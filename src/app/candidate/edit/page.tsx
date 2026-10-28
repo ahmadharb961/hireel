@@ -1,4 +1,6 @@
+import { PhotoUpload } from "@/components/PhotoUpload";
 import { prisma } from "@/lib/db";
+import { photoUrl } from "@/lib/photo";
 import { requireOnboardedCandidate } from "@/server/candidate-data";
 import { CandidateHeader } from "../CandidateHeader";
 import { EditForm } from "./EditForm";
@@ -13,6 +15,7 @@ export default async function EditPage() {
     <div className="scr">
       <CandidateHeader candidateId={profile.id} back="/candidate/profile" />
       <main className="main">
+        <section className="card" style={{ marginBottom: 16 }}><PhotoUpload initialUrl={photoUrl(profile)} name={profile.fullName} /></section>
         <EditForm
           candidateId={profile.id}
           cv={cv}

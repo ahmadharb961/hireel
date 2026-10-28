@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { CvUpload } from "@/components/CvUpload";
+import { PhotoUpload } from "@/components/PhotoUpload";
+import { photoUrl } from "@/lib/photo";
+import { SignOut } from "@/components/SignOut";
 import { CandidateNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
 import { requireOnboardedCandidate, studioVideos } from "@/server/candidate-data";
@@ -22,9 +25,11 @@ export default async function ProfilePreview() {
       <CandidateHeader candidateId={profile.id} />
       <main className="main">
         <div className="stack">
+          <section className="card"><PhotoUpload initialUrl={photoUrl(profile)} name={profile.fullName} /></section>
           <div><h1 className="h2">{t("employerView")}</h1><p className="p">{t("employerViewSub")}</p></div>
           <PreviewCard
             name={profile.fullName}
+            photo={photoUrl(profile)}
             headline={profile.headline}
             city={profile.location.split(",")[0]}
             skills={skills.map((s) => s.skill.name)}
@@ -35,6 +40,7 @@ export default async function ProfilePreview() {
           <p className="note">{t("privateNote")}</p>
           <section className="card"><h2 className="h3">🔒 {tc("title")}</h2><CvUpload candidateId={profile.id} initial={cv} /></section>
           <Link className="btn g w" href="/candidate/edit">{t("editProfile")}</Link>
+          <SignOut />
         </div>
       </main>
       <CandidateNav />

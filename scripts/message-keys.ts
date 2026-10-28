@@ -55,7 +55,7 @@ export const DYNAMIC: string[] = [
   ...["required", "too_long", "email", "password_short", "agree", "url", "phone", "years", "skills_min", "skills_max", "message_short", "invalid",
     "generic", "rate_limited", "email_taken", "consent", "incomplete", "about_short", "not_found", "stream_not_configured", "video_consent",
     "lang_taken", "max_videos", "signup_required", "saved_limit", "suspended", "blocked", "duplicate", "cooldown", "intro_limit", "cv_limit",
-    "reason_required", "plan_invalid", "UNAUTHORIZED", "network", "cv_too_big", "cv_type", "cv_missing"].map((k) => `errors.${k}`),
+    "reason_required", "plan_invalid", "UNAUTHORIZED", "network", "cv_too_big", "cv_type", "cv_missing", "photo_type", "photo_too_big"].map((k) => `errors.${k}`),
 ];
 
 export function hasKey(messages: Record<string, unknown>, key: string) {

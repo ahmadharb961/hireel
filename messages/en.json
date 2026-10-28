@@ -11,7 +11,8 @@
     "pleaseWait": "Please wait…",
     "signOut": "Sign out",
     "switchLanguage": "Language",
-    "reload": "Reload page"
+    "reload": "Reload page",
+    "accountMenu": "Account menu"
   },
   "nav": {
     "home": "Home",
@@ -25,7 +26,8 @@
     "inbox": "Inbox",
     "account": "Account",
     "reels": "Reels",
-    "myArea": "My area"
+    "myArea": "My area",
+    "homepage": "Homepage"
   },
   "languages": {
     "EN": "English",
@@ -114,7 +116,9 @@
     "network": "Couldn’t save. Check your internet connection and try again. If it keeps happening, reload the page (Hireel may have just been updated).",
     "cv_too_big": "This file is larger than 5 MB. Please upload a smaller PDF or Word file.",
     "cv_type": "Please upload a PDF or Word file (.pdf, .doc or .docx).",
-    "cv_missing": "Choose a file to upload."
+    "cv_missing": "Choose a file to upload.",
+    "photo_type": "Please choose a photo (JPG or PNG).",
+    "photo_too_big": "This photo is larger than 12 MB. Please choose a smaller one."
   },
   "home": {
     "login": "Log in",
@@ -1092,7 +1096,9 @@
     "answered": "Answered",
     "openCompany": "Open full details",
     "cvFile": "CV file",
-    "noCvFile": "No CV file uploaded."
+    "noCvFile": "No CV file uploaded.",
+    "removePhoto": "Remove photo",
+    "photoRemoved": "Photo removed"
   },
   "cvFile": {
     "title": "CV file",
@@ -1106,5 +1112,14 @@
     "removeConfirm": "Remove your CV? Companies you shared it with will no longer be able to download it.",
     "help": "PDF or Word, up to 5 MB. Private: a company can download it only after you accept its request and choose to share your CV.",
     "downloadCv": "Download CV file"
+  },
+  "photo": {
+    "title": "Profile photo",
+    "help": "A clear, friendly photo of your face. Employers see it next to your videos. Optional.",
+    "add": "Add photo",
+    "change": "Change photo",
+    "remove": "Remove",
+    "saved": "Photo saved",
+    "removed": "Photo removed"
   }
 }

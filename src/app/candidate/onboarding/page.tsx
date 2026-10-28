@@ -1,18 +1,22 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { photoUrl } from "@/lib/photo";
 import { requireCandidate } from "@/server/session";
+import { getTranslations } from "next-intl/server";
+import { AccountMenu } from "@/components/AccountMenu";
 import { Header } from "@/components/Header";
 import { Wizard } from "./Wizard";
 
 export default async function OnboardingPage() {
-  const { profile } = await requireCandidate();
+  const { profile, viewer } = await requireCandidate();
   if (profile.onboardingStep >= 5) redirect("/candidate");
   const skills = await prisma.candidateSkill.findMany({ where: { candidateId: profile.id }, include: { skill: true } });
   return (
     <div className="scr">
-      <Header home="/candidate/onboarding" />
+      <Header home="/candidate/onboarding" right={<AccountMenu name={viewer.name} email={viewer.email} links={[{ href: "/", label: (await getTranslations("nav"))("homepage") }]} />} />
       <main className="main">
         <Wizard
+          photo={photoUrl(profile)}
           initialStep={Math.min(Math.max(profile.onboardingStep, 1), 4)}
           initial={{
             fullName: profile.fullName, headline: profile.headline, location: profile.location, phone: profile.phone,

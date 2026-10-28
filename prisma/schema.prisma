@@ -208,6 +208,8 @@ model CandidateProfile {
   searchPaused     Boolean       @default(false)
   onboardingStep   Int           @default(1)
   publishConsentAt DateTime?
+  // set when a profile photo exists; also used to refresh cached copies
+  photoUpdatedAt   DateTime?
   isDemo           Boolean       @default(false)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
@@ -216,6 +218,7 @@ model CandidateProfile {
   videos       Video[]
   shareLink    ShareLink?
   cvFile       CvFile?
+  photo        ProfilePhoto?
   saves        SavedCandidate[]
   requests     IntroRequest[]
   blocks       Block[]
@@ -471,4 +474,12 @@ model CvFile {
   size        Int
   data        Bytes
   createdAt   DateTime         @default(now())
+}
+
+/// Square profile photo (resized WebP, location data removed). Shown under the same rules as the profile.
+model ProfilePhoto {
+  candidateId String           @id
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  data        Bytes
+  updatedAt   DateTime         @updatedAt
 }

@@ -4,6 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { Header } from "@/components/Header";
 import { CandidateBrowseNav, EmployerNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
+import { photoUrl } from "@/lib/photo";
 import { AVAILABILITY, INDUSTRIES, VIDEO_LANGUAGES } from "@/lib/constants";
 import { savedCount } from "@/server/employer-data";
 import { initialsOf } from "@/server/profile-data";
@@ -91,7 +92,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         <div className="stack cards2" style={{ gap: 8 }}>
           {results.map((c) => (
             <Link key={c.id} className="list-row" href={`/c/${c.id}`}>
-              <div className="thumb">{initialsOf(c.fullName)}</div>
+              <div className="thumb">{photoUrl(c) ? <img src={photoUrl(c)!} alt="" /> : initialsOf(c.fullName)}</div>
               <div className="t">
                 <b>{c.fullName} {c.isDemo ? <span className="demo-flag">{t("demo")}</span> : null}</b>
                 <span>{c.headline} · {t("years", { n: c.yearsExperience })}</span>

@@ -3,6 +3,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Header } from "@/components/Header";
 import { EmployerNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
+import { photoUrl } from "@/lib/photo";
 import { savedCount } from "@/server/employer-data";
 import { requireEmployer } from "@/server/session";
 
@@ -31,7 +32,7 @@ export default async function InboxPage() {
           return (
             <div key={r.id} className="card">
               <div className="sw">
-                <div><h2 className="h3"><Link href={`/c/${c.id}`} style={{ color: "inherit" }}>{c.fullName}</Link></h2><p className="p">{r.roleTitle} · {t("sent", { date: fmt.dateTime(r.createdAt, { dateStyle: "medium" }) })}</p></div>
+                <div><h2 className="h3 pv-name">{photoUrl(c) ? <img className="pv-av" src={photoUrl(c)!} alt="" style={{ width: 36, height: 36 }} /> : null}<Link href={`/c/${c.id}`} style={{ color: "inherit" }}>{c.fullName}</Link></h2><p className="p">{r.roleTitle} · {t("sent", { date: fmt.dateTime(r.createdAt, { dateStyle: "medium" }) })}</p></div>
                 <span className={`tag ${accepted ? "" : r.status === "PENDING" ? "warn" : "mute"}`}>{t(`status.${r.status}`)}</span>
               </div>
               {accepted ? (

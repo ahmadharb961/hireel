@@ -9,3 +9,4 @@ export const savePlans = safe(a.savePlans);
 export const resolveReport = safe(a.resolveReport);
 export const setCandidateSuspended = safe(a.setCandidateSuspended);
 export const unpublishCandidate = safe(a.unpublishCandidate);
+export const removeCandidatePhoto = safe(a.removeCandidatePhoto);

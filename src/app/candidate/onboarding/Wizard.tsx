@@ -2,6 +2,7 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { PhotoUpload } from "@/components/PhotoUpload";
 import { SkillsInput } from "@/components/SkillsInput";
 import { AVAILABILITY, CITY_SUGGESTIONS, INDUSTRIES } from "@/lib/constants";
 import { chooseProfileType, publishProfile, saveBasics, saveExperience } from "../safe-actions";
@@ -11,7 +12,7 @@ type Init = {
   yearsExperience: string; availability: string; skills: string[]; about: string; profileType: "VIDEO" | "TEXT_ONLY"; visibility: "EVERYONE" | "EMPLOYERS_ONLY";
 };
 
-export function Wizard({ initialStep, initial }: { initialStep: number; initial: Init }) {
+export function Wizard({ initialStep, initial, photo }: { initialStep: number; initial: Init; photo: string | null }) {
   const t = useTranslations("onboarding");
   const te = useTranslations("errors");
   const ti = useTranslations("industries");
@@ -48,6 +49,7 @@ export function Wizard({ initialStep, initial }: { initialStep: number; initial:
       {step === 1 ? (
         <>
           <h1 className="h2">{t("s1Title")}</h1><p className="p">{t("s1Sub")}</p>
+          <div style={{ marginTop: 14 }}><PhotoUpload initialUrl={photo} name={v.fullName} /></div>
           <label className="lbl" htmlFor="fullName">{t("fullName")}</label>
           <input className="i" id="fullName" value={v.fullName} onChange={set("fullName")} autoComplete="name" />
           <label className="lbl" htmlFor="headline">{t("headline")}</label>

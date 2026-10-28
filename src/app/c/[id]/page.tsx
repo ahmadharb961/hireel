@@ -7,6 +7,7 @@ import { ToastProvider } from "@/components/Toast";
 import { ProfileActions } from "@/components/employer/ProfileActions";
 import { ProfileVideo } from "@/components/employer/ProfileVideo";
 import { prisma } from "@/lib/db";
+import { photoUrl } from "@/lib/photo";
 import { quotaFor, savedCount } from "@/server/employer-data";
 import { initialsOf, liveVideos, recordProfileView } from "@/server/profile-data";
 import { clientIp, rateLimit } from "@/server/ratelimit";
@@ -61,7 +62,7 @@ export default async function CandidateProfilePage({ params }: { params: Promise
         <div>
           <span className="tag">{ta(c.availability)}</span>
           {c.isDemo ? <span className="demo-flag" style={{ marginInlineStart: 6 }}>{t("demo")}</span> : null}
-          <h1 className="h2" style={{ marginTop: 8 }}>{c.fullName}</h1>
+          <h1 className="h2 pv-name" style={{ marginTop: 8 }}>{photoUrl(c) ? <img className="pv-av" src={photoUrl(c)!} alt="" /> : null}{c.fullName}</h1>
           <p className="p">{c.headline} · {t("years", { n: c.yearsExperience })} · {c.location}</p>
           <div className="wrap" style={{ marginTop: 10 }}>{c.skills.map((s) => <span key={s.skillId} className="sk">{s.skill.name}</span>)}</div>
         </div>

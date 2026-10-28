@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
+import { photoUrl } from "@/lib/photo";
 import { requireAdmin } from "@/server/session";
 import { signedPlayback } from "@/server/videos";
 import { AdminFrame } from "../../AdminFrame";
@@ -47,7 +48,7 @@ export default async function CandidateDetail({ params }: { params: Promise<{ id
     <AdminFrame tab="candidates">
       <Link href="/admin/candidates" className="aback">← {ta("back")}</Link>
       <div className="card ahead">
-        <span className="arow-av lg">{videos[0]?.play?.poster ? <img src={videos[0].play.poster} alt="" /> : c.fullName.slice(0, 1)}</span>
+        <span className="arow-av lg">{photoUrl(c) ?? videos[0]?.play?.poster ? <img src={(photoUrl(c) ?? videos[0]?.play?.poster)!} alt="" /> : c.fullName.slice(0, 1)}</span>
         <div style={{ minWidth: 0, flex: 1 }}>
           <h1 className="h2">{c.fullName || "—"} {c.isDemo ? <span className="demo-flag">Demo</span> : null}</h1>
           <p className="p">{c.headline || "—"}</p>
@@ -61,7 +62,7 @@ export default async function CandidateDetail({ params }: { params: Promise<{ id
         </div>
       </div>
 
-      <CandidateControls id={c.id} suspended={Boolean(c.user.suspendedAt)} published={c.status === "PUBLISHED"} />
+      <CandidateControls id={c.id} suspended={Boolean(c.user.suspendedAt)} published={c.status === "PUBLISHED"} hasPhoto={Boolean(c.photoUpdatedAt)} />
 
       <div className="asplit">
         <section className="card">

@@ -2,6 +2,12 @@ import { expect, test, type Page } from "@playwright/test";
 import { linkFromEmail, noSideScroll, totp, unique } from "./helpers";
 
 const PASSWORD = "Str0ng-pass!";
+
+/** A small real PNG for upload tests. */
+async function sharpPng() {
+  const sharp = (await import("sharp")).default;
+  return sharp({ create: { width: 300, height: 400, channels: 3, background: "#2f8a6c" } }).png().toBuffer();
+}
 const id = unique();
 const candEmail = `cand.${id}@example.com`;
 const empEmail = `emp.${id}@example.com`;
@@ -171,7 +177,12 @@ test.describe.serial("Hireel core loop", () => {
     await signIn(page, candEmail);
     // CV file: a renamed picture is refused, a real PDF is accepted and downloadable by the candidate.
     await page.goto("/candidate/profile");
-    const cvInput = page.locator('input[type="file"]');
+    // Profile photo: any picture is accepted and shown as a round avatar.
+    const png = await sharpPng();
+    await page.locator('.phup input[type="file"]').setInputFiles({ name: "me.png", mimeType: "image/png", buffer: png });
+    await expect(page.locator(".phup-av img")).toBeVisible();
+    expect((await page.request.get((await page.locator(".phup-av img").getAttribute("src"))!)).headers()["content-type"]).toBe("image/webp");
+    const cvInput = page.locator('.cvbox input[type="file"]');
     await cvInput.setInputFiles({ name: "cv.pdf", mimeType: "application/pdf", buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4]) });
     await expect(page.getByText("Please upload a PDF or Word file")).toBeVisible();
     await cvInput.setInputFiles({ name: "My CV.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n% test cv\n") });

@@ -31,4 +31,11 @@ test("setup steps: Back works and a failed save never freezes the button", async
   await page.unroute("**/candidate/onboarding");
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page.getByText("Step 2 of 4")).toBeVisible();
+
+  // The candidate can always sign out from the profile menu at the top.
+  await page.getByRole("button", { name: "Account menu" }).click();
+  await page.getByRole("menuitem", { name: "Sign out" }).click();
+  await page.waitForURL((u) => u.pathname === "/");
+  await page.goto("/candidate");
+  await expect(page).toHaveURL(/\/login/);
 });

@@ -122,3 +122,13 @@ export async function unpublishCandidate(candidateId: string, reason = ""): Prom
   revalidatePath(`/admin/candidates/${candidateId}`);
   return { ok: true };
 }
+
+/** Removes a candidate's profile photo (for example if it isn't a real or appropriate photo). */
+export async function removeCandidatePhoto(candidateId: string, reason = ""): Promise<R> {
+  const a = await admin();
+  await prisma.profilePhoto.deleteMany({ where: { candidateId } });
+  await prisma.candidateProfile.updateMany({ where: { id: candidateId }, data: { photoUpdatedAt: null } });
+  await audit(a.id, "candidate.remove_photo", "CandidateProfile", candidateId, reason);
+  revalidatePath(`/admin/candidates/${candidateId}`);
+  return { ok: true };
+}

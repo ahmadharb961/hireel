@@ -182,7 +182,7 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
                     </div>
                   ) : null}
                   <span className="avail">{ta(c.availability)}</span>
-                  <h2 className="h2">{c.name}</h2>
+                  <h2 className="h2 fname">{c.photo ? <img className="fav" src={c.photo} alt="" /> : null}{c.name}</h2>
                   <div className="role">{c.headline}</div>
                   <div className="meta">{t("years", { n: c.years })}{c.location ? ` · ${c.location}` : ""}</div>
                   <div className="skills">{c.skills.map((s) => <span key={s}>{s}</span>)}</div>
@@ -236,7 +236,7 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
         {current ? (
           <div className="ppanel">
             <div className="pp-head">
-              <span className="pp-av">{posterOf(current) ? <img src={posterOf(current)!} alt="" /> : initials(current.name)}</span>
+              <span className="pp-av">{current.photo ?? posterOf(current) ? <img src={(current.photo ?? posterOf(current))!} alt="" /> : initials(current.name)}</span>
               <div className="pp-id">
                 <h2>{current.name}</h2>
                 <p>{current.headline}</p>

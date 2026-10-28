@@ -3,6 +3,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { FEED_PAGE_SIZE, type VideoLang } from "@/lib/constants";
 import { EXP_BANDS, FEED_PLACES } from "@/lib/feed-filters";
+import { photoUrl } from "@/lib/photo";
 import { publicViewCount } from "./rules/views";
 import { signedPlayback } from "./videos";
 
@@ -27,6 +28,7 @@ export type FeedCard = {
   skills: string[];
   /** Only sent to signed-in employers. */
   about: string | null;
+  photo: string | null;
   videos: FeedVideo[];
   startLang: VideoLang;
   isDemo: boolean;
@@ -132,6 +134,7 @@ async function loadCards(ids: string[], q: Pick<FeedQuery, "lang" | "viewer">): 
       availability: p.availability,
       skills: p.skills.map((s) => s.skill.name).slice(0, 5),
       about: q.viewer.kind === "employer" ? p.about : null,
+      photo: photoUrl(p),
       videos,
       startLang,
       isDemo: p.isDemo,

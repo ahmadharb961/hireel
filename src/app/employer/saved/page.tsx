@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Header } from "@/components/Header";
 import { EmployerNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
+import { photoUrl } from "@/lib/photo";
 import { initialsOf } from "@/server/profile-data";
 import { requireEmployer } from "@/server/session";
 
@@ -22,7 +23,7 @@ export default async function SavedPage() {
         <div className="stack cards2">
         {rows.length === 0 ? <div className="empty">{t("empty")}</div> : rows.map(({ candidate: c }) => (
           <Link key={c.id} className="list-row" href={`/c/${c.id}`}>
-            <div className="thumb">{initialsOf(c.fullName)}</div>
+            <div className="thumb">{photoUrl(c) ? <img src={photoUrl(c)!} alt="" /> : initialsOf(c.fullName)}</div>
             <div className="t"><b>{c.fullName}</b><span>{c.headline}</span><span>{c.location} · {c.skills.map((s) => s.skill.name).join(", ")}</span></div>
           </Link>
         ))}

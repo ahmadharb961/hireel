@@ -28,7 +28,7 @@ export async function SeeItInAction() {
         <Link href="/feed" tabIndex={-1} className="sia-phone">
           <span className="sia-notch" />
           <span className="sia-status"><b>9:41</b><i /></span>
-          <img src="/photos/p2.jpg" alt="" />
+          <img src="/photos/reel-man.jpg" alt="" />
           <span className="sia-shade" />
           <span className="sia-top"><b>{t("role")}</b><span>{t("meta")}</span></span>
           <span className="sia-ex">{t("example")}</span>
@@ -40,7 +40,7 @@ export async function SeeItInAction() {
         </Link>
         <span className="sia-chip"><LIcon name="video" size={22} /><b>{t("chip")}</b></span>
         <span className="sia-card">
-          <span className="sia-card-hd"><img src="/photos/p2.jpg" alt="" /><span><b>{t("role")}</b><span>{t("meta")}</span></span></span>
+          <span className="sia-card-hd"><img src="/photos/reel-man-face.jpg" alt="" /><span><b>{t("role")}</b><span>{t("meta")}</span></span></span>
           <span className="sia-tags">{(t.raw("tags") as string[]).map((x) => <em key={x}>{x}</em>)}</span>
           <span className="sia-card-btn">{t("viewProfile")} <LIcon name="arrow" size={14} className="flipx" /></span>
         </span>

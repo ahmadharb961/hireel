@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { photoUrl } from "@/lib/photo";
 import { requireAdmin } from "@/server/session";
 import { signedPlayback } from "@/server/videos";
 import { AdminFrame } from "../AdminFrame";
@@ -58,7 +59,7 @@ export default async function CandidatesAdmin({ searchParams }: { searchParams: 
         <div className="arows">
           {rows.map((c, i) => (
             <Link key={c.id} href={`/admin/candidates/${c.id}`} className="arow">
-              <span className="arow-av">{posters[i] ? <img src={posters[i]!} alt="" /> : c.fullName.slice(0, 1)}</span>
+              <span className="arow-av">{photoUrl(c) ?? posters[i] ? <img src={(photoUrl(c) ?? posters[i])!} alt="" /> : c.fullName.slice(0, 1)}</span>
               <span className="arow-main">
                 <b>{c.fullName || "—"} {c.isDemo ? <span className="demo-flag">Demo</span> : null}</b>
                 <span>{c.headline || "—"}{c.location ? ` · ${c.location}` : ""}</span>
