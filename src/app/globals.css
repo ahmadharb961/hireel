@@ -586,3 +586,7 @@ nav.bn a:active, nav.fn a:active, nav.fn button:active { opacity: .6; }
 .actions .ai, .freel .actions .ai { background: rgba(179,226,205,.2); border: 1px solid rgba(179,226,205,.55); color: #fff; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: none; }
 .actions .btn.m .ai, .freel .actions .btn.m .ai { background: rgba(179,226,205,.42); border-color: rgba(179,226,205,.8); }
 .actions .btn.saved .ai, .freel .actions .btn.saved .ai { background: var(--mint); border-color: var(--mint); color: var(--g); }
+
+/* Filters: white icon in a round glass button, with a count when filters are on */
+.fbtn.ic { position: relative; width: 44px; height: 44px; min-height: 0; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; background: rgba(20,20,20,.42); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.18); }
+.fbtn-n { position: absolute; top: -3px; inset-inline-end: -3px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--mint); color: var(--g); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }

@@ -138,8 +138,9 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
     <div className="scr fs">
       <header className="fh">
         <Link className="logo" href="/" aria-label="Hireel"><Logo white height={26} /></Link>
-        <button type="button" className="fbtn" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(!filtersOpen)}>
-          {t("filters")}{nFilters ? ` · ${nFilters}` : ""}
+        <button type="button" className="fbtn ic" aria-expanded={filtersOpen} aria-label={`${t("filters")}${nFilters ? ` · ${nFilters}` : ""}`} onClick={() => setFiltersOpen(!filtersOpen)}>
+          <LIcon name="sliders" size={22} />
+          {nFilters ? <span className="fbtn-n">{nFilters}</span> : null}
         </button>
       </header>
       {filtersOpen ? (
