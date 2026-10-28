@@ -40,7 +40,7 @@ html[lang="ar"] .h2-title { letter-spacing: 0; line-height: 1.25; }
 .h2-cta { box-shadow: 0 10px 24px rgba(25,92,72,.25); }
 .h2-cta2 { background: var(--card); color: var(--tx); border: 1.5px solid var(--bd); }
 .h2-cta:hover, .h2-cta2:hover { transform: translateY(-2px); }
-.h2-note { margin-top: 16px; font-size: 13px; color: var(--tx2); display: flex; align-items: center; gap: 8px; }
+.h2-note { margin-top: 18px; font-size: 14px; font-weight: 700; color: var(--brand); background: var(--soft); border: 1px solid color-mix(in srgb, var(--g) 20%, transparent); padding: 8px 16px; border-radius: 999px; display: inline-flex; align-items: center; gap: 8px; }
 .h2-dot { width: 8px; height: 8px; border-radius: 50%; background: #2fb27f; box-shadow: 0 0 0 4px rgba(47,178,127,.18); flex: none; }
 
 .h2-art { position: relative; height: 380px; max-width: 520px; width: 100%; margin: 0 auto; }
@@ -148,7 +148,26 @@ html[lang="ar"] .eband h2 { letter-spacing: 0; line-height: 1.35; }
 .esearch-f input, .esearch-f select { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--tx); font-size: 15px; min-height: 44px; outline: none; }
 .esearch-go { border-radius: 12px; min-height: 48px; white-space: nowrap; }
 
-/* plans */
+/* free for everyone (launch) */
+.free2 { display: grid; gap: 16px; max-width: 880px; margin: 8px auto 0; }
+.free2-card { position: relative; background: var(--card); border: 1px solid var(--bd); border-radius: 26px; padding: 26px 22px; display: flex; flex-direction: column; gap: 10px; transition: transform .2s, box-shadow .2s; }
+.free2-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(15,42,33,.1); }
+.free2-top { display: flex; justify-content: space-between; align-items: center; }
+.free2-ic { width: 52px; height: 52px; border-radius: 16px; background: var(--soft); color: var(--g); display: flex; align-items: center; justify-content: center; }
+.free2-badge { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; padding: 6px 12px; border-radius: 999px; background: var(--mint); color: var(--g); }
+html[lang="ar"] .free2-badge { letter-spacing: 0; }
+.free2-card h3 { font-size: 20px; font-weight: 800; margin: 6px 0 0; }
+.free2-price { font-size: 40px; font-weight: 800; letter-spacing: -1px; line-height: 1; color: var(--brand); }
+.free2-card ul { list-style: none; padding: 0; margin: 8px 0 14px; display: grid; gap: 10px; }
+.free2-card li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.4; }
+.free2-card .btn { margin-top: auto; }
+.free2-card.hi { background: linear-gradient(160deg, #195C48, #0f3b2e); border-color: transparent; color: #fff; box-shadow: 0 24px 50px rgba(25,92,72,.3); }
+.free2-card.hi .free2-ic { background: rgba(179,226,205,.16); color: var(--mint); }
+.free2-card.hi .free2-price { color: var(--mint); }
+.free2-card.hi li { color: #e9f5ef; }
+.free2-card.hi .plan2-ck { background: rgba(179,226,205,.2); color: var(--mint); }
+
+/* plans (kept for when paid plans return) */
 .plans2 { display: grid; gap: 16px; max-width: 880px; margin: 8px auto 0; }
 .plan2 { position: relative; background: var(--card); border: 1px solid var(--bd); border-radius: 26px; padding: 26px 22px; display: flex; flex-direction: column; gap: 10px; transition: transform .2s, box-shadow .2s; }
 .plan2:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(15,42,33,.1); }
@@ -242,7 +261,7 @@ html[lang="ar"] .as-title { letter-spacing: 0; line-height: 1.3; }
   .esearch { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: center; border-radius: 22px; padding: 8px; gap: 6px; }
   .esearch-f:first-child { grid-column: 1 / -1; }
   .esearch-go { border-radius: 14px; padding-inline: 22px; }
-  .plans2 { grid-template-columns: 1fr 1fr; }
+  .plans2, .free2 { grid-template-columns: 1fr 1fr; }
   .fcta { grid-template-columns: 1fr auto; align-items: center; padding: 36px 40px; }
   .fcta-btns { flex-direction: row; }
   .sitefoot-in { grid-template-columns: 2fr 1fr 1fr; }

@@ -150,7 +150,8 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.getByRole("button", { name: "Request sent" })).toBeVisible();
 
     await page.goto("/employer/account");
-    await expect(page.getByText("Plan: Freemium")).toBeVisible();
+    await expect(page.getByText("Free during our launch")).toBeVisible();
+    await expect(page.getByText("Fair-use limits this month")).toBeVisible();
     await expect(page.locator(".meter").first()).toBeVisible();
     await expect(page.getByText(/^1$/).first()).toBeVisible();
     await noSideScroll(page);

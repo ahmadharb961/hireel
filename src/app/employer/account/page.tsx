@@ -3,7 +3,6 @@ import { Header } from "@/components/Header";
 import { LangSwitch } from "@/components/LangSwitch";
 import { EmployerNav } from "@/components/Nav";
 import { SignOut } from "@/components/SignOut";
-import { prisma } from "@/lib/db";
 import { quotaFor, savedCount } from "@/server/employer-data";
 import { requireEmployer } from "@/server/session";
 
@@ -15,7 +14,6 @@ export default async function AccountPage() {
   const ti = await getTranslations("industries");
   const q = await quotaFor(emp, locale);
   const saved = await savedCount(member.id);
-  const premium = await prisma.plan.findUnique({ where: { key: "premium" } });
   const plan = company.plan;
   const meter = (label: string, used: number, max: number) => (
     <div style={{ marginTop: 12 }}>
@@ -34,19 +32,16 @@ export default async function AccountPage() {
           </div>
           <p className="note" style={{ marginTop: 8 }}>{company.status === "VERIFIED" ? t("verifiedNote") : company.status === "SUSPENDED" ? t("suspendedNote") : t("notVerifiedNote")}</p>
         </div>
+        <div className="card" style={{ background: "var(--soft)", borderColor: "transparent" }}>
+          <div className="sw"><h2 className="h3">{t("freeTitle")}</h2><span className="tag">$0</span></div>
+          <p className="p" style={{ marginTop: 4 }}>{t("freeBody")}</p>
+        </div>
         <div className="card">
-          <div className="sw"><h2 className="h3">{t("plan", { name: locale === "ar" ? plan.nameAr : plan.nameEn })}</h2><span className="tag">{locale === "ar" ? plan.priceLabelAr : plan.priceLabelEn}</span></div>
+          <h2 className="h3">{t("fairTitle")}</h2>
           {meter(t("introThisMonth"), q.used.intro, plan.monthlyIntroRequests)}
           {meter(t("cvThisMonth"), q.used.cv, plan.monthlyCvRequests)}
           {meter(t("savedLimit"), saved, plan.maxSaved)}
-          <p className="note" style={{ marginTop: 10 }}>{t("resets")}</p>
-          {plan.key === "free" && premium ? (
-            <div className="card" style={{ marginTop: 12, background: "var(--soft)", borderColor: "transparent" }}>
-              <h3 className="h3">{t("premiumTitle", { name: locale === "ar" ? premium.nameAr : premium.nameEn })}</h3>
-              <p className="p">{t("premiumBody", { intro: premium.monthlyIntroRequests, cv: premium.monthlyCvRequests, saved: premium.maxSaved })}</p>
-              <p className="note" style={{ marginTop: 6 }}>{t("premiumHow")}</p>
-            </div>
-          ) : null}
+          <p className="note" style={{ marginTop: 10 }}>{t("fairNote")}</p>
         </div>
         <LangSwitch variant="button" />
         <SignOut />

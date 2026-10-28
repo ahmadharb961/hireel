@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { CategoryStrip } from "@/components/landing/CategoryStrip";
 import { EmployerSearch } from "@/components/landing/EmployerSearch";
 import { LIcon } from "@/components/landing/icons";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { SiteNav } from "@/components/landing/SiteNav";
-import { prisma } from "@/lib/db";
 import { featuredCandidates } from "@/server/landing-data";
 import { initialsOf } from "@/server/profile-data";
 import { getViewer, homeFor } from "@/server/session";
@@ -22,8 +21,7 @@ export default async function Home() {
   if (viewer) redirect(homeFor(viewer.role));
   const t = await getTranslations("landing");
   const th = await getTranslations("home");
-  const locale = await getLocale();
-  const [plans, featured] = await Promise.all([prisma.plan.findMany({ orderBy: { sortOrder: "asc" } }), featuredCandidates(6)]);
+  const featured = await featuredCandidates(6);
 
   return (
     <div className="site2">
@@ -122,7 +120,7 @@ export default async function Home() {
               <p>{t("emp.body")}</p>
               <div className="eband-ctas">
                 <Link className="btn eband-go" href="/signup?role=employer">{t("emp.getStarted")} <LIcon name="arrow" size={16} className="flipx" /></Link>
-                <Link className="eband-link" href="/#plans">{t("emp.seePricing")} <LIcon name="arrow" size={16} className="flipx" /></Link>
+                <Link className="eband-link" href="/#how">{t("emp.howLink")} <LIcon name="arrow" size={16} className="flipx" /></Link>
               </div>
             </div>
             <div className="eband-art">
@@ -135,37 +133,37 @@ export default async function Home() {
         </div>
 
         <div className="wrapx">
-          {/* ---------- Plans ---------- */}
-          <section className="lsec" id="plans">
+          {/* ---------- Free for everyone (launch period: no plans or prices shown) ---------- */}
+          <section className="lsec" id="free">
             <div className="lsec-head center">
-              <div><span className="pillx">{t("plans.pill")}</span><h2 className="lsec-title" style={{ marginTop: 10 }}>{t("plans.title")}</h2><p className="lsec-sub">{t("plans.sub")}</p></div>
+              <div><span className="pillx">{t("free.pill")}</span><h2 className="lsec-title" style={{ marginTop: 10 }}>{t("free.title")}</h2><p className="lsec-sub">{t("free.sub")}</p></div>
             </div>
-            <div className="plans2">
-              {plans.map((p) => {
-                const premium = p.key !== "free";
-                return (
-                  <div key={p.id} className={`plan2${premium ? " hi" : ""}`}>
-                    {premium ? <span className="plan2-badge">{t("plans.recommended")}</span> : null}
-                    <h3>{locale === "ar" ? p.nameAr : p.nameEn}</h3>
-                    <div className="plan2-price">{locale === "ar" ? p.priceLabelAr : p.priceLabelEn}</div>
-                    <ul>
-                      {[t("plans.browse"), t("plans.intro", { n: p.monthlyIntroRequests }), t("plans.cv", { n: p.monthlyCvRequests }), t("plans.saved", { n: p.maxSaved }), t("plans.filters")].map((f) => (
-                        <li key={f}><span className="plan2-ck"><LIcon name="check" size={14} /></span>{f}</li>
-                      ))}
-                    </ul>
-                    <Link className={`btn w${premium ? " m" : ""}`} href="/signup?role=employer">{premium ? t("plans.ctaPremium") : t("plans.ctaFree")}</Link>
+            <div className="free2">
+              {(["cand", "emp"] as const).map((k) => (
+                <div key={k} className={`free2-card${k === "emp" ? " hi" : ""}`}>
+                  <div className="free2-top">
+                    <span className="free2-ic"><LIcon name={k === "cand" ? "video" : "briefcase"} size={26} /></span>
+                    <span className="free2-badge">{t("free.badge")}</span>
                   </div>
-                );
-              })}
+                  <h3>{t(`free.${k}Title`)}</h3>
+                  <div className="free2-price">$0</div>
+                  <ul>
+                    {(t.raw(`free.${k}Items`) as string[]).map((f) => (
+                      <li key={f}><span className="plan2-ck"><LIcon name="check" size={14} /></span>{f}</li>
+                    ))}
+                  </ul>
+                  <Link className={`btn w${k === "emp" ? " m" : ""}`} href={`/signup?role=${k === "cand" ? "candidate" : "employer"}`}>{t(`free.cta${k === "cand" ? "C" : "E"}`)}</Link>
+                </div>
+              ))}
             </div>
-            <p className="note" style={{ textAlign: "center", marginTop: 14 }}>{t("plans.note")}</p>
+            <p className="note" style={{ textAlign: "center", marginTop: 14 }}>{t("free.note")}</p>
           </section>
 
           {/* ---------- FAQ ---------- */}
           <section className="lsec faq2" id="faq">
             <h2 className="lsec-title" style={{ textAlign: "center" }}>{t("faq.title")}</h2>
             <div className="faq2-list">
-              {[1, 2, 3, 4, 5].map((n) => (
+              {[6, 1, 2, 3, 4, 5].map((n) => (
                 <details key={n}><summary>{th(`faq${n}`)}<span className="faq2-ic" aria-hidden="true">+</span></summary><p>{th(`faq${n}A`)}</p></details>
               ))}
             </div>

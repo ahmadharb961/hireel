@@ -179,7 +179,9 @@
     "mockSkill3": "Arabic & English",
     "float1": "Contact stays private",
     "float2": "Up to 2 videos, any of EN / AR / FR",
-    "float3": "Intro request sent"
+    "float3": "Intro request sent",
+    "faq6": "Is Hireel free for employers?",
+    "faq6A": "Yes. During our launch, everything is free for employers too: browsing reels, search, saving candidates and sending intro requests. No payment details needed."
   },
   "signup": {
     "title": "Create your account",
@@ -589,15 +591,15 @@
     "missing": "Add an opportunity title and a short message (10+ characters).",
     "cancel": "Cancel",
     "send": "Send request",
-    "usesOne": "Uses 1 of your {n} remaining intro requests this month ({plan})."
+    "usesOne": "Uses 1 of your {n} remaining intro requests this month."
   },
   "upgrade": {
-    "title": "Upgrade to Premium",
-    "introLimit": "You’ve used all your intro requests on the {plan} plan this month.",
-    "savedLimit": "Your saved list is full on the {plan} plan.",
-    "how": "Online payment isn’t connected yet. To move to Premium, contact the Hireel team and they’ll switch your company over.",
-    "seePlan": "See my plan",
-    "notNow": "Not now"
+    "title": "Monthly limit reached",
+    "introLimit": "You’ve used all your intro requests for this month.",
+    "savedLimit": "Your saved list is full. Remove someone to save a new candidate.",
+    "how": "Limits keep Hireel fair and protect candidates from spam. They reset on the 1st of each month.",
+    "seePlan": "See my usage",
+    "notNow": "OK"
   },
   "report": {
     "button": "Report profile",
@@ -655,7 +657,7 @@
   },
   "saved": {
     "title": "Saved candidates",
-    "count": "{n} of {max} on your plan",
+    "count": "{n} of {max} saved",
     "empty": "Tap Save on a reel to keep candidates here.",
     "phase2": "Shortlists with private notes arrive in the next update."
   },
@@ -686,15 +688,14 @@
     "verifiedNote": "Candidates see a Verified badge on your requests.",
     "notVerifiedNote": "You can send requests now. The Hireel team may verify your company, which adds a badge candidates trust.",
     "suspendedNote": "Your company is suspended, so you can’t send requests. Contact Hireel support.",
-    "plan": "Plan: {name}",
     "introThisMonth": "Intro requests this month",
     "cvThisMonth": "CV & contact requests",
     "savedLimit": "Saved candidates",
-    "resets": "Monthly limits reset on the 1st of each month.",
-    "premiumTitle": "{name}",
-    "premiumBody": "{intro} intro requests and {cv} CV & contact requests per month, and up to {saved} saved candidates.",
-    "premiumHow": "Online payment isn’t connected yet. Contact the Hireel team to move to Premium.",
-    "teamSoon": "Team members and roles arrive in the next update."
+    "teamSoon": "Team members and roles arrive in the next update.",
+    "freeTitle": "Free during our launch",
+    "freeBody": "Your company has full access at no cost. No payment details needed.",
+    "fairTitle": "Fair-use limits this month",
+    "fairNote": "Limits keep Hireel fair and protect candidates from spam. They reset on the 1st of each month."
   },
   "sharePage": {
     "goneTitle": "This link doesn’t work anymore",
@@ -848,7 +849,7 @@
       "lead": "Show who you are beyond a CV, or discover exceptional talent through short, authentic videos.",
       "ctaCandidate": "Create Your Video Profile",
       "ctaEmployer": "Discover Talent",
-      "note": "Free for candidates · Employers watch reels free, no account needed",
+      "note": "100% free for candidates and employers",
       "hand1": "Real people",
       "hand2": "Real stories",
       "hand3": "Real opportunities",
@@ -895,7 +896,6 @@
       "title": "Find the right talent, faster.",
       "body": "Discover, save and contact qualified candidates through authentic video profiles.",
       "getStarted": "Get started",
-      "seePricing": "See pricing",
       "role": "Job title or skill",
       "rolePh": "e.g. Marketing Manager",
       "location": "Location",
@@ -903,28 +903,15 @@
       "years": "Experience",
       "anyYears": "Any",
       "yearsPlus": "{n}+ years",
-      "search": "Search talent"
-    },
-    "plans": {
-      "pill": "Employer plans",
-      "title": "Start free. Upgrade when you hire more.",
-      "sub": "Watching reels is always free. Plans set how many candidates you can contact each month.",
-      "recommended": "Best for active hiring",
-      "browse": "Unlimited reel browsing & search",
-      "intro": "{n} intro requests / month",
-      "cv": "{n} CV & contact requests / month",
-      "saved": "Save up to {n} candidates",
-      "filters": "Fair, job-related filters",
-      "ctaFree": "Start free",
-      "ctaPremium": "Ask for Premium",
-      "note": "Online payment isn't available yet. The Hireel team switches companies to Premium on request."
+      "search": "Search talent",
+      "howLink": "How it works"
     },
     "faq": {
       "title": "Frequently asked questions"
     },
     "final": {
       "title": "Ready to be seen?",
-      "body": "Create your profile and record your first video today. It's free for candidates.",
+      "body": "Create your profile and record your first video today. Hireel is free for candidates and employers.",
       "ctaC": "Create Your Video Profile",
       "ctaE": "I'm hiring"
     },
@@ -934,6 +921,29 @@
       "legal": "Legal",
       "privacy": "Privacy",
       "terms": "Terms"
+    },
+    "free": {
+      "pill": "Free for everyone",
+      "title": "Hireel is free. For everyone.",
+      "sub": "No fees, no credit card and no paid plans while we launch.",
+      "candTitle": "For candidates",
+      "candItems": [
+        "Create your video profile",
+        "Up to 2 videos in different languages",
+        "Choose who can see you",
+        "You decide who gets your contact details"
+      ],
+      "empTitle": "For employers",
+      "empItems": [
+        "Browse and search every reel",
+        "Save the candidates you like",
+        "Send intro requests",
+        "Ask for CV and contact details"
+      ],
+      "ctaC": "Create your video profile",
+      "ctaE": "Start hiring free",
+      "badge": "Free",
+      "note": "To protect candidates from spam, each company has a fair monthly limit on requests."
     }
   },
   "authside": {
