@@ -64,7 +64,7 @@ hireel/
 │  │  ├─ (marketing)/        # homepage, about, legal pages
 │  │  ├─ (auth)/             # sign-up, login, verify email, reset password
 │  │  ├─ candidate/          # Home, My Video, Profile, Share tabs + onboarding
-│  │  ├─ employer/           # Discover feed, Search, Saved, Inbox, Account
+│  │  ├─ employer/           # Discover feed, Search, Saved, Requests (sent), Account
 │  │  ├─ admin/              # employer approvals, video moderation, overview
 │  │  ├─ p/[token]/          # public share-link profile page (noindex)
 │  │  ├─ api/                # server endpoints (uploads, webhooks, view counting…)
@@ -221,8 +221,10 @@ After **every** phase: run the app → run automated tests → fix problems → 
 - [ ] **WAITING ON YOU:** Deploy to a real HTTPS address; you test on a real iPhone and a real Android phone (see docs/SETUP.md)
 
 ### Phase 2: Conversations and teams
-- [ ] CV file (PDF) upload, shared only on accepted requests
-- [ ] Messaging (only after an accepted intro request)
+- [x] CV file (PDF or Word) upload, shared only on accepted requests
+- [x] Profile photo
+- [ ] In-app chat, only between a company and a candidate after the candidate accepts its intro request;
+      phone numbers stay private, block and report work inside the chat, with new-message notifications
 - [ ] Shortlists with private notes
 - [ ] In-app notifications + email notifications (with per-user settings)
 - [ ] Employer team members, invites and roles
