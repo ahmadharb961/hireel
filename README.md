@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hireel
 
-## Getting Started
+Video-first talent marketplace for Lebanon and the GCC. Candidates record short intro videos; employers discover them in a vertical reels feed. English and Arabic (right-to-left).
 
-First, run the development server:
+- **Plan and phases:** [PLAN.md](PLAN.md)
+- **Where we are:** [PROGRESS.md](PROGRESS.md)
+- **Putting it online (non-technical guide):** [docs/SETUP.md](docs/SETUP.md)
+- **Product spec and approved designs:** [docs/](docs/)
+
+## Stack
+
+Next.js 16 (App Router) · TypeScript · Tailwind 4 · PostgreSQL + Prisma 7 · Better Auth (email/password, verification, reset, admin TOTP) · Cloudflare Stream (tus uploads, signed HLS playback, webhooks) · SMTP email (Hostinger) · next-intl (en/ar) · hand-written service worker (PWA).
+
+## Run it locally (developers)
 
 ```bash
+cp .env.example .env              # fill DATABASE_URL etc.
+npm install
+npx prisma migrate deploy         # create tables
+npm run db:setup                  # default plans
+npm run demo:seed                 # optional, clearly labeled demo candidates
+npm run make-admin -- you@example.com "Your Name"
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without SMTP settings, development emails are written to `.dev-mail/` instead of being sent. Without Cloudflare settings, the video studio says uploads aren't switched on (nothing is faked).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test             # rules + database tests (uses the hireel_test database)
+npm run test:e2e     # browser tests against a running server on :3100 (see playwright.config.ts)
+```
 
-## Learn More
+## Useful commands
 
-To learn more about Next.js, take a look at the following resources:
+| Command | What it does |
+|---|---|
+| `npm run db:migrate` | Apply database changes (production) |
+| `npm run db:setup` | Create the Freemium and Premium plans if missing |
+| `npm run make-admin -- email "Name"` | Create or promote a Super Admin |
+| `npm run demo:seed` / `npm run demo:clear` | Add / remove demo data (never touches real data) |
+| `npm run stream:setup -- https://domain` | Create the Cloudflare signing key and webhook |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project layout
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/app/          screens and API routes (candidate/, employer/, feed/, admin/, p/[token] share page, api/)
+src/server/       server-only logic: permissions, feed, requests, plans, videos, Cloudflare
+src/server/rules/ pure rules with unit tests (views, plans, share tokens, bots)
+src/components/   shared UI (player, nav, sheets, install banner)
+messages/         en.json, ar.json
+prisma/           schema and migrations
+scripts/          setup, admin, demo data, icons, Cloudflare setup
+tests/            unit, integration (database), e2e (browser)
+docs/             spec, approved designs, setup guide
+```

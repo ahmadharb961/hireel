@@ -1,0 +1,453 @@
+// Hireel database schema.
+// Tables marked "auth" follow the Better Auth layout and must keep their field names.
+// Every table that can hold sample data has an `isDemo` flag; `npm run demo:clear` removes all demo rows.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CANDIDATE
+  EMPLOYER
+  ADMIN
+}
+
+enum Locale {
+  en
+  ar
+}
+
+enum ProfileStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
+enum ProfileType {
+  VIDEO
+  TEXT_ONLY
+}
+
+enum Visibility {
+  EVERYONE
+  EMPLOYERS_ONLY
+}
+
+enum VideoLanguage {
+  EN
+  AR
+  FR
+}
+
+enum VideoProcessing {
+  UPLOADING
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum Moderation {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CompanyStatus {
+  UNVERIFIED
+  VERIFIED
+  SUSPENDED
+}
+
+enum MemberRole {
+  OWNER
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+}
+
+enum UsageKind {
+  INTRO_REQUEST
+  CV_CONTACT_REQUEST
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+}
+
+// ---------- auth ----------
+
+model User {
+  id               String    @id
+  name             String
+  email            String    @unique
+  emailVerified    Boolean   @default(false)
+  image            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  role             Role      @default(CANDIDATE)
+  locale           Locale    @default(en)
+  twoFactorEnabled Boolean?  @default(false)
+  suspendedAt      DateTime?
+  isDemo           Boolean   @default(false)
+
+  sessions   Session[]
+  accounts   Account[]
+  twoFactors TwoFactor[]
+  candidate  CandidateProfile?
+  member     CompanyMember?
+  views      VideoView[]
+  reports    Report[]          @relation("reporter")
+  audit      AuditLog[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model TwoFactor {
+  id                      String    @id
+  secret                  String
+  backupCodes             String
+  userId                  String
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified                Boolean?  @default(true)
+  failedVerificationCount Int?      @default(0)
+  lockedUntil             DateTime?
+
+  @@index([secret])
+  @@index([userId])
+  @@map("twoFactor")
+}
+
+model RateLimit {
+  id          String @id
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rateLimit")
+}
+
+// ---------- candidates ----------
+
+model CandidateProfile {
+  id               String        @id @default(cuid())
+  userId           String        @unique
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName         String
+  headline         String        @default("")
+  location         String        @default("")
+  currentTitle     String        @default("")
+  industry         String        @default("")
+  yearsExperience  Int           @default(0)
+  availability     String        @default("AVAILABLE_NOW")
+  about            String        @default("")
+  // private until the candidate shares them with a company
+  phone            String        @default("")
+  contactEmail     String        @default("")
+  workHistory      String        @default("")
+  education        String        @default("")
+  profileType      ProfileType   @default(VIDEO)
+  status           ProfileStatus @default(DRAFT)
+  visibility       Visibility    @default(EVERYONE)
+  searchPaused     Boolean       @default(false)
+  onboardingStep   Int           @default(1)
+  publishConsentAt DateTime?
+  isDemo           Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  skills       CandidateSkill[]
+  videos       Video[]
+  shareLink    ShareLink?
+  saves        SavedCandidate[]
+  requests     IntroRequest[]
+  blocks       Block[]
+  profileViews ProfileView[]
+
+  @@index([status, visibility])
+  @@index([industry])
+}
+
+model Skill {
+  id         String           @id @default(cuid())
+  name       String
+  slug       String           @unique
+  candidates CandidateSkill[]
+}
+
+model CandidateSkill {
+  candidateId String
+  skillId     String
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  skill       Skill            @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([candidateId, skillId])
+  @@index([skillId])
+}
+
+model Video {
+  id              String          @id @default(cuid())
+  candidateId     String
+  candidate       CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  language        VideoLanguage
+  isPrimary       Boolean         @default(false)
+  streamUid       String?         @unique
+  processing      VideoProcessing @default(UPLOADING)
+  moderation      Moderation      @default(PENDING)
+  rejectionReason String?
+  durationSec     Int?
+  width           Int?
+  height          Int?
+  consentAt       DateTime
+  viewCount       Int             @default(0)
+  // a replacement stays private until approved; then the video it replaces is archived
+  replacesVideoId String?
+  // set when replaced; the file is deleted from Cloudflare once deleteAfter passes
+  archivedAt      DateTime?
+  deleteAfter     DateTime?
+  isDemo          Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  views VideoView[]
+
+  @@index([candidateId, archivedAt])
+  @@index([moderation, processing])
+}
+
+model VideoView {
+  id       String   @id @default(cuid())
+  videoId  String
+  video    Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  viewerId String
+  viewer   User     @relation(fields: [viewerId], references: [id], onDelete: Cascade)
+  viewedAt DateTime @default(now())
+
+  @@index([videoId, viewerId, viewedAt])
+}
+
+model ProfileView {
+  id          String           @id @default(cuid())
+  candidateId String
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  companyId   String
+  company     Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  viewedAt    DateTime         @default(now())
+
+  @@index([candidateId, companyId, viewedAt])
+}
+
+model ShareLink {
+  id          String           @id @default(cuid())
+  candidateId String           @unique
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  token       String           @unique
+  enabled     Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+// ---------- employers ----------
+
+model Plan {
+  id                   String    @id @default(cuid())
+  key                  String    @unique // "free" | "premium"
+  nameEn               String
+  nameAr               String
+  priceLabelEn         String
+  priceLabelAr         String
+  monthlyIntroRequests Int
+  monthlyCvRequests    Int
+  maxSaved             Int
+  isDefault            Boolean   @default(false)
+  sortOrder            Int       @default(0)
+  updatedAt            DateTime  @updatedAt
+  companies            Company[]
+}
+
+model Company {
+  id          String        @id @default(cuid())
+  name        String
+  website     String        @default("")
+  industry    String        @default("")
+  size        String        @default("")
+  country     String        @default("Lebanon")
+  description String        @default("")
+  status      CompanyStatus @default(UNVERIFIED)
+  planId      String
+  plan        Plan          @relation(fields: [planId], references: [id])
+  isDemo      Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  members      CompanyMember[]
+  requests     IntroRequest[]
+  blocks       Block[]
+  usage        UsageLedger[]
+  profileViews ProfileView[]
+}
+
+model CompanyMember {
+  id        String     @id @default(cuid())
+  companyId String
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      MemberRole @default(OWNER)
+  position  String     @default("")
+  createdAt DateTime   @default(now())
+
+  saved    SavedCandidate[]
+  requests IntroRequest[]
+}
+
+model SavedCandidate {
+  memberId    String
+  member      CompanyMember    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  candidateId String
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+
+  @@id([memberId, candidateId])
+  @@index([candidateId])
+}
+
+model IntroRequest {
+  id           String           @id @default(cuid())
+  companyId    String
+  company      Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  senderId     String
+  sender       CompanyMember    @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  candidateId  String
+  candidate    CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  roleTitle    String
+  employment   String
+  workLocation String           @default("")
+  payRange     String           @default("")
+  message      String
+  wantsCv      Boolean          @default(false)
+  status       RequestStatus    @default(PENDING)
+  // what the candidate chose to share on accept
+  shareEmail   Boolean          @default(false)
+  sharePhone   Boolean          @default(false)
+  shareCv      Boolean          @default(false)
+  respondedAt  DateTime?
+  isDemo       Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+
+  @@index([candidateId, status])
+  @@index([companyId, candidateId])
+}
+
+model Block {
+  candidateId String
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  companyId   String
+  company     Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+
+  @@id([candidateId, companyId])
+}
+
+model UsageLedger {
+  id          String    @id @default(cuid())
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  kind        UsageKind
+  periodStart DateTime
+  requestId   String
+  createdAt   DateTime  @default(now())
+
+  @@index([companyId, kind, periodStart])
+}
+
+// ---------- trust & admin ----------
+
+model Report {
+  id         String       @id @default(cuid())
+  reporterId String
+  reporter   User         @relation("reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType String // "COMPANY" | "CANDIDATE"
+  targetId   String
+  reason     String
+  details    String       @default("")
+  status     ReportStatus @default(OPEN)
+  createdAt  DateTime     @default(now())
+
+  @@index([status])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String
+  actor      User     @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  action     String
+  targetType String
+  targetId   String
+  reason     String   @default("")
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId])
+}
+
+model AppRateLimit {
+  key         String   @id
+  windowStart DateTime
+  count       Int
+}

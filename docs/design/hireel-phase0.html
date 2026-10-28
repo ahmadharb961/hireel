@@ -1,0 +1,937 @@
+<title>Hireel Design Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one 430px-wide phone column, centered on larger screens. Each screen = header + scrolling main + bottom nav. The feed is full-bleed with floating header and translucent nav. */
+:root{
+  --g:#195C48;--g2:#235443;--mint:#B3E2CD;--bg:#FAF9F6;--card:#FFFFFF;--tx:#182722;--tx2:#69766F;--bd:#E4EAE5;
+  --brand:#195C48;--soft:#EAF5EF;--bad:#B42318;--badbg:#FDECEA;--warn:#8A4B00;--warnbg:#FFF3E0;--on:#FFFFFF;--media:#0f1a16;
+  --font:"Inter","Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1a16;--card:#182722;--tx:#f1f5f2;--tx2:#9fb0a8;--bd:#2a3b34;--brand:#B3E2CD;--soft:#1d3a30;--bad:#F97066;--badbg:#3b1a17;--warn:#F5C27A;--warnbg:#3a2a12;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1a16;--card:#182722;--tx:#f1f5f2;--tx2:#9fb0a8;--bd:#2a3b34;--brand:#B3E2CD;--soft:#1d3a30;--bad:#F97066;--badbg:#3b1a17;--warn:#F5C27A;--warnbg:#3a2a12;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);display:flex;justify-content:center;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit}
+:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.app{position:relative;width:100%;max-width:430px;height:100%;overflow:hidden;background:var(--bg)}
+#view{height:100%}
+.scr{position:relative;height:100%;display:flex;flex-direction:column}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bd);background:var(--bg);min-height:58px}
+.hd .l{display:flex;align-items:center;gap:8px;min-width:0}
+.logo{font-weight:800;font-size:20px;letter-spacing:.5px;color:var(--brand);border:0;background:none;cursor:pointer;padding:0}
+.badge{font-size:11px;background:var(--mint);color:var(--g);padding:5px 9px;border-radius:99px;font-weight:600;border:0;cursor:pointer;white-space:nowrap}
+.ib{border:0;background:none;color:var(--brand);width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.ib svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dot{position:absolute;top:6px;right:6px;min-width:18px;height:18px;border-radius:9px;background:var(--g);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.main{flex:1;overflow:auto;padding:16px;-webkit-overflow-scrolling:touch}
+.stack{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:16px}
+h1{font-size:30px;line-height:1.12;letter-spacing:-.5px;text-wrap:balance}
+h2{font-size:20px;line-height:1.25;text-wrap:balance}
+h3{font-size:15px;line-height:1.3}
+p,li{color:var(--tx2);font-size:14px;line-height:1.5}
+ul{padding-left:18px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.note{font-size:12px;color:var(--tx2);line-height:1.45}
+.bar{height:8px;background:var(--bd);border-radius:99px;overflow:hidden;margin:10px 0}
+.bar i{display:block;height:100%;background:var(--g);border-radius:99px;transition:width .3s}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.stat{text-align:center;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:12px 4px}
+.stat b{display:block;font-size:22px;font-variant-numeric:tabular-nums}.stat span{font-size:11px;color:var(--tx2)}
+.btn{border:0;border-radius:16px;padding:14px 18px;font-weight:700;font-size:16px;cursor:pointer;min-height:54px;background:var(--g);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.btn.g{background:var(--bd);color:var(--tx)}
+.btn.m{background:var(--mint);color:var(--g)}
+.btn.o{background:transparent;color:var(--brand);border:1.5px solid var(--bd)}
+.btn.bad{background:var(--badbg);color:var(--bad)}
+.btn.w{width:100%}
+.btn.sm{min-height:44px;padding:10px 14px;font-size:14px;border-radius:12px}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.row{display:flex;gap:8px}
+.row>*{flex:1}
+.wrap{display:flex;flex-wrap:wrap;gap:6px}
+.sw{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sw>div,.sw>p{min-width:0}
+.tog{position:relative;width:50px;height:30px;border-radius:99px;background:var(--bd);border:0;cursor:pointer;flex:none}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.tog.on{background:var(--g)}.tog.on::after{left:23px}
+label.f{display:block;font-size:13px;font-weight:600;margin:12px 0 5px;color:var(--tx)}
+input.i,select.i,textarea.i{width:100%;padding:12px;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);font-size:15px;min-height:48px}
+textarea.i{min-height:90px;resize:vertical}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--tx);line-height:1.45;margin-top:12px;cursor:pointer}
+.chk input{width:22px;height:22px;flex:none;accent-color:var(--g);margin-top:1px}
+.err{color:var(--bad);font-size:13px;margin-top:8px;font-weight:600}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;background:var(--soft);color:var(--brand);white-space:nowrap}
+.tag.warn{background:var(--warnbg);color:var(--warn)}
+.tag.bad{background:var(--badbg);color:var(--bad)}
+.tag.mute{background:var(--bd);color:var(--tx2)}
+.sk{display:inline-block;background:var(--soft);color:var(--brand);padding:5px 11px;border-radius:99px;font-size:13px;font-weight:500}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:14px;padding:10px 6px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-weight:700;font-size:14px;min-height:56px;cursor:pointer}
+.seg button.on{background:var(--g);color:#fff;border-color:var(--g)}
+.seg small{font-weight:500;font-size:12px;opacity:.85}
+.demo{border:1.5px dashed var(--bd);border-radius:16px;padding:12px}
+.demo>b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);margin-bottom:8px}
+.chipbtn{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 14px;border-radius:99px;font-size:14px;cursor:pointer;min-height:40px}
+.chipbtn.on{background:var(--g);color:#fff;border-color:var(--g)}
+.list-row{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--bd);border-radius:16px;background:var(--card);cursor:pointer;text-align:left;width:100%;color:var(--tx)}
+.thumb{width:54px;height:72px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.8);font-weight:700;font-size:18px}
+.list-row .t{min-width:0;flex:1}
+.list-row .t b{display:block;font-size:15px}
+.list-row .t span{display:block;font-size:13px;color:var(--tx2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{padding:40px 16px;text-align:center;color:var(--tx2);font-size:14px}
+
+/* candidate nav + video boxes (from approved candidate prototype) */
+nav.bn{display:flex;border-top:1px solid var(--bd);background:var(--card)}
+nav.bn button{flex:1;border:0;background:none;color:var(--tx2);font-size:13px;padding:8px 0;min-height:68px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;position:relative}
+nav.bn button i{font-style:normal;display:flex;color:var(--brand)}
+nav.bn svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav.bn button.on{color:var(--brand);font-weight:700}
+.vid{position:relative;aspect-ratio:9/16;max-height:52vh;max-width:100%;margin:0 auto;border-radius:20px;background:var(--media);color:#9fb0a8;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;overflow:hidden;font-size:14px}
+.vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vid.lb video.bgv{filter:blur(22px) brightness(.6);transform:scale(1.25);object-fit:cover}
+.vid.lb video.fgv{object-fit:contain}
+.vid .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff}
+.vid .ph b{font-size:64px;opacity:.3}
+.vid .st{position:absolute;top:10px;left:10px;z-index:2}
+.q{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:10px;font-size:13px;color:var(--tx)}
+.link{display:flex;gap:6px;margin-top:10px}
+.link input{flex:1;min-width:0;padding:11px;border:1px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx);font-size:13px}
+.pp{background:var(--g);color:#fff;border-radius:20px;padding:20px}
+.pp h2{color:#fff}
+.pp .vp{position:relative;aspect-ratio:9/12;max-width:100%;border-radius:14px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:13px;overflow:hidden}
+.pp .vp video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pp span.t{display:inline-block;background:rgba(179,226,205,.22);border:1px solid rgba(179,226,205,.5);padding:3px 10px;border-radius:99px;font-size:12px;margin:6px 6px 0 0}
+.lgp{border:1px solid rgba(179,226,205,.6);background:transparent;color:#fff;border-radius:99px;padding:8px 14px;font-size:13px;min-height:40px;cursor:pointer}
+.lgp.on{background:var(--mint);color:var(--g)}
+
+/* employer feed (from approved feed prototype) */
+.fs{background:var(--media)}
+.fs .fh{position:absolute;top:0;left:0;right:0;z-index:4;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.55),transparent);padding:14px 16px 24px}
+.fs .logo{color:#fff}
+.fs .badge{background:rgba(255,255,255,.2);color:#fff}
+#fbtn{border:0;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;padding:8px 16px;border-radius:99px;font-size:15px;font-weight:600;cursor:pointer;min-height:42px}
+.chips{position:absolute;top:64px;left:0;right:0;z-index:6;display:none;margin:0 12px;padding:14px;background:var(--card);border:1px solid var(--bd);border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.35);flex-direction:column;gap:12px;max-height:70%;overflow:auto}
+.chips.show{display:flex}
+.chips h4{font-size:13px;color:var(--tx2);font-weight:600;margin-bottom:6px}
+.chip{flex:none;border:1px solid var(--bd);background:var(--bg);color:var(--tx);padding:10px 16px;border-radius:99px;font-size:15px;cursor:pointer}
+.chip.on{background:var(--g);color:#fff;border-color:var(--g)}
+#feed{position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}
+#feed::-webkit-scrollbar{display:none}
+.item{height:100%;scroll-snap-align:start;scroll-snap-stop:always}
+.fcard{position:relative;height:100%;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer}
+.face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:88px;font-weight:700;opacity:.25}
+.blurbg{position:absolute;inset:-40px;filter:blur(28px) brightness(.7)}
+.landf{position:absolute;left:0;right:0;top:50%;transform:translateY(-62%);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:700;color:rgba(255,255,255,.3);box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72) 0%,rgba(0,0,0,0) 55%)}
+.top{position:absolute;top:66px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pill{background:rgba(0,0,0,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:6px 10px;border-radius:99px;font-size:12px;color:#fff}
+.mute{border:0;cursor:pointer;min-height:36px}
+.pz{position:absolute;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none}
+.pz span{width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:28px}
+.item.paused .pz{display:flex}
+.info{position:relative;padding:16px 16px 88px}
+.info h2{font-size:22px;color:#fff}
+.role{margin-top:2px;opacity:.92;font-size:15px}
+.meta{margin-top:6px;font-size:13px;opacity:.85}
+.skills{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.skills span{background:rgba(179,226,205,.22);border:1px solid rgba(179,226,205,.5);padding:4px 10px;border-radius:99px;font-size:12px}
+.avail{display:inline-block;background:var(--mint);color:var(--g);font-weight:600;font-size:12px;padding:4px 10px;border-radius:99px;margin-bottom:6px}
+.langs{display:flex;gap:6px;margin-bottom:10px}
+.langs button{border:1px solid rgba(179,226,205,.6);background:rgba(0,0,0,.25);color:#fff;border-radius:99px;padding:6px 12px;font-size:13px;min-height:36px;cursor:pointer}
+.langs button.on{background:var(--mint);color:var(--g);border-color:var(--mint);font-weight:600}
+.actions{display:flex;gap:8px;margin-top:6px}
+.actions .btn{flex:1;padding:14px 6px;min-height:56px;white-space:nowrap;font-size:15px}
+.btn.s{background:rgba(255,255,255,.18);color:#fff}
+.btn.saved{background:#fff;color:var(--g)}
+.prog{position:absolute;left:0;bottom:0;height:3px;background:var(--mint);width:0}
+.item.act .prog{animation:p 12s linear forwards}
+.item.paused .prog{animation-play-state:paused}
+@keyframes p{to{width:100%}}
+@media (prefers-reduced-motion:reduce){.item.act .prog{animation:none;width:100%}}
+nav.fn{position:absolute;left:0;right:0;bottom:0;z-index:4;display:flex;background:rgba(10,20,16,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.15)}
+nav.fn button{flex:1;border:0;background:none;color:#fff;padding:8px 0;font-size:13px;cursor:pointer;min-height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+nav.fn button i{font-style:normal;display:flex;color:var(--mint)}
+nav.fn svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav.fn button.on{font-weight:700}
+
+/* sheets + toast */
+.sheet{position:absolute;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;z-index:20}
+.sheet.show{display:flex}
+.panel{background:var(--card);color:var(--tx);width:100%;border-radius:24px 24px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));max-height:88%;overflow:auto}
+.panel h3{font-size:18px;margin-bottom:4px}
+.panel label{display:block}
+.panel label.chk{display:flex}
+.toast{position:absolute;left:16px;right:16px;bottom:84px;z-index:30;background:var(--tx);color:var(--bg);padding:14px 16px;border-radius:14px;font-size:14px;font-weight:600;text-align:center;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+
+/* marketing home */
+.hero{padding:8px 0 4px}
+.hero p.lead{font-size:16px;margin-top:10px;color:var(--tx2)}
+.reels{display:flex;gap:10px;overflow-x:auto;padding:4px 0 6px;scrollbar-width:none}
+.reel{flex:none;width:132px;aspect-ratio:9/16;border-radius:18px;position:relative;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:10px}
+.reel::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65),transparent 60%)}
+.reel>*{position:relative;z-index:1}
+.reel b{font-size:13px}.reel span{font-size:11px;opacity:.9}
+.reel .ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:700;opacity:.25;z-index:0}
+.sec{padding-top:28px}
+.sec>h2{margin:6px 0 12px}
+.steps{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}
+.steps li{display:flex;gap:12px;align-items:flex-start;color:var(--tx)}
+.steps .n{width:32px;height:32px;border-radius:50%;background:var(--soft);color:var(--brand);font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
+.steps b{display:block;font-size:15px}.steps span{display:block;font-size:14px;color:var(--tx2);line-height:1.45}
+.price{display:flex;flex-direction:column;gap:6px}
+.price .amt{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.price.hi{border:2px solid var(--g)}
+details{border-bottom:1px solid var(--bd);padding:14px 0}
+summary{font-weight:600;cursor:pointer;font-size:15px;list-style-position:outside}
+details p{margin-top:8px}
+footer.ft{margin-top:28px;padding:20px 0 8px;border-top:1px solid var(--bd)}
+footer.ft .wrap span{font-size:13px;color:var(--tx2);margin-right:10px}
+.cta{background:var(--g);color:#fff;border-radius:24px;padding:22px 18px;margin-top:28px}
+.cta h2{color:#fff}.cta p{color:#e3efe9}
+
+/* admin */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 16px;border-bottom:1px solid var(--bd);scrollbar-width:none}
+.tabs button{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:99px;padding:9px 16px;font-size:14px;font-weight:600;min-height:42px;cursor:pointer}
+.tabs button.on{background:var(--g);color:#fff;border-color:var(--g)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--tx2)}
+.kv b{font-variant-numeric:tabular-nums;text-align:right}
+.meter{height:8px;border-radius:99px;background:var(--bd);overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:var(--g)}
+.num{width:90px;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font-size:15px;text-align:right;font-variant-numeric:tabular-nums}
+</style>
+
+<div class="app" id="app">
+  <div id="view"></div>
+  <div class="sheet" id="sheet"><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <input type="file" id="file" accept="video/*" capture="user" hidden>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- helpers ---------- */
+var $=function(s,r){return (r||document).querySelector(s)};
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]})}
+function ini(n){return n.split(" ").map(function(w){return w[0]}).join("")}
+function grad(c){return "linear-gradient(160deg,"+c[0]+","+c[1]+")"}
+var LN={EN:"English",AR:"Arabic",FR:"French"};
+var ICON={
+ discover:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>',
+ search:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+ saved:'<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
+ inbox:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+ account:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+ home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+ video:'<svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="M16 11l5-3v8l-5-3z"/></svg>',
+ share:'<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+ bell:'<svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>',
+ back:'<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>'
+};
+
+/* ---------- sample data (all fictional, labeled "Sample data" in the UI) ---------- */
+var C=[
+ {id:"lina",n:"Lina Haddad",t:"Digital Marketing Manager",y:8,loc:"Beirut, Lebanon",ind:"Marketing",sk:["Meta Ads","Team leadership","SEO"],av:"Available now",c:["#195C48","#2f8a6c"],about:"I lead performance marketing teams and have managed over $400k in annual ad spend for retail and hospitality brands.",exp:["Head of Digital, retail group (2021–now)","Marketing Lead, agency (2017–2021)"],edu:"BA Business Administration, AUB",spoken:["English","Arabic","French"],vis:"all"},
+ {id:"karim",n:"Karim Nassar",t:"Senior Full-Stack Developer",y:6,loc:"Jounieh, Lebanon",ind:"Technology",sk:["TypeScript","React","PostgreSQL"],av:"1 month notice",c:["#235443","#4a9a80"],about:"I build and ship web products end to end, from database design to polished interfaces.",exp:["Senior Developer, fintech startup (2022–now)","Developer, software house (2018–2022)"],edu:"BSc Computer Science, LAU",spoken:["English","Arabic"],vids:[{l:"EN",v:86,p:1}],vis:"emp"},
+ {id:"maya",n:"Maya Khoury",t:"Finance Analyst",y:4,loc:"Tripoli, Lebanon",ind:"Finance",sk:["Financial modelling","IFRS","Excel"],av:"Available now",c:["#144a3a","#3b8a70"],about:"I prepare monthly reporting and budgeting models for mid-size companies.",exp:["Finance Analyst, manufacturing (2022–now)","Junior Auditor, audit firm (2020–2022)"],edu:"BA Accounting, USJ",spoken:["Arabic","English"],vids:[{l:"AR",v:54,p:1},{l:"EN",v:6}],vis:"all"},
+ {id:"omar",n:"Omar Sleiman",t:"Sales Executive",y:5,loc:"Dubai, UAE",ind:"Sales",sk:["B2B sales","CRM","Negotiation"],av:"2 months notice",c:["#1d6b55","#5aa68b"],about:"I close enterprise software deals across the GCC and enjoy building long client relationships.",exp:["Account Executive, SaaS (2021–now)","Sales Rep, telecom (2019–2021)"],edu:"BBA Marketing, NDU",spoken:["English","Arabic"],vids:[{l:"EN",v:203,p:1},{l:"AR",v:40}],vis:"all"},
+ {id:"rita",n:"Rita Aoun",t:"UX Designer",y:7,loc:"Beirut, Lebanon",ind:"Design",sk:["Figma","User research","Design systems"],av:"Open to offers",c:["#2a5c4c","#6bb29a"],about:"I design mobile products backed by research, and I care about accessibility.",exp:["Lead Designer, product studio (2020–now)","UI Designer, agency (2017–2020)"],edu:"BA Graphic Design, ALBA",spoken:["English","French","Arabic"],vids:[{l:"EN",v:97,p:1},{l:"FR",v:4}],vis:"all"},
+ {id:"nour",n:"Nour Saad",t:"Junior Accountant",y:1,loc:"Saida, Lebanon",ind:"Finance",sk:["QuickBooks","Excel","Payroll"],av:"Available now",c:["#1f5e4b","#77b89f"],about:"Recent graduate with a year of bookkeeping experience at a family business.",exp:["Bookkeeper, trading company (2025–now)"],edu:"BA Accounting, LU",spoken:["Arabic","English"],vids:[{l:"AR",v:7,p:1}],vis:"all",land:1}
+];
+function cand(id){for(var i=0;i<C.length;i++)if(C[i].id===id)return C[i];return null}
+
+var S={
+ mode:"visitor",                       // visitor | employer
+ company:"Cedar Retail Group",
+ plan:"free",
+ plans:{free:{name:"Freemium",price:"Free",intro:5,cv:2,saved:20},premium:{name:"Premium",price:"$49 / month",intro:60,cv:30,saved:500}},
+ used:{intro:2,cv:1},
+ saved:{rita:1},
+ empReq:[{cid:"rita",title:"Senior Product Designer",status:"Accepted",date:"Oct 20",cv:1,shared:["Email","Phone","CV"]},{cid:"karim",title:"Lead Engineer",status:"Pending",date:"Oct 25",cv:0}],
+ ind:"All",lang:"any",fopen:false,cardLang:{},
+ // candidate side (Lina)
+ slots:[{lang:"EN",url:null,sample:true,status:"live",views:128,land:false},{lang:"AR",url:null,status:"empty",views:0,land:false}],
+ primary:0,active:0,prev:0,rejectReason:"",studioErr:"",
+ shareOn:false,shareUrl:"",vis:"all",published:true,paused:false,textOnly:false,
+ candReq:[
+  {id:"r1",co:"Cedar Retail Group",ver:true,rep:"Sara M., HR Manager",desc:"Retail group with 40 stores across Lebanon and Cyprus.",pos:"Head of E-commerce Marketing",type:"Full-time",where:"Beirut (hybrid)",comp:"$2,500–3,200 / month",msg:"We loved your video. We're growing our online sales team and your Meta Ads experience stood out. Could we have a 20-minute call next week?",date:"2 days ago",status:"Pending",cv:true},
+  {id:"r2",co:"Blue Harbor Tech",ver:false,rep:"Jad K., Talent Partner",desc:"Software agency, 25 people.",pos:"Growth Marketer",type:"Contract",where:"Remote",comp:"",msg:"Hi Lina, we have a 6-month contract role. Interested?",date:"5 days ago",status:"Pending",cv:false},
+  {id:"r3",co:"Levant Hospitality Co.",ver:true,rep:"Rami H., Operations Director",desc:"Hotel and restaurant group.",pos:"Marketing Manager",type:"Full-time",where:"Beirut",comp:"",msg:"Thanks for your time last week.",date:"Oct 12",status:"Accepted",cv:true}
+ ],
+ confirmBlock:null,
+ ob:{step:1,name:"Lina Haddad",headline:"Digital Marketing Manager",loc:"Beirut, Lebanon",phone:"",title:"Head of Digital",ind:"Marketing",years:"8",skills:["Meta Ads","Team leadership","SEO"],avail:"Available now",mode:"video",about:"",consent:false,vis:"all",err:""},
+ su:{role:"candidate",err:"",email:""},
+ atab:"overview",
+ queue:[{id:"q1",who:"Nour Saad",lang:"EN",dur:"0:48",c:["#1f5e4b","#77b89f"],note:"Landscape upload"},{id:"q2",who:"Hadi Mansour",lang:"FR",dur:"1:12",c:["#235443","#4a9a80"],note:""}],
+ rejecting:null,
+ companies:[{n:"Cedar Retail Group",st:"Not verified",plan:"free",joined:"Oct 2026"},{n:"Blue Harbor Tech",st:"Not verified",plan:"free",joined:"Oct 2026"},{n:"Levant Hospitality Co.",st:"Verified",plan:"premium",joined:"Sep 2026"}],
+ searchQ:"",sInd:"All"
+};
+
+/* Lina's feed videos come from her studio: only approved ("live") videos appear */
+function vidsOf(c){
+ if(c.id!=="lina")return c.vids;
+ var out=[];S.slots.forEach(function(s,i){if(s.status==="live"&&(s.url||s.sample))out.push({l:s.lang,v:s.views,p:i===S.primary?1:0,url:s.url,land:s.land})});
+ if(out.length&&!out.some(function(x){return x.p}))out[0].p=1;
+ return out;
+}
+function activeVid(c){
+ var vs=vidsOf(c),k=S.cardLang[c.id],i;
+ if(k)for(i=0;i<vs.length;i++)if(vs[i].l===k)return vs[i];
+ if(S.lang!=="any")for(i=0;i<vs.length;i++)if(vs[i].l===S.lang)return vs[i];
+ for(i=0;i<vs.length;i++)if(vs[i].p)return vs[i];
+ return vs[0];
+}
+function feedList(){
+ return C.filter(function(c){
+  if(c.id==="lina"&&(!S.published||S.paused||S.textOnly))return false;
+  var vs=vidsOf(c);if(!vs.length)return false;
+  if(S.mode==="visitor"&&(c.id==="lina"?S.vis:c.vis)==="emp")return false;
+  if(S.ind!=="All"&&c.ind!==S.ind)return false;
+  if(S.lang!=="any"&&!vs.some(function(v){return v.l===S.lang}))return false;
+  return true;
+ });
+}
+function fmt(n){return n>=1000?(n/1000).toFixed(1)+"k":String(n)}
+function left(k){return Math.max(0,S.plans[S.plan][k]-S.used[k])}
+function savedCount(){return Object.keys(S.saved).filter(function(k){return S.saved[k]}).length}
+function pendingCand(){return S.candReq.filter(function(r){return r.status==="Pending"}).length}
+
+/* ---------- shared UI ---------- */
+function badge(){return '<button class="badge" data-act="screens" aria-label="Sample data. Open screen list">Sample data · Screens</button>'}
+function hdr(opts){
+ opts=opts||{};
+ return '<header class="hd"><div class="l">'+(opts.back?'<button class="ib" data-go="'+opts.back+'" aria-label="Back">'+ICON.back+'</button>':'')+
+  '<button class="logo" data-go="'+(opts.home||"home")+'">'+(opts.title||"Hireel")+'</button></div><div class="l">'+badge()+(opts.right||"")+'</div></header>';
+}
+function navEmp(on,floating){
+ var items=[["feed","discover","Discover"],["search","search","Search"],["saved","saved","Saved ("+savedCount()+")"],["inbox","inbox","Inbox"],["account","account","Account"]];
+ return '<nav class="'+(floating?"fn":"bn")+'">'+items.map(function(it){
+  var gated=S.mode==="visitor"&&(it[0]==="saved"||it[0]==="inbox"||it[0]==="account");
+  return '<button class="'+(on===it[0]?"on":"")+'" '+(gated?'data-act="gate" data-why="'+it[0]+'"':'data-go="'+it[0]+'"')+'><i>'+ICON[it[1]]+'</i><span>'+it[2]+'</span></button>';
+ }).join("")+'</nav>';
+}
+function navCand(on){
+ var items=[["me-home","home","Home"],["me-video","video","My Video"],["me-profile","account","Profile"],["me-share","share","Share"]];
+ return '<nav class="bn">'+items.map(function(it){return '<button class="'+(on===it[0]?"on":"")+'" data-go="'+it[0]+'"><i>'+ICON[it[1]]+'</i><span>'+it[2]+'</span></button>'}).join("")+'</nav>';
+}
+var sheet=$("#sheet"),panel=$("#panel");
+function openSheet(h){panel.innerHTML=h;sheet.classList.add("show");var f=panel.querySelector("input,textarea,select,button");if(f)try{f.focus({preventScroll:true})}catch(e){}}
+function closeSheet(){sheet.classList.remove("show")}
+var tt;
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("show")},2400)}
+function statusTag(st){
+ var m={empty:["No video yet","mute"],uploading:["Uploading…","warn"],processing:["Processing…","warn"],review:["Waiting for review","warn"],live:["Live",""],rejected:["Not approved","bad"]}[st];
+ return '<span class="tag '+m[1]+'">'+m[0]+'</span>';
+}
+
+/* ---------- screens ---------- */
+var V={};
+
+V.home=function(){
+ var P=S.plans;
+ var reels=C.slice(0,4).map(function(c){return '<div class="reel" style="background:'+grad(c.c)+'"><div class="ini" aria-hidden="true">'+ini(c.n)+'</div><b>'+esc(c.n)+'</b><span>'+esc(c.t)+'</span></div>'}).join("");
+ return '<div class="scr">'+hdr({right:'<button class="btn sm o" data-go="login">Log in</button>'})+
+ '<main class="main" data-scroll>'+
+ '<section class="hero"><p class="eyebrow">Video-first hiring · Lebanon</p><h1 style="margin-top:8px">Your Experience Deserves to Be Seen.</h1>'+
+ '<p class="lead">Show who you are beyond your CV. Discover opportunities through video, or find exceptional talent in seconds.</p>'+
+ '<div class="stack" style="margin-top:18px"><button class="btn w" data-act="signup-as" data-role="candidate">Create Your Video Profile</button><button class="btn w m" data-go="feed">Discover Talent</button></div>'+
+ '<div class="reels" style="margin-top:20px" aria-label="Sample candidate reels">'+reels+'</div><p class="note">Sample profiles for this preview.</p></section>'+
+ '<section class="sec"><p class="eyebrow">For candidates</p><h2>Get discovered in three steps</h2><ol class="steps">'+
+  '<li><span class="n">1</span><div><b>Build a short profile</b><span>Name, headline, location, skills and experience. About two minutes.</span></div></li>'+
+  '<li><span class="n">2</span><div><b>Record a 30–90 second video</b><span>Answer three guided questions. Add a second video in Arabic or French if you like.</span></div></li>'+
+  '<li><span class="n">3</span><div><b>Say yes to the right employers</b><span>Companies send intro requests. Your phone, email and CV stay private until you accept.</span></div></li></ol></section>'+
+ '<section class="sec"><p class="eyebrow">For employers</p><h2>Meet candidates before the interview</h2><ol class="steps">'+
+  '<li><span class="n">1</span><div><b>Watch reels for free</b><span>Swipe through intro videos and filter by industry or video language. No account needed.</span></div></li>'+
+  '<li><span class="n">2</span><div><b>Sign up to act</b><span>Save candidates, open full profiles and send intro requests.</span></div></li>'+
+  '<li><span class="n">3</span><div><b>Talk once they accept</b><span>Candidates choose what to share with you: phone, email or CV.</span></div></li></ol></section>'+
+ '<section class="sec"><p class="eyebrow">Industries</p><h2>Talent across Lebanon and the GCC</h2><div class="wrap">'+["Marketing","Technology","Finance","Sales","Design","Hospitality","Engineering","Healthcare","Education","Logistics"].map(function(x){return '<span class="sk">'+x+'</span>'}).join("")+'</div></section>'+
+ '<section class="sec"><p class="eyebrow">Why video</p><h2>A CV lists facts. A video shows how you communicate.</h2><div class="stack">'+
+  '<div class="card"><h3>Faster first impressions</h3><p>Hear how a candidate explains their work in 60 seconds, before booking a call.</p></div>'+
+  '<div class="card"><h3>Fair by design</h3><p>No likes, no follower counts, no popularity ranking. Filters cover skills, experience, location, availability and video language only.</p></div>'+
+  '<div class="card"><h3>Private by default</h3><p>Contact details are never public. Candidates decide who sees them.</p></div></div></section>'+
+ '<section class="sec"><p class="eyebrow">Employer plans</p><h2>Start free. Upgrade when you hire more.</h2><div class="stack">'+
+  ['free','premium'].map(function(k){var p=P[k];return '<div class="card price'+(k==="premium"?" hi":"")+'"><h3>'+esc(p.name)+'</h3><div class="amt">'+esc(p.price)+'</div><ul><li>Unlimited reel browsing</li><li>'+p.intro+' intro requests per month</li><li>'+p.cv+' CV and contact requests per month</li><li>Save up to '+p.saved+' candidates</li></ul></div>'}).join("")+
+  '<p class="note">Sample pricing, not final. Limits are set by the Hireel admin and can change.</p></div></section>'+
+ '<section class="sec"><p class="eyebrow">Questions</p><h2>FAQ</h2>'+
+  '<details><summary>Is Hireel free for candidates?</summary><p>Yes. Candidates never pay.</p></details>'+
+  '<details><summary>Who can see my video?</summary><p>You choose: everyone who visits Hireel, or only signed-in employers. You can unpublish at any time.</p></details>'+
+  '<details><summary>Do I have to appear on camera?</summary><p>No. You can create a text-only profile instead.</p></details>'+
+  '<details><summary>When does an employer get my phone or email?</summary><p>Only after you accept their request and choose to share them.</p></details>'+
+ '</section>'+
+ '<section class="cta"><h2>Ready to be seen?</h2><p style="margin-top:6px">Create your profile and record your first video today.</p><div class="stack" style="margin-top:14px"><button class="btn w m" data-act="signup-as" data-role="candidate">Create Your Video Profile</button><button class="btn w s" data-act="signup-as" data-role="employer">I’m hiring</button></div></section>'+
+ '<footer class="ft"><span class="logo">Hireel</span><div class="wrap" style="margin-top:10px"><span>About</span><span>Privacy</span><span>Terms</span><span>Cookies</span><span>Contact</span></div><p class="note" style="margin-top:10px">© 2026 Hireel. Footer pages are built in Phase 1.</p></footer>'+
+ '</main></div>';
+};
+
+V.login=function(){
+ return '<div class="scr">'+hdr({back:"home"})+'<main class="main" data-scroll><h2>Log in</h2><p>Welcome back.</p>'+
+ '<form id="loginForm" novalidate><label class="f" for="li-email">Email</label><input class="i" id="li-email" type="email" autocomplete="email" placeholder="you@example.com">'+
+ '<label class="f" for="li-pass">Password</label><input class="i" id="li-pass" type="password" autocomplete="current-password">'+
+ '<p style="margin-top:10px"><button type="button" class="btn sm o" data-go="forgot">Forgot password?</button></p>'+
+ '<button class="btn w" style="margin-top:14px" type="submit">Log in</button></form>'+
+ '<p style="margin-top:14px">New to Hireel? <button class="btn sm o" data-go="signup">Create an account</button></p>'+
+ '<div class="demo" style="margin-top:20px"><b>Demo shortcuts</b><div class="stack"><button class="btn sm g w" data-act="demo-login" data-role="candidate">Log in as sample candidate (Lina)</button><button class="btn sm g w" data-act="demo-login" data-role="employer">Log in as sample employer</button><button class="btn sm g w" data-act="demo-login" data-role="admin">Log in as admin</button></div></div>'+
+ '</main></div>';
+};
+V.forgot=function(){
+ return '<div class="scr">'+hdr({back:"login"})+'<main class="main" data-scroll><h2>Reset your password</h2><p>Enter your email and we’ll send you a reset link.</p>'+
+ '<form id="forgotForm" novalidate><label class="f" for="fg-email">Email</label><input class="i" id="fg-email" type="email" autocomplete="email"><p class="err" id="fg-msg" hidden></p><button class="btn w" style="margin-top:14px" type="submit">Send reset link</button></form>'+
+ '<p class="note" style="margin-top:12px">Demo: no email is sent.</p></main></div>';
+};
+
+V.signup=function(){
+ var r=S.su.role,cand=r==="candidate";
+ var countries='<option>Lebanon</option><option>United Arab Emirates</option><option>Saudi Arabia</option><option>Qatar</option><option>Kuwait</option><option>Other</option>';
+ var f=cand?
+  '<div class="row"><div><label class="f" for="su-first">First name</label><input class="i" id="su-first" autocomplete="given-name"></div><div><label class="f" for="su-last">Last name</label><input class="i" id="su-last" autocomplete="family-name"></div></div>'+
+  '<label class="f" for="su-email">Email</label><input class="i" id="su-email" type="email" autocomplete="email">'
+ :
+  '<label class="f" for="su-co">Company name</label><input class="i" id="su-co" autocomplete="organization">'+
+  '<label class="f" for="su-email">Business email</label><input class="i" id="su-email" type="email" autocomplete="email">'+
+  '<div class="row"><div><label class="f" for="su-person">Your name</label><input class="i" id="su-person" autocomplete="name"></div><div><label class="f" for="su-pos">Your position</label><input class="i" id="su-pos" autocomplete="organization-title"></div></div>'+
+  '<label class="f" for="su-ind">Industry</label><select class="i" id="su-ind"><option>Retail</option><option>Technology</option><option>Finance</option><option>Hospitality</option><option>Other</option></select>'+
+  '<div class="row"><div><label class="f" for="su-web">Website</label><input class="i" id="su-web" type="url" placeholder="https://"></div><div><label class="f" for="su-size">Company size</label><select class="i" id="su-size"><option>1–10</option><option>11–50</option><option>51–200</option><option>201–1000</option><option>1000+</option></select></div></div>';
+ return '<div class="scr">'+hdr({back:"home"})+'<main class="main" data-scroll><h2>Create your account</h2><p>Free for candidates. Free plan for employers.</p>'+
+ '<div class="seg" style="margin-top:14px" role="tablist"><button type="button" class="'+(cand?"on":"")+'" data-act="su-role" data-role="candidate"><span>I’m looking for work</span><small>Candidate</small></button><button type="button" class="'+(!cand?"on":"")+'" data-act="su-role" data-role="employer"><span>I’m hiring</span><small>Employer</small></button></div>'+
+ '<form id="signupForm" novalidate>'+f+
+ '<label class="f" for="su-pass">Password</label><input class="i" id="su-pass" type="password" autocomplete="new-password" placeholder="At least 8 characters">'+
+ '<label class="f" for="su-country">Country</label><select class="i" id="su-country">'+countries+'</select>'+
+ '<label class="chk"><input type="checkbox" id="su-agree"><span>I agree to the Terms and the Privacy Policy.</span></label>'+
+ (S.su.err?'<p class="err">'+esc(S.su.err)+'</p>':'')+
+ '<button class="btn w" style="margin-top:16px" type="submit">Create account</button></form>'+
+ '<p style="margin-top:14px">Already have an account? <button class="btn sm o" data-go="login">Log in</button></p>'+
+ '<p class="note" style="margin-top:10px">Demo: nothing is saved and no email is sent.</p></main></div>';
+};
+V.verify=function(){
+ return '<div class="scr">'+hdr({back:"signup"})+'<main class="main" data-scroll><div class="card" style="text-align:center;padding:28px 18px"><h2>Check your inbox</h2><p style="margin-top:8px">We sent a verification link to <b style="color:var(--tx)">'+esc(S.su.email||"your email")+'</b>. Tap it to activate your account.</p><p class="note" style="margin-top:10px">Didn’t get it? Check spam, or resend in 60 seconds.</p></div>'+
+ '<div class="demo" style="margin-top:16px"><b>Demo shortcut</b><button class="btn w" data-act="verified">Open the verification link</button></div></main></div>';
+};
+
+/* candidate onboarding */
+V.onboarding=function(){
+ var o=S.ob,st=o.step,body="";
+ if(st===1)body='<h2>About you</h2><p>This is what employers see first.</p>'+
+  '<label class="f" for="ob-name">Full name</label><input class="i" id="ob-name" data-ob="name" value="'+esc(o.name)+'" autocomplete="name">'+
+  '<label class="f" for="ob-headline">Professional headline</label><input class="i" id="ob-headline" data-ob="headline" value="'+esc(o.headline)+'" placeholder="e.g. Digital Marketing Manager">'+
+  '<label class="f" for="ob-loc">Location</label><select class="i" id="ob-loc" data-ob="loc">'+["Beirut, Lebanon","Jounieh, Lebanon","Tripoli, Lebanon","Saida, Lebanon","Zahle, Lebanon","Dubai, UAE","Riyadh, Saudi Arabia","Doha, Qatar"].map(function(x){return '<option'+(x===o.loc?" selected":"")+'>'+x+'</option>'}).join("")+'</select>'+
+  '<label class="f" for="ob-phone">Phone number <span class="tag mute">Private</span></label><input class="i" id="ob-phone" data-ob="phone" type="tel" value="'+esc(o.phone)+'" placeholder="+961" autocomplete="tel"><p class="note" style="margin-top:6px">Only shared with an employer if you accept their request and choose to share it.</p>';
+ if(st===2)body='<h2>Your experience</h2><p>Keep it short. You can add work history and education later.</p>'+
+  '<label class="f" for="ob-title">Current or most recent position</label><input class="i" id="ob-title" data-ob="title" value="'+esc(o.title)+'">'+
+  '<div class="row"><div><label class="f" for="ob-ind">Industry</label><select class="i" id="ob-ind" data-ob="ind">'+["Marketing","Technology","Finance","Sales","Design","Hospitality","Engineering","Other"].map(function(x){return '<option'+(x===o.ind?" selected":"")+'>'+x+'</option>'}).join("")+'</select></div>'+
+  '<div><label class="f" for="ob-years">Years of experience</label><input class="i" id="ob-years" data-ob="years" type="number" min="0" max="50" inputmode="numeric" value="'+esc(o.years)+'"></div></div>'+
+  '<label class="f" for="ob-skill">Skills (up to 8)</label><div class="row"><input class="i" id="ob-skill" placeholder="Type a skill, then Add" style="flex:2"><button type="button" class="btn sm" data-act="ob-addskill" style="flex:none">Add</button></div>'+
+  '<div class="wrap" style="margin-top:8px">'+o.skills.map(function(s,i){return '<button type="button" class="chipbtn on" data-act="ob-rmskill" data-i="'+i+'" aria-label="Remove '+esc(s)+'">'+esc(s)+' ✕</button>'}).join("")+'</div>'+
+  '<label class="f" for="ob-avail">Availability</label><select class="i" id="ob-avail" data-ob="avail">'+["Available now","2 weeks notice","1 month notice","2 months notice","Open to offers"].map(function(x){return '<option'+(x===o.avail?" selected":"")+'>'+x+'</option>'}).join("")+'</select>';
+ if(st===3)body='<h2>Your introduction</h2><p>Profiles with a video get noticed faster. Prefer not to be on camera? That’s fine too.</p>'+
+  '<div class="stack" style="margin-top:14px">'+
+  '<button type="button" class="list-row" data-act="ob-mode" data-m="video" aria-pressed="'+(o.mode==="video")+'" style="'+(o.mode==="video"?"border-color:var(--g);border-width:2px":"")+'"><div class="thumb" style="background:var(--g)">▶</div><div class="t"><b>Record or upload a video</b><span>30–90 seconds, vertical works best</span></div></button>'+
+  '<button type="button" class="list-row" data-act="ob-mode" data-m="text" aria-pressed="'+(o.mode==="text")+'" style="'+(o.mode==="text"?"border-color:var(--g);border-width:2px":"")+'"><div class="thumb" style="background:var(--bd);color:var(--tx)">Aa</div><div class="t"><b>Text-only profile</b><span>Write a short introduction instead</span></div></button></div>'+
+  (o.mode==="text"?'<label class="f" for="ob-about">About you</label><textarea class="i" id="ob-about" data-ob="about" placeholder="Who you are, what you’re great at, and what you’re looking for.">'+esc(o.about)+'</textarea>':'<p class="note" style="margin-top:12px">You’ll record in the Video Studio after this step. You can publish now and add the video later.</p>');
+ if(st===4)body='<h2>Review and publish</h2>'+
+  '<div class="card" style="margin-top:12px"><h3>'+esc(o.name)+'</h3><p>'+esc(o.headline)+' · '+esc(o.loc)+'</p><p>'+esc(o.years)+' yrs experience · '+esc(o.avail)+'</p><div class="wrap" style="margin-top:8px">'+o.skills.map(function(s){return '<span class="sk">'+esc(s)+'</span>'}).join("")+'</div></div>'+
+  '<h3 style="margin-top:16px">Who can watch your reel?</h3>'+
+  '<label class="chk"><input type="radio" name="obvis" data-act="ob-vis" value="all"'+(o.vis==="all"?" checked":"")+'><span><b>Everyone</b><br><span class="note">Anyone visiting Hireel can watch. Only signed-in employers can contact you.</span></span></label>'+
+  '<label class="chk"><input type="radio" name="obvis" data-act="ob-vis" value="emp"'+(o.vis==="emp"?" checked":"")+'><span><b>Signed-in employers only</b><br><span class="note">Good if you’re job-hunting quietly.</span></span></label>'+
+  '<label class="chk" style="margin-top:16px"><input type="checkbox" id="ob-consent" data-act="ob-consent"'+(o.consent?" checked":"")+'><span>I agree that Hireel may show my profile and video as chosen above. I can unpublish at any time.</span></label>';
+ return '<div class="scr">'+hdr({back:st>1?"":"verify"}).replace('data-go=""','data-act="ob-back"')+
+ '<main class="main" data-scroll><p class="note">Step '+st+' of 4 · Saved automatically</p><div class="bar"><i style="width:'+(st*25)+'%"></i></div>'+body+
+ (o.err?'<p class="err">'+esc(o.err)+'</p>':'')+
+ '<div class="row" style="margin-top:18px">'+(st>1?'<button class="btn g" data-act="ob-back">Back</button>':'')+'<button class="btn" data-act="ob-next">'+(st===4?"Publish my profile":"Continue")+'</button></div>'+
+ '<p class="note" style="margin-top:12px">Sample answers are pre-filled for this preview.</p></main></div>';
+};
+
+/* candidate app */
+function candHdr(){return hdr({home:"me-home",right:'<button class="ib" data-go="requests" aria-label="Intro requests">'+ICON.bell+(pendingCand()?'<span class="dot">'+pendingCand()+'</span>':'')+'</button>'})}
+function pct(){var h=S.slots.some(function(s){return s.url||s.sample})||S.textOnly;return h?(S.published?(S.shareOn?100:85):70):40}
+function phHTML(s){return '<div class="ph" style="background:'+grad(C[0].c)+'"><b>LH</b><span>Sample video · '+LN[s.lang]+'</span></div>'}
+function vidHTML(s,controls){
+ if(s.url){
+  var a=' src="'+s.url+'" muted playsinline';
+  if(s.land)return '<video class="bgv"'+a+' autoplay loop aria-hidden="true"></video><video class="fgv"'+a+(controls?' controls':' autoplay loop')+'></video>';
+  return '<video'+a+(controls?' controls':' autoplay loop')+'></video>';
+ }
+ if(s.sample)return phHTML(s);
+ return "";
+}
+V["me-home"]=function(){
+ var vv=S.slots.map(function(s,i){if(!(s.url||s.sample))return"";
+  return '<div class="sw" style="padding:8px 0;border-bottom:1px solid var(--bd)"><div><p><b style="color:var(--tx)">'+LN[s.lang]+'</b>'+(i===S.primary?" · Primary":"")+'</p>'+statusTag(s.status)+'</div><p style="text-align:right">'+(s.status==="live"?'<b style="color:var(--tx);font-variant-numeric:tabular-nums">'+s.views+'</b> views'+(s.views<10?'<br><span class="note">Shown publicly from 10</span>':''):'<span class="note">Counting starts when live</span>')+'</p></div>'}).join("");
+ var pc=pct(),np=pendingCand();
+ return '<div class="scr">'+candHdr()+'<main class="main" data-scroll><div class="stack">'+
+ '<div><h2>Welcome, Lina</h2><p>Employers discover you through video.</p></div>'+
+ '<div class="card"><h3>Profile '+pc+'% complete</h3><div class="bar"><i style="width:'+pc+'%"></i></div><p>'+(pc<70?"Next step: record your video introduction.":pc<85?"Next step: review and publish your profile.":pc<100?"Next step: turn on your share link to send your profile to anyone.":"Your profile is complete.")+'</p></div>'+
+ (np?'<button class="list-row" data-go="requests"><div class="thumb" style="background:var(--g);height:54px">'+np+'</div><div class="t"><b>'+np+' new intro request'+(np>1?"s":"")+'</b><span>Review and decide who gets your contact details</span></div></button>':'')+
+ '<div><div class="grid3"><div class="stat"><b>41</b><span>Profile views</span></div><div class="stat"><b>6</b><span>Saves</span></div><div class="stat"><b>'+S.candReq.length+'</b><span>Requests</span></div></div><p class="note" style="margin-top:6px">Sample numbers. Real numbers will come from the database.</p></div>'+
+ '<div class="card"><h3>Video views</h3>'+(vv||'<p>Add a video to start counting views.</p>')+'<p class="note" style="margin-top:8px">Counted when a signed-in employer watches at least 3 seconds. One count per employer per day. Your own views don’t count.</p></div>'+
+ (S.paused?'<div class="card" style="background:var(--warnbg);border-color:transparent"><h3 style="color:var(--warn)">Job search paused</h3><p>Your profile is hidden from the feed. Turn it back on in Share.</p></div>':'')+
+ '</div></main>'+navCand("me-home")+'</div>';
+};
+V["me-video"]=function(){
+ var s=S.slots[S.active],has=!!(s.url||s.sample);
+ var segs=S.slots.map(function(x,i){return '<button type="button" class="'+(i===S.active?"on":"")+'" data-act="slot" data-i="'+i+'"><span>Video '+(i+1)+'</span><small>'+((x.url||x.sample)?LN[x.lang]:"Empty")+(i===S.primary&&(x.url||x.sample)?" · Primary":"")+'</small></button>'}).join("");
+ var langOpts=["EN","AR","FR"].map(function(k){return '<option value="'+k+'"'+(k===s.lang?" selected":"")+'>'+LN[k]+'</option>'}).join("");
+ var demoSt=has?'<div class="demo"><b>Demo: preview each status</b><div class="wrap">'+["uploading","processing","review","live","rejected"].map(function(k){return '<button class="chipbtn'+(s.status===k?" on":"")+'" data-act="setst" data-st="'+k+'">'+{uploading:"Uploading",processing:"Processing",review:"Review",live:"Live",rejected:"Rejected"}[k]+'</button>'}).join("")+'</div></div>':'';
+ var rej=s.status==="rejected"?'<div class="card" style="background:var(--badbg);border-color:transparent"><h3 style="color:var(--bad)">Your video wasn’t approved</h3><p style="color:var(--tx)">Reason from our review team: '+esc(s.reason||"The sound is too quiet to understand. Please record again in a quieter place.")+'</p><p class="note" style="margin-top:6px">Replace the video and it will be reviewed again.</p></div>':'';
+ var stMsg={uploading:"Uploading. You can leave this screen; it keeps going.",processing:"Cloudflare is preparing your video for all phones. This usually takes under a minute.",review:"Our team checks every video before it goes live, usually within 24 hours.",live:"Live. Employers can see this video."}[s.status]||"";
+ return '<div class="scr">'+candHdr()+'<main class="main" data-scroll><div class="stack">'+
+ '<div><h2>My video</h2><p>Add up to 2 videos in different languages and choose which one employers see first. 30–90 seconds each, vertical works best.</p></div>'+
+ '<div class="seg">'+segs+'</div>'+
+ '<label class="f" for="lang" style="margin:0">Video language</label><select class="i" id="lang" data-act="lang">'+langOpts+'</select>'+
+ '<div class="vid'+(s.url&&s.land?" lb":"")+'">'+(has?'<span class="st">'+statusTag(s.status)+'</span>'+vidHTML(s,true):"No video yet")+'</div>'+
+ (s.url&&s.land?'<p class="note" style="text-align:center">Landscape video: shown whole on a blurred background, never stretched.</p>':'')+
+ (stMsg&&has?'<p class="note" style="text-align:center">'+stMsg+'</p>':'')+
+ (S.studioErr?'<p class="err" style="text-align:center">'+esc(S.studioErr)+'</p>':'')+
+ rej+
+ '<button class="btn w" data-act="rec">'+(has?"Replace this video":"Record or upload video")+'</button>'+
+ (has&&S.active!==S.primary?'<button class="btn g w" data-act="mkp">Make this my primary video</button>':'')+
+ (has?'<p class="note">Replacing a video keeps the old one privately for 30 days, then deletes it. Nobody else can see it.</p>':'')+
+ demoSt+
+ '<div class="card"><h3>Answer these three questions</h3><div class="stack" style="gap:6px;margin-top:6px"><div class="q">1. Who are you, and what do you specialize in?</div><div class="q">2. What experience and achievements make you stand out?</div><div class="q">3. What type of opportunity are you looking for?</div></div>'+
+ '<p class="note" style="margin-top:10px">Tips: hold your phone upright, face a window for light, and find a quiet room. No filters needed.</p></div>'+
+ '<div class="card"><div class="sw"><div><h3>Text-only profile</h3><p>Prefer not to appear on camera? Show a written introduction instead.</p></div><button class="tog'+(S.textOnly?" on":"")+'" data-act="textonly" aria-pressed="'+S.textOnly+'" aria-label="Text-only profile"></button></div></div>'+
+ '<p class="note">Demo: your video stays on this phone. Nothing is uploaded.</p>'+
+ '</div></main>'+navCand("me-video")+'</div>';
+};
+V["me-profile"]=function(){
+ var have=[];S.slots.forEach(function(x,i){if(x.url||x.sample)have.push(i)});
+ if(have.length&&!(S.slots[S.prev].url||S.slots[S.prev].sample))S.prev=(S.slots[S.primary].url||S.slots[S.primary].sample)?S.primary:have[0];
+ var pv;
+ if(S.textOnly)pv='<div class="vp" style="aspect-ratio:auto;padding:16px;text-align:left;display:block;line-height:1.5">'+esc(S.ob.about||"I lead performance marketing teams and have managed over $400k in annual ad spend for retail and hospitality brands.")+'</div>';
+ else if(!have.length)pv='<div class="vp">Your video appears here</div>';
+ else{var s=S.slots[S.prev];pv='<div class="vp">'+(s.url?'<video src="'+s.url+'" muted playsinline autoplay loop style="object-fit:'+(s.land?"contain":"cover")+'"></video>':'<span>Sample video · '+LN[s.lang]+'</span>')+'</div>'}
+ var pl=have.length>1&&!S.textOnly?'<div style="display:flex;gap:6px;margin-bottom:10px">'+have.map(function(i){return '<button type="button" class="lgp'+(i===S.prev?" on":"")+'" data-act="prev" data-i="'+i+'">'+LN[S.slots[i].lang]+(i===S.primary?" ★":"")+'</button>'}).join("")+'</div>':'';
+ return '<div class="scr">'+candHdr()+'<main class="main" data-scroll><div class="stack">'+
+ '<div><h2>Employer view</h2><p>This is how employers see your profile.</p></div>'+
+ '<div class="pp">'+pv+pl+'<h2>'+esc(S.ob.name)+'</h2><p style="color:#e3efe9">'+esc(S.ob.headline)+' · '+esc(S.ob.loc.split(",")[0])+'</p><div>'+S.ob.skills.map(function(x){return '<span class="t">'+esc(x)+'</span>'}).join("")+'</div></div>'+
+ '<p class="note">Your phone, email and CV stay hidden until you accept a request.</p>'+
+ '<button class="btn g w" data-act="edit-profile">Edit profile</button>'+
+ '</div></main>'+navCand("me-profile")+'</div>';
+};
+V["me-share"]=function(){
+ return '<div class="scr">'+candHdr()+'<main class="main" data-scroll><div class="stack">'+
+ '<h2>Share and privacy</h2>'+
+ '<div class="card"><div class="sw"><div><h3>Shareable profile link</h3><p>Anyone with the link sees your video, headline and skills. Nothing else.</p></div><button class="tog'+(S.shareOn?" on":"")+'" data-act="share-tog" aria-label="Enable share link" aria-pressed="'+S.shareOn+'"></button></div>'+
+ (S.shareOn?'<div class="link"><input id="url" readonly value="'+esc(S.shareUrl)+'" aria-label="Your share link"><button class="btn" data-act="copy">Copy</button></div><div class="link"><button class="btn g" style="flex:1" data-act="regen">Make a new link</button><button class="btn o" style="flex:1" data-go="p-lina">Open page</button></div><p class="note" style="margin-top:8px">Making a new link stops the old one from working. The page is hidden from search engines.</p>':'')+
+ '</div>'+
+ '<div class="card"><h3>Who can watch my reel</h3>'+
+ '<label class="chk"><input type="radio" name="vis" data-act="vis" value="all"'+(S.vis==="all"?" checked":"")+'><span><b>Everyone</b><br><span class="note">Visitors can watch. Only signed-in employers can contact you.</span></span></label>'+
+ '<label class="chk"><input type="radio" name="vis" data-act="vis" value="emp"'+(S.vis==="emp"?" checked":"")+'><span><b>Signed-in employers only</b></span></label></div>'+
+ '<div class="card"><div class="sw"><p>Profile published</p><button class="tog'+(S.published?" on":"")+'" data-act="pub-tog" aria-label="Profile published" aria-pressed="'+S.published+'"></button></div><div class="sw" style="margin-top:12px"><p>Pause my job search</p><button class="tog'+(S.paused?" on":"")+'" data-act="pause-tog" aria-label="Pause search" aria-pressed="'+S.paused+'"></button></div></div>'+
+ '<p class="note">Demo link: it opens a preview page inside this demo only.</p>'+
+ '</div></main>'+navCand("me-share")+'</div>';
+};
+V.requests=function(){
+ var list=S.candReq.map(function(r){
+  var stTag=r.status==="Pending"?'<span class="tag warn">New</span>':r.status==="Accepted"?'<span class="tag">Accepted</span>':r.status==="Blocked"?'<span class="tag bad">Blocked</span>':'<span class="tag mute">'+r.status+'</span>';
+  var acts="";
+  if(S.confirmBlock===r.id)acts='<div class="card" style="background:var(--badbg);border-color:transparent;margin-top:10px"><p style="color:var(--tx)">Block '+esc(r.co)+'? They won’t see your profile or be able to contact you again.</p><div class="row" style="margin-top:10px"><button class="btn sm g" data-act="block-cancel">Cancel</button><button class="btn sm bad" data-act="block-yes" data-id="'+r.id+'">Block</button></div></div>';
+  else if(r.status==="Pending")acts='<div class="row" style="margin-top:12px"><button class="btn sm g" data-act="decline" data-id="'+r.id+'">Decline</button><button class="btn sm" data-act="accept" data-id="'+r.id+'">Accept</button></div><div class="row" style="margin-top:6px"><button class="btn sm o" data-act="block" data-id="'+r.id+'">Block</button><button class="btn sm o" data-act="report" data-id="'+r.id+'">Report</button></div>';
+  else if(r.status==="Accepted")acts='<p class="note" style="margin-top:10px">You shared: '+esc((r.shared||["Email"]).join(", "))+'. Messaging arrives in Phase 2.</p>';
+  return '<div class="card"><div class="sw"><div><h3>'+esc(r.co)+' '+(r.ver?'<span class="tag">✓ Verified</span>':'<span class="tag mute">Not verified</span>')+'</h3><p>'+esc(r.rep)+'</p></div>'+stTag+'</div>'+
+  '<p class="note" style="margin-top:4px">'+esc(r.desc)+'</p>'+
+  '<div style="margin-top:10px"><div class="kv"><span>Opportunity</span><b>'+esc(r.pos)+'</b></div><div class="kv"><span>Type · Location</span><b>'+esc(r.type)+' · '+esc(r.where)+'</b></div>'+(r.comp?'<div class="kv"><span>Pay range</span><b>'+esc(r.comp)+'</b></div>':'')+'<div class="kv"><span>Received</span><b>'+esc(r.date)+'</b></div></div>'+
+  '<p style="margin-top:10px;color:var(--tx)">“'+esc(r.msg)+'”</p>'+
+  (r.cv&&r.status==="Pending"?'<p class="tag warn" style="margin-top:10px;white-space:normal">They also asked to see your CV and contact details</p>':'')+
+  acts+'</div>';
+ }).join("");
+ return '<div class="scr">'+hdr({back:"me-home",home:"me-home"})+'<main class="main" data-scroll><div class="stack"><div><h2>Intro requests</h2><p>Your contact details stay private until you accept.</p></div>'+list+'<p class="note">Sample requests from fictional companies.</p></div></main>'+navCand("")+'</div>';
+};
+
+/* employer feed */
+function feedCard(c){
+ var v=activeVid(c),vs=vidsOf(c),dem=S.mode==="employer";
+ var sent=S.empReq.some(function(r){return r.cid===c.id});
+ var media=(c.land||(v&&v.land))?'<div class="blurbg" style="background:'+grad(c.c)+'"></div><div class="landf" style="background:'+grad(c.c)+'">'+ini(c.n)+'</div>':'<div class="face" aria-hidden="true">'+ini(c.n)+'</div>';
+ var langs=vs.length>1?'<div class="langs" role="group" aria-label="Video language">'+vs.map(function(x){return '<button type="button" class="'+(x===v?"on":"")+'" data-act="clang" data-id="'+c.id+'" data-l="'+x.l+'">'+LN[x.l]+(x.p?" ★":"")+'</button>'}).join("")+'</div>':'';
+ return '<section class="item" data-id="'+c.id+'"><div class="fcard" style="background:'+((c.land||(v&&v.land))?"#0b1310":grad(c.c))+'">'+media+'<div class="shade"></div><div class="pz" aria-hidden="true"><span>▶</span></div>'+
+ '<div class="top">'+(v.v>=10?'<span class="pill">'+fmt(v.v)+' views</span>':'<span></span>')+'<span style="display:flex;gap:6px">'+((c.land||(v&&v.land))?'<span class="pill">Landscape upload</span>':'')+'<button class="pill mute" data-act="mute" aria-label="Toggle sound">🔇 Muted</button></span></div>'+
+ '<div class="info">'+langs+'<span class="avail">'+esc(c.av)+'</span><h2>'+esc(c.n)+'</h2><div class="role">'+esc(c.t)+'</div>'+
+ '<div class="meta">'+c.y+' yrs experience · '+esc(c.loc)+'</div>'+
+ '<div class="skills">'+c.sk.map(function(s){return "<span>"+esc(s)+"</span>"}).join("")+'</div>'+
+ '<div class="actions"><button class="btn '+(S.saved[c.id]&&dem?"saved":"s")+'" data-act="save" data-id="'+c.id+'">'+(S.saved[c.id]&&dem?"Saved ✓":"Save")+'</button><button class="btn s" data-act="prof" data-id="'+c.id+'">Profile</button><button class="btn p m" data-act="req" data-id="'+c.id+'"'+(sent&&dem?" disabled":"")+'>'+(sent&&dem?"Request sent":"Request intro")+'</button></div></div>'+
+ '<div class="prog"></div></div></section>';
+}
+V.feed=function(){
+ var L=feedList(),inds=["All"].concat(Array.from(new Set(C.map(function(c){return c.ind}))));
+ var nf=(S.ind!=="All"?1:0)+(S.lang!=="any"?1:0);
+ var chips='<div><h4>Industry</h4><div class="wrap">'+inds.map(function(i){return '<button class="chip'+(i===S.ind?" on":"")+'" data-act="f-ind" data-v="'+i+'">'+i+'</button>'}).join("")+'</div></div>'+
+ '<div><h4>Video language</h4><div class="wrap">'+[["any","Any"],["EN","English"],["AR","Arabic"],["FR","French"]].map(function(x){return '<button class="chip'+(x[0]===S.lang?" on":"")+'" data-act="f-lang" data-v="'+x[0]+'">'+x[1]+'</button>'}).join("")+'</div></div>'+
+ (S.mode==="visitor"?'<p class="note">You’re browsing as a visitor. Sign up as an employer to see every candidate and act on reels.</p>':'');
+ return '<div class="scr fs"><header class="fh"><span class="logo">Hireel</span>'+badge()+'<button id="fbtn" type="button" data-act="filters" aria-expanded="'+S.fopen+'">Filters'+(nf?" · "+nf:"")+'</button></header>'+
+ '<div class="chips'+(S.fopen?" show":"")+'" id="chips">'+chips+'</div>'+
+ '<div id="feed" tabindex="0" aria-label="Candidate video feed">'+(L.length?L.map(feedCard).join(""):'<div class="empty" style="color:#9fb0a8;padding-top:140px">No candidates match these filters.</div>')+'</div>'+
+ navEmp("feed",true)+'</div>';
+};
+function profileSheet(id){
+ var c=cand(id);
+ openSheet('<h3>'+esc(c.n)+'</h3><p>'+esc(c.t)+' · '+esc(c.loc)+'</p><label class="f">About</label><p>'+esc(c.about)+'</p><label class="f">Experience</label><ul>'+c.exp.map(function(x){return"<li>"+esc(x)+"</li>"}).join("")+'</ul><label class="f">Education</label><p>'+esc(c.edu)+'</p><p style="margin-top:10px">Contact details stay private until the candidate accepts your request.</p><div class="row" style="margin-top:14px"><button class="btn g" data-close>Close</button><button class="btn" data-go="c-'+c.id+'" data-close>Full profile</button></div>');
+}
+function reqSheet(id){
+ var c=cand(id),p=S.plans[S.plan];
+ if(left("intro")<=0){upgradeSheet("You’ve used all "+p.intro+" intro requests on the "+p.name+" plan this month.");return}
+ openSheet('<h3>Request introduction</h3><p>to '+esc(c.n)+'</p>'+
+ '<form id="reqForm" data-id="'+c.id+'" novalidate>'+
+ '<label class="f" for="f1">Opportunity title</label><input class="i" id="f1" placeholder="e.g. Marketing Manager">'+
+ '<div class="row"><div><label class="f" for="f2">Employment type</label><select class="i" id="f2"><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Freelance</option></select></div><div><label class="f" for="f4">Work location</label><input class="i" id="f4" placeholder="e.g. Beirut, hybrid"></div></div>'+
+ '<label class="f" for="f3">Message</label><textarea class="i" id="f3" rows="3" placeholder="Why you think they are a fit"></textarea>'+
+ '<label class="f" for="f5">Pay range (optional)</label><input class="i" id="f5" placeholder="e.g. $2,000–2,500 / month">'+
+ '<label class="chk"><input type="checkbox" id="f6"'+(left("cv")?"":" disabled")+'><span>Also ask to see their full CV and contact details<br><span class="note">'+(left("cv")?"Uses 1 of your "+left("cv")+" remaining CV & contact requests. The candidate still decides.":"No CV & contact requests left this month.")+'</span></span></label>'+
+ '<p class="err" id="ferr" hidden></p>'+
+ '<div class="row" style="margin-top:14px"><button type="button" class="btn g" data-close>Cancel</button><button class="btn" type="submit">Send request</button></div>'+
+ '<p class="note" style="margin-top:10px;text-align:center">Uses 1 of your '+left("intro")+' remaining intro requests this month ('+esc(p.name)+'). Demo: nothing is actually sent.</p></form>');
+}
+function upgradeSheet(msg){
+ openSheet('<h3>Upgrade to Premium</h3><p>'+esc(msg)+'</p><div class="card" style="margin-top:12px"><div class="kv"><span>Intro requests / month</span><b>'+S.plans.premium.intro+'</b></div><div class="kv"><span>CV & contact requests / month</span><b>'+S.plans.premium.cv+'</b></div><div class="kv"><span>Saved candidates</span><b>'+S.plans.premium.saved+'</b></div><div class="kv"><span>Price</span><b>'+esc(S.plans.premium.price)+'</b></div></div>'+
+ '<p class="note" style="margin-top:10px">Online payment isn’t connected yet. Until it is, the Hireel admin switches companies to Premium.</p>'+
+ '<div class="demo" style="margin-top:12px"><b>Demo shortcut</b><button class="btn w" data-act="demo-premium">Pretend the admin upgraded us</button></div><button class="btn g w" style="margin-top:10px" data-close>Not now</button>');
+}
+function gateSheet(why){
+ var t={save:"save candidates",prof:"open full profiles",req:"send intro requests",saved:"keep a saved list",inbox:"see your requests",account:"manage your company account",row:"open full profiles"}[why]||"do that";
+ openSheet('<h3>Sign up as an employer</h3><p>Watching reels is free. Create a free employer account to '+t+'.</p><div class="stack" style="margin-top:16px"><button class="btn w" data-act="signup-as" data-role="employer" data-close>Sign up free</button><button class="btn g w" data-go="login" data-close>I already have an account</button><button class="btn o w" data-close>Keep watching</button></div>');
+}
+
+V.search=function(){
+ return '<div class="scr">'+hdr({home:"feed"})+'<main class="main" data-scroll><div class="stack">'+
+ '<label class="f" for="sq" style="margin:0">Search candidates</label><input class="i" id="sq" type="search" placeholder="Job title, skill or city" value="'+esc(S.searchQ)+'" autocomplete="off">'+
+ '<div class="wrap">'+["All","Marketing","Technology","Finance","Sales","Design"].map(function(i){return '<button class="chipbtn'+(S.sInd===i?" on":"")+'" data-act="s-ind" data-v="'+i+'">'+i+'</button>'}).join("")+'</div>'+
+ '<div id="sres">'+searchResults()+'</div>'+
+ '<p class="note">Filters cover job-related details only. Hireel never filters by age, gender, religion, ethnicity or appearance.</p>'+
+ '</div></main>'+navEmp("search",false)+'</div>';
+};
+function searchResults(){
+ var q=S.searchQ.trim().toLowerCase();
+ var L=C.filter(function(c){
+  if(!vidsOf(c).length&&c.id!=="lina")return false;
+  if(S.mode==="visitor"&&(c.id==="lina"?S.vis:c.vis)==="emp")return false;
+  if(S.sInd!=="All"&&c.ind!==S.sInd)return false;
+  if(!q)return true;
+  return (c.n+" "+c.t+" "+c.loc+" "+c.sk.join(" ")).toLowerCase().indexOf(q)>-1;
+ });
+ return '<p class="note" style="margin-bottom:8px">'+L.length+' candidate'+(L.length===1?"":"s")+'</p><div class="stack" style="gap:8px">'+(L.length?L.map(rowHTML).join(""):'<div class="empty">No candidates match. Try a different word.</div>')+'</div>';
+}
+function rowHTML(c){return '<button class="list-row" data-act="row" data-id="'+c.id+'"><div class="thumb" style="background:'+grad(c.c)+'">'+ini(c.n)+'</div><div class="t"><b>'+esc(c.n)+'</b><span>'+esc(c.t)+' · '+c.y+' yrs</span><span>'+esc(c.loc)+' · '+esc(c.sk.join(", "))+'</span></div></button>'}
+V.saved=function(){
+ var L=C.filter(function(c){return S.saved[c.id]});
+ return '<div class="scr">'+hdr({home:"feed"})+'<main class="main" data-scroll><div class="stack"><div><h2>Saved candidates</h2><p>'+L.length+' of '+S.plans[S.plan].saved+' on your plan</p></div>'+
+ (L.length?L.map(rowHTML).join(""):'<div class="empty">Tap Save on a reel to keep candidates here.</div>')+'<p class="note">Shortlists with private notes arrive in Phase 2.</p></div></main>'+navEmp("saved",false)+'</div>';
+};
+V.inbox=function(){
+ var L=S.empReq.map(function(r){var c=cand(r.cid);
+  var tg=r.status==="Accepted"?'<span class="tag">Accepted</span>':r.status==="Declined"?'<span class="tag mute">Declined</span>':'<span class="tag warn">Pending</span>';
+  return '<div class="card"><div class="sw"><div><h3>'+esc(c.n)+'</h3><p>'+esc(r.title)+' · sent '+esc(r.date)+'</p></div>'+tg+'</div>'+
+  (r.status==="Accepted"?'<div style="margin-top:10px"><div class="kv"><span>Email</span><b>'+c.id+'.sample@example.com</b></div><div class="kv"><span>Phone</span><b>+961 70 000 000</b></div><div class="kv"><span>CV</span><b>Shared (PDF)</b></div><p class="note" style="margin-top:6px">Sample contact details. Real ones appear only after the candidate accepts.</p></div>':
+  '<p class="note" style="margin-top:8px">'+(r.cv?"You also asked for their CV and contact details. ":"")+'Contact details appear here if they accept.</p>')+'</div>'}).join("");
+ return '<div class="scr">'+hdr({home:"feed"})+'<main class="main" data-scroll><div class="stack"><div><h2>Requests you sent</h2><p>One request per candidate. No reminders or repeat messages.</p></div>'+(L||'<div class="empty">No requests yet.</div>')+'</div></main>'+navEmp("inbox",false)+'</div>';
+};
+V.account=function(){
+ var p=S.plans[S.plan],co=S.companies[0];
+ function m(lbl,used,max){return '<div style="margin-top:12px"><div class="sw"><p style="color:var(--tx)">'+lbl+'</p><p style="font-variant-numeric:tabular-nums"><b style="color:var(--tx)">'+used+'</b> / '+max+'</p></div><div class="meter"><i style="width:'+Math.min(100,used/max*100)+'%"></i></div></div>'}
+ return '<div class="scr">'+hdr({home:"feed"})+'<main class="main" data-scroll><div class="stack">'+
+ '<div class="card"><div class="sw"><div><h3>'+esc(S.company)+'</h3><p>Retail · Beirut · 51–200 people</p></div>'+(co.st==="Verified"?'<span class="tag">✓ Verified</span>':co.st==="Suspended"?'<span class="tag bad">Suspended</span>':'<span class="tag mute">Not verified</span>')+'</div><p class="note" style="margin-top:8px">'+(co.st==="Verified"?"Candidates see a Verified badge on your requests.":"You can send requests now. Verification adds a badge candidates trust.")+'</p></div>'+
+ '<div class="card"><div class="sw"><h3>Plan: '+esc(p.name)+'</h3><span class="tag">'+esc(p.price)+'</span></div>'+
+ m("Intro requests this month",S.used.intro,p.intro)+m("CV & contact requests",S.used.cv,p.cv)+m("Saved candidates",savedCount(),p.saved)+
+ '<p class="note" style="margin-top:10px">Resets on the 1st of each month.</p>'+
+ (S.plan==="free"?'<button class="btn w" style="margin-top:12px" data-act="upgrade">Upgrade to Premium</button>':'')+'</div>'+
+ '<button class="btn g w" data-act="signout">Sign out</button>'+
+ '<p class="note">Sample company. Team members and roles arrive in Phase 2.</p>'+
+ '</div></main>'+navEmp("account",false)+'</div>';
+};
+
+/* full candidate profile (employer) */
+function profilePage(id){
+ var c=cand(id);if(!c)return V.feed();
+ if(S.mode==="visitor"){return '<div class="scr">'+hdr({back:"feed",home:"feed"})+'<main class="main"><div class="card" style="text-align:center;padding:28px 18px"><h2>Full profiles are for employers</h2><p style="margin-top:8px">Create a free employer account to see experience, education and more.</p><button class="btn w" style="margin-top:16px" data-act="signup-as" data-role="employer">Sign up free</button></div></main></div>'}
+ var v=activeVid(c),vs=vidsOf(c),acc=S.empReq.some(function(r){return r.cid===id&&r.status==="Accepted"}),sent=S.empReq.some(function(r){return r.cid===id});
+ return '<div class="scr">'+hdr({back:"feed",home:"feed"})+'<main class="main" data-scroll><div class="stack">'+
+ '<div class="vid" style="background:'+grad(c.c)+';max-height:46vh">'+(v?'<span class="st"><span class="pill">'+(v.v>=10?fmt(v.v)+" views":"New")+'</span></span>':'')+'<div class="ph"><b>'+ini(c.n)+'</b><span>Sample video'+(v?" · "+LN[v.l]:"")+'</span></div></div>'+
+ (vs.length>1?'<div class="wrap" style="justify-content:center">'+vs.map(function(x){return '<button class="chipbtn'+(x===v?" on":"")+'" data-act="clang" data-id="'+c.id+'" data-l="'+x.l+'">'+LN[x.l]+(x.p?" ★":"")+'</button>'}).join("")+'</div>':'')+
+ '<div><span class="tag">'+esc(c.av)+'</span><h2 style="margin-top:8px">'+esc(c.n)+'</h2><p>'+esc(c.t)+' · '+c.y+' yrs experience · '+esc(c.loc)+'</p><div class="wrap" style="margin-top:10px">'+c.sk.map(function(s){return '<span class="sk">'+esc(s)+'</span>'}).join("")+'</div></div>'+
+ '<div class="card"><h3>About</h3><p>'+esc(c.about)+'</p></div>'+
+ '<div class="card"><h3>Experience</h3><ul>'+c.exp.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul></div>'+
+ '<div class="card"><h3>Education</h3><p>'+esc(c.edu)+'</p><h3 style="margin-top:12px">Languages</h3><p>'+esc(c.spoken.join(", "))+'</p></div>'+
+ '<div class="card"><h3>CV and contact details</h3>'+(acc?'<div class="kv"><span>Email</span><b>'+c.id+'.sample@example.com</b></div><div class="kv"><span>Phone</span><b>+961 70 000 000</b></div><p class="note">Sample details.</p>':'<p>🔒 Hidden until '+esc(c.n.split(" ")[0])+' accepts your request.</p>')+'</div>'+
+ '<div class="row"><button class="btn g" data-act="save" data-id="'+c.id+'">'+(S.saved[c.id]?"Saved ✓":"Save")+'</button><button class="btn" data-act="req" data-id="'+c.id+'"'+(sent?" disabled":"")+'>'+(sent?"Request sent":"Request intro")+'</button></div>'+
+ '<button class="btn o w" data-act="report-prof">Report profile</button><p class="note">Sample candidate.</p>'+
+ '</div></main>'+navEmp("",false)+'</div>';
+}
+/* public share page */
+V["p-lina"]=function(){
+ if(!S.shareOn)return '<div class="scr">'+hdr()+'<main class="main"><div class="card" style="text-align:center;padding:28px 18px"><h2>This link doesn’t work anymore</h2><p style="margin-top:8px">The candidate has turned off or replaced their share link.</p><button class="btn w" style="margin-top:16px" data-go="feed">Discover other talent</button></div></main></div>';
+ var s=S.slots[S.primary].url||S.slots[S.primary].sample?S.slots[S.primary]:S.slots[0];
+ return '<div class="scr">'+hdr()+'<main class="main" data-scroll><div class="stack">'+
+ '<div class="vid'+(s.url&&s.land?" lb":"")+'">'+(s.url||s.sample?vidHTML(s,true):"No video yet")+'</div>'+
+ '<div><h2>'+esc(S.ob.name)+'</h2><p>'+esc(S.ob.headline)+'</p><div class="wrap" style="margin-top:10px">'+S.ob.skills.map(function(x){return '<span class="sk">'+esc(x)+'</span>'}).join("")+'</div></div>'+
+ '<button class="btn w m" data-act="'+(S.mode==="employer"?"req":"gate")+'" data-id="lina" data-why="req">Request intro</button>'+
+ '<p class="note">Shared profile page. Shows only the video, headline and skills. Hidden from search engines.</p>'+
+ '</div></main></div>';
+};
+
+/* admin */
+V.admin=function(){
+ var t=S.atab,body="";
+ var linaQ=S.slots.map(function(s,i){return s.status==="review"?{id:"lina-"+i,who:"Lina Haddad",lang:s.lang,dur:s.dur||"1:05",c:C[0].c,note:s.land?"Landscape upload":"",slot:i}:null}).filter(Boolean);
+ var Q=linaQ.concat(S.queue);
+ if(t==="overview"){
+  body='<div class="grid2">'+[["Candidates","128"],["Published profiles","74"],["Employers","36"],["Verified employers",String(S.companies.filter(function(c){return c.st==="Verified"}).length+20)],["Videos to review",String(Q.length)],["Intro requests","212"]].map(function(x){return '<div class="stat"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>'}).join("")+'</div><p class="note">Sample numbers, except “Videos to review”, which follows this demo.</p>'+
+  '<div class="card"><h3>Needs attention</h3><div class="kv"><span>Videos waiting for review</span><b>'+Q.length+'</b></div><div class="kv"><span>Companies not verified</span><b>'+S.companies.filter(function(c){return c.st==="Not verified"}).length+'</b></div><div class="kv"><span>Open reports</span><b>1</b></div></div>'+
+  '<div class="card"><h3>Security</h3><p>Admins sign in with a password plus a 6-digit code from an authenticator app. Every approval, rejection and plan change is recorded in the audit log.</p></div>';
+ }
+ if(t==="videos"){
+  body=Q.length?Q.map(function(q){
+   var rj=S.rejecting===q.id;
+   return '<div class="card"><div style="display:flex;gap:12px"><div class="thumb" style="background:'+grad(q.c)+';width:72px;height:128px">'+ini(q.who)+'</div><div style="min-width:0;flex:1"><h3>'+esc(q.who)+'</h3><p>'+LN[q.lang]+' · '+esc(q.dur)+'</p><p class="note">Publish consent: given ✓'+(q.note?"<br>"+esc(q.note):"")+'</p></div></div>'+
+   (rj?'<label class="f" for="rr">Reason (the candidate will see this)</label><div class="wrap" style="margin-bottom:8px">'+["Sound is too quiet","Video is not an introduction","Contains contact details","Inappropriate content"].map(function(x){return '<button class="chipbtn" data-act="rr-pick" data-v="'+x+'">'+x+'</button>'}).join("")+'</div><textarea class="i" id="rr" placeholder="Explain what to fix"></textarea><p class="err" id="rrerr" hidden></p><div class="row" style="margin-top:10px"><button class="btn sm g" data-act="rj-cancel">Cancel</button><button class="btn sm bad" data-act="rj-yes" data-id="'+q.id+'">Reject video</button></div>':
+   '<div class="row" style="margin-top:12px"><button class="btn sm g" data-act="rj" data-id="'+q.id+'">Reject</button><button class="btn sm" data-act="approve" data-id="'+q.id+'">Approve</button></div>')+'</div>';
+  }).join(""):'<div class="empty">No videos waiting. Nice work.</div>';
+  body+='<p class="note">Tip: upload a video as Lina (My Video tab) and it appears here.</p>';
+ }
+ if(t==="employers"){
+  body=S.companies.map(function(c,i){
+   return '<div class="card"><div class="sw"><div><h3>'+esc(c.n)+'</h3><p>Joined '+esc(c.joined)+'</p></div>'+(c.st==="Verified"?'<span class="tag">✓ Verified</span>':c.st==="Suspended"?'<span class="tag bad">Suspended</span>':'<span class="tag mute">Not verified</span>')+'</div>'+
+   '<label class="f" for="cp'+i+'">Plan</label><select class="i" id="cp'+i+'" data-act="co-plan" data-i="'+i+'"><option value="free"'+(c.plan==="free"?" selected":"")+'>'+esc(S.plans.free.name)+'</option><option value="premium"'+(c.plan==="premium"?" selected":"")+'>'+esc(S.plans.premium.name)+'</option></select>'+
+   '<div class="row" style="margin-top:10px">'+(c.st!=="Verified"&&c.st!=="Suspended"?'<button class="btn sm" data-act="co-verify" data-i="'+i+'">Verify</button>':'')+'<button class="btn sm '+(c.st==="Suspended"?"g":"bad")+'" data-act="co-susp" data-i="'+i+'">'+(c.st==="Suspended"?"Reactivate":"Suspend")+'</button></div></div>';
+  }).join("")+'<p class="note">Sample companies.</p>';
+ }
+ if(t==="plans"){
+  body=["free","premium"].map(function(k){var p=S.plans[k];
+   function n(f,l){return '<div class="sw" style="padding:8px 0;border-bottom:1px solid var(--bd)"><label for="pl-'+k+'-'+f+'" style="font-size:14px">'+l+'</label><input class="num" id="pl-'+k+'-'+f+'" type="number" min="0" inputmode="numeric" value="'+p[f]+'" data-pl="'+k+'" data-f="'+f+'"></div>'}
+   return '<div class="card"><label class="f" for="pl-'+k+'-name" style="margin-top:0">Plan name</label><input class="i" id="pl-'+k+'-name" value="'+esc(p.name)+'" data-pl="'+k+'" data-f="name">'+
+   '<label class="f" for="pl-'+k+'-price">Price label</label><input class="i" id="pl-'+k+'-price" value="'+esc(p.price)+'" data-pl="'+k+'" data-f="price">'+
+   n("intro","Intro requests / month")+n("cv","CV & contact requests / month")+n("saved","Saved candidates")+'</div>'}).join("")+
+  '<button class="btn w" data-act="plans-save">Save plans</button><p class="note">Changes apply right away to every company on that plan. Check the employer Account screen and the homepage pricing.</p>';
+ }
+ return '<div class="scr">'+hdr({title:"Hireel Admin",home:"admin"})+
+ '<div class="tabs" role="tablist">'+[["overview","Overview"],["videos","Videos ("+Q.length+")"],["employers","Employers"],["plans","Plans"]].map(function(x){return '<button class="'+(t===x[0]?"on":"")+'" data-act="atab" data-v="'+x[0]+'">'+x[1]+'</button>'}).join("")+'</div>'+
+ '<main class="main" data-scroll><div class="stack">'+body+'</div></main></div>';
+};
+
+/* screen index */
+function screensSheet(){
+ var L=[["home","Homepage"],["signup","Sign up"],["login","Log in"],["onboarding","Candidate onboarding"],["me-home","Candidate: Home"],["me-video","Candidate: Video studio"],["me-profile","Candidate: Employer view of my profile"],["me-share","Candidate: Share and privacy"],["requests","Candidate: Intro requests inbox"],["p-lina","Public share page"],["feed","Employer feed"],["search","Employer: Search"],["c-lina","Employer: Full candidate profile"],["inbox","Employer: Requests sent"],["account","Employer: Account and plan"],["admin","Admin overview"]];
+ openSheet('<h3>Hireel design preview</h3><p>Phase 0. Every name, company and number here is sample data. Nothing is saved or sent.</p>'+
+ '<div class="card" style="margin-top:12px;padding:12px"><p style="color:var(--tx);font-weight:600">View the employer side as</p><div class="seg" style="margin-top:8px"><button class="'+(S.mode==="visitor"?"on":"")+'" data-act="as" data-v="visitor"><span>Visitor</span><small>Not signed in</small></button><button class="'+(S.mode==="employer"?"on":"")+'" data-act="as" data-v="employer"><span>Employer</span><small>'+esc(S.plans[S.plan].name)+'</small></button></div></div>'+
+ '<div class="stack" style="gap:6px;margin-top:12px">'+L.map(function(x){return '<button class="list-row" style="padding:12px 14px" data-go="'+x[0]+'" data-close><div class="t"><b style="font-size:14px">'+x[1]+'</b></div><span aria-hidden="true">›</span></button>'}).join("")+'</div><button class="btn g w" style="margin-top:12px" data-close>Close</button>');
+}
+
+/* ---------- router ---------- */
+var io;
+function route(){return location.hash.replace(/^#/,"")||"home"}
+function render(keep){
+ var r=route(),html,sc=0,fs=0;
+ if(keep){var m=$("[data-scroll]");if(m)sc=m.scrollTop;var f=$("#feed");if(f)fs=f.scrollTop}
+ if(r.indexOf("c-")===0)html=profilePage(r.slice(2));else html=(V[r]||V.home)();
+ $("#view").innerHTML=html;
+ if(keep){var m2=$("[data-scroll]");if(m2)m2.scrollTop=sc;var f2=$("#feed");if(f2)f2.scrollTop=fs}
+ if(r==="feed")observe();
+}
+window.addEventListener("hashchange",function(){closeSheet();S.fopen=false;S.studioErr="";render()});
+function go(r){if(route()===r)render();else location.hash=r}
+function observe(){
+ if(io)io.disconnect();var feed=$("#feed");if(!feed)return;
+ io=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle("act",e.isIntersecting&&e.intersectionRatio>.6)})},{root:feed,threshold:[.6]});
+ feed.querySelectorAll(".item").forEach(function(el){io.observe(el)});
+ feed.addEventListener("keydown",function(e){if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();feed.scrollBy({top:(e.key==="ArrowDown"?1:-1)*feed.clientHeight,behavior:"smooth"})}});
+}
+
+/* ---------- actions ---------- */
+function rid(){var a=new Uint8Array(16);crypto.getRandomValues(a);return Array.from(a,function(x){return x.toString(36).padStart(2,"0")}).join("").slice(0,22)}
+function needEmp(why){if(S.mode!=="employer"){gateSheet(why);return true}return false}
+
+document.addEventListener("click",function(e){
+ var el=e.target.closest("[data-act],[data-go],[data-close]");
+ if(!el){
+  if(e.target===sheet){closeSheet();return}
+  var card=e.target.closest(".fcard");
+  if(card){var it=card.closest(".item");it.classList.toggle("paused")}
+  return;
+ }
+ var a=el.getAttribute("data-act"),g=el.getAttribute("data-go"),id=el.getAttribute("data-id");
+ if(el.hasAttribute("data-close")&&!a)closeSheet();
+ if(g){closeSheet();go(g);return}
+ if(!a)return;
+ switch(a){
+ case "screens":screensSheet();break;
+ case "as":S.mode=el.getAttribute("data-v");closeSheet();render(true);toast(S.mode==="employer"?"Viewing as a signed-in employer":"Viewing as a visitor");break;
+ case "gate":gateSheet(el.getAttribute("data-why"));break;
+ case "signup-as":S.su.role=el.getAttribute("data-role");S.su.err="";closeSheet();go("signup");break;
+ case "su-role":S.su.role=el.getAttribute("data-role");S.su.err="";render(true);break;
+ case "demo-login":
+  var role=el.getAttribute("data-role");
+  if(role==="candidate")go("me-home");
+  else if(role==="employer"){S.mode="employer";go("feed")}
+  else openSheet('<h3>Two-step sign-in</h3><p>Enter the 6-digit code from your authenticator app.</p><form id="mfaForm" novalidate><label class="f" for="mfa">Code</label><input class="i" id="mfa" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456"><p class="err" id="mfaerr" hidden></p><button class="btn w" style="margin-top:12px" type="submit">Verify</button></form><p class="note" style="margin-top:8px">Demo: any 6 digits work.</p>');
+  break;
+ case "verified":if(S.su.role==="employer"){S.mode="employer";toast("Email verified. Welcome to Hireel.");go("feed")}else{S.ob.step=1;toast("Email verified");go("onboarding")}break;
+ /* onboarding */
+ case "ob-next":obNext();break;
+ case "ob-back":if(S.ob.step>1){S.ob.step--;S.ob.err="";render()}else go("verify");break;
+ case "ob-addskill":var inp=$("#ob-skill"),v=inp.value.trim();if(v&&S.ob.skills.length<8&&S.ob.skills.indexOf(v)<0){S.ob.skills.push(v);render(true);$("#ob-skill").focus()}break;
+ case "ob-rmskill":S.ob.skills.splice(+el.getAttribute("data-i"),1);render(true);break;
+ case "ob-mode":S.ob.mode=el.getAttribute("data-m");render(true);break;
+ case "ob-vis":S.ob.vis=el.value;break;
+ case "ob-consent":S.ob.consent=el.checked;break;
+ /* candidate */
+ case "slot":S.active=+el.getAttribute("data-i");S.studioErr="";render(true);break;
+ case "rec":$("#file").value="";$("#file").click();break;
+ case "mkp":S.primary=S.active;S.prev=S.active;toast("Primary video updated");render(true);break;
+ case "setst":S.slots[S.active].status=el.getAttribute("data-st");render(true);break;
+ case "textonly":S.textOnly=!S.textOnly;render(true);break;
+ case "prev":S.prev=+el.getAttribute("data-i");render(true);break;
+ case "edit-profile":S.ob.step=1;go("onboarding");break;
+ case "share-tog":S.shareOn=!S.shareOn;if(S.shareOn)S.shareUrl="https://hireel.example/p/"+rid();render(true);break;
+ case "regen":S.shareUrl="https://hireel.example/p/"+rid();toast("New link made. The old one no longer works.");render(true);break;
+ case "copy":
+  var u=$("#url");var done=function(){el.textContent="Copied";setTimeout(function(){el.textContent="Copy"},1500)};
+  try{navigator.clipboard.writeText(u.value).then(done,function(){u.select();done()})}catch(err){u.select();done()}
+  break;
+ case "vis":S.vis=el.value;S.ob.vis=el.value;toast(S.vis==="all"?"Everyone can watch your reel":"Only signed-in employers can watch your reel");break;
+ case "pub-tog":S.published=!S.published;toast(S.published?"Profile published":"Profile unpublished. Employers can’t see it.");render(true);break;
+ case "pause-tog":S.paused=!S.paused;render(true);break;
+ case "accept":acceptSheet(id);break;
+ case "decline":setReq(id,"Declined");toast("Request declined. The company isn’t told why.");break;
+ case "block":S.confirmBlock=id;render(true);break;
+ case "block-cancel":S.confirmBlock=null;render(true);break;
+ case "block-yes":S.confirmBlock=null;setReq(id,"Blocked");toast("Company blocked");break;
+ case "report":case "report-prof":
+  openSheet('<h3>Report</h3><p>Tell us what’s wrong. The other side isn’t told who reported.</p><div class="stack" style="gap:4px;margin-top:8px">'+["Looks like a fake company or profile","Asked for money or personal documents","Harassment or offensive message","Something else"].map(function(x,i){return '<label class="chk"><input type="radio" name="rp" value="'+i+'"'+(i===0?" checked":"")+'><span>'+x+'</span></label>'}).join("")+'</div><label class="f" for="rpx">Details (optional)</label><textarea class="i" id="rpx"></textarea><div class="row" style="margin-top:12px"><button class="btn g" data-close>Cancel</button><button class="btn" data-act="report-send">Send report</button></div>');
+  break;
+ case "report-send":closeSheet();toast("Report sent to the Hireel team (demo)");break;
+ case "acc-yes":
+  var r=S.candReq.filter(function(x){return x.id===id})[0],sh=[];
+  panel.querySelectorAll("input[data-share]:checked").forEach(function(c){sh.push(c.getAttribute("data-share"))});
+  r.shared=sh.length?sh:["Nothing yet"];closeSheet();setReq(id,"Accepted");toast("Accepted. "+r.co+" can now see what you shared.");break;
+ /* employer feed */
+ case "filters":S.fopen=!S.fopen;$("#chips").classList.toggle("show",S.fopen);el.setAttribute("aria-expanded",S.fopen);break;
+ case "f-ind":S.ind=el.getAttribute("data-v");S.fopen=false;render();break;
+ case "f-lang":S.lang=el.getAttribute("data-v");S.cardLang={};S.fopen=false;render();break;
+ case "clang":S.cardLang[id]=el.getAttribute("data-l");render(true);break;
+ case "mute":el.textContent=el.textContent.indexOf("Muted")>-1?"🔊 Sound on":"🔇 Muted";break;
+ case "save":
+  if(needEmp("save"))break;
+  if(!S.saved[id]&&savedCount()>=S.plans[S.plan].saved){upgradeSheet("Your saved list is full on the "+S.plans[S.plan].name+" plan.");break}
+  S.saved[id]=!S.saved[id];render(true);toast(S.saved[id]?"Saved":"Removed from saved");break;
+ case "prof":if(needEmp("prof"))break;profileSheet(id);break;
+ case "row":if(needEmp("row"))break;go("c-"+id);break;
+ case "req":if(needEmp("req"))break;if(S.empReq.some(function(r){return r.cid===id}))break;reqSheet(id);break;
+ case "upgrade":upgradeSheet("Get more intro requests and CV & contact requests every month.");break;
+ case "demo-premium":S.plan="premium";S.companies[0].plan="premium";closeSheet();render(true);toast("You’re on Premium (demo)");break;
+ case "signout":S.mode="visitor";go("feed");toast("Signed out");break;
+ case "s-ind":S.sInd=el.getAttribute("data-v");render(true);break;
+ /* admin */
+ case "atab":S.atab=el.getAttribute("data-v");S.rejecting=null;render();break;
+ case "approve":adminDecide(id,true);break;
+ case "rj":S.rejecting=id;render(true);break;
+ case "rj-cancel":S.rejecting=null;render(true);break;
+ case "rr-pick":$("#rr").value=el.getAttribute("data-v")+". ";$("#rr").focus();break;
+ case "rj-yes":var reason=$("#rr").value.trim();if(reason.length<5){var re=$("#rrerr");re.textContent="Write a reason so the candidate knows what to fix.";re.hidden=false;break}adminDecide(id,false,reason);break;
+ case "co-verify":S.companies[+el.getAttribute("data-i")].st="Verified";toast("Company verified");render(true);break;
+ case "co-susp":var co=S.companies[+el.getAttribute("data-i")];co.st=co.st==="Suspended"?"Not verified":"Suspended";toast(co.st==="Suspended"?"Company suspended. Their requests are hidden.":"Company reactivated");render(true);break;
+ case "plans-save":
+  var bad=false;document.querySelectorAll("[data-pl]").forEach(function(inp){var k=inp.getAttribute("data-pl"),f=inp.getAttribute("data-f");if(f==="name"||f==="price"){if(!inp.value.trim())bad=true;else S.plans[k][f]=inp.value.trim()}else{var n=parseInt(inp.value,10);if(isNaN(n)||n<0)bad=true;else S.plans[k][f]=n}});
+  if(bad)toast("Check the fields: names can’t be empty and limits must be 0 or more");else toast("Plans saved");render(true);break;
+ }
+});
+document.addEventListener("change",function(e){
+ var el=e.target;
+ if(el.matches("[data-ob]")){S.ob[el.getAttribute("data-ob")]=el.value}
+ if(el.id==="lang"){
+  var other=S.slots[1-S.active].lang,hasOther=!!(S.slots[1-S.active].url||S.slots[1-S.active].sample);
+  if(hasOther&&el.value===other){S.studioErr="Your two videos need different languages.";render(true);return}
+  S.slots[S.active].lang=el.value;if(!hasOther&&el.value===other)S.slots[1-S.active].lang=["EN","AR","FR"].filter(function(x){return x!==el.value})[0];
+  S.studioErr="";render(true);
+ }
+ if(el.matches("[data-act=co-plan]")){var i=+el.getAttribute("data-i");S.companies[i].plan=el.value;if(i===0)S.plan=el.value;toast(S.companies[i].n+" is now on "+S.plans[el.value].name)}
+});
+document.addEventListener("input",function(e){
+ var el=e.target;
+ if(el.matches("[data-ob]"))S.ob[el.getAttribute("data-ob")]=el.value;
+ if(el.id==="sq"){S.searchQ=el.value;$("#sres").innerHTML=searchResults()}
+});
+document.addEventListener("keydown",function(e){
+ if(e.key==="Escape"&&sheet.classList.contains("show"))closeSheet();
+ if(e.key==="Enter"&&e.target.id==="ob-skill"){e.preventDefault();var b=$("[data-act=ob-addskill]");if(b)b.click()}
+});
+document.addEventListener("submit",function(e){
+ e.preventDefault();var f=e.target;
+ if(f.id==="signupForm"){
+  var email=$("#su-email").value.trim(),pass=$("#su-pass").value,agree=$("#su-agree").checked,err="";
+  var need=S.su.role==="candidate"?[$("#su-first").value,$("#su-last").value]:[$("#su-co").value,$("#su-person").value];
+  if(need.some(function(x){return !x.trim()}))err=S.su.role==="candidate"?"Add your first and last name.":"Add your company name and your name.";
+  else if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))err="Enter a valid email address, like name@example.com.";
+  else if(pass.length<8)err="Use a password with at least 8 characters.";
+  else if(!agree)err="Please agree to the Terms and Privacy Policy to continue.";
+  if(err){S.su.err=err;var vals={};f.querySelectorAll("input,select").forEach(function(x){vals[x.id]=x.type==="checkbox"?x.checked:x.value});render(true);Object.keys(vals).forEach(function(k){var x=document.getElementById(k);if(x){if(x.type==="checkbox")x.checked=vals[k];else x.value=vals[k]}});return}
+  S.su.err="";S.su.email=email;go("verify");
+ }
+ if(f.id==="loginForm"){toast("Demo: use a shortcut below to log in")}
+ if(f.id==="forgotForm"){var m=$("#fg-msg");m.hidden=false;m.style.color="var(--brand)";m.textContent="If an account exists for that email, a reset link is on its way.";}
+ if(f.id==="mfaForm"){if(!/^\d{6}$/.test($("#mfa").value.trim())){var me=$("#mfaerr");me.textContent="Enter the 6 digits from your app.";me.hidden=false;return}closeSheet();go("admin")}
+ if(f.id==="reqForm"){
+  var cid=f.getAttribute("data-id"),t=$("#f1").value.trim(),msg=$("#f3").value.trim(),cv=$("#f6").checked,fe=$("#ferr");
+  if(!t||msg.length<10){fe.textContent="Add an opportunity title and a short message (10+ characters).";fe.hidden=false;return}
+  if(cv&&left("cv")<=0){fe.textContent="No CV & contact requests left this month. Untick the box or upgrade.";fe.hidden=false;return}
+  S.used.intro++;if(cv)S.used.cv++;
+  S.empReq.unshift({cid:cid,title:t,status:"Pending",date:"Today",cv:cv?1:0});
+  closeSheet();render(true);toast("Request sent to "+cand(cid).n.split(" ")[0]+" (demo)");
+ }
+});
+function obNext(){
+ var o=S.ob;o.err="";
+ if(o.step===1&&(!o.name.trim()||!o.headline.trim()))o.err="Add your name and a headline.";
+ if(o.step===2&&(!o.title.trim()||o.years===""||+o.years<0||+o.years>50))o.err="Add your position and years of experience (0–50).";
+ if(o.step===2&&!o.err&&!o.skills.length)o.err="Add at least one skill.";
+ if(o.step===3&&o.mode==="text"&&o.about.trim().length<40)o.err="Write at least 40 characters about yourself.";
+ if(o.step===4&&!o.consent)o.err="Please tick the consent box to publish.";
+ if(o.err){render(true);return}
+ if(o.step<4){o.step++;render();var m=$("[data-scroll]");if(m)m.scrollTop=0;return}
+ S.textOnly=o.mode==="text";S.vis=o.vis;S.published=true;
+ C[0].t=o.headline;C[0].n=o.name;C[0].loc=o.loc;C[0].sk=o.skills.slice(0,3);C[0].av=o.avail;C[0].y=+o.years;
+ toast("Profile published (demo)");go(o.mode==="video"?"me-video":"me-home");
+}
+function setReq(id,st){S.candReq.forEach(function(r){if(r.id===id)r.status=st});render(true)}
+function acceptSheet(id){
+ var r=S.candReq.filter(function(x){return x.id===id})[0];
+ openSheet('<h3>Accept '+esc(r.co)+'</h3><p>Choose what to share. You can change this later.</p>'+
+ ['Email','Phone','CV'].map(function(k){return '<label class="chk"><input type="checkbox" data-share="'+k+'"'+(k==="Email"||r.cv?" checked":"")+'><span>'+k+'</span></label>'}).join("")+
+ '<div class="row" style="margin-top:16px"><button class="btn g" data-close>Cancel</button><button class="btn" data-act="acc-yes" data-id="'+id+'">Accept and share</button></div>');
+}
+function adminDecide(id,ok,reason){
+ S.rejecting=null;
+ if(id.indexOf("lina-")===0){var s=S.slots[+id.split("-")[1]];s.status=ok?"live":"rejected";s.reason=reason||"";if(ok)s.views=0}
+ else S.queue=S.queue.filter(function(q){return q.id!==id});
+ toast(ok?"Approved. The video is live.":"Rejected. The candidate sees your reason.");render(true);
+}
+
+/* real local video pick (stays on this device) */
+$("#file").addEventListener("change",function(){
+ var f=this.files[0];if(!f)return;
+ if(f.size>250*1024*1024){S.studioErr="This video is over 250 MB. Try a shorter clip.";render(true);return}
+ var u=URL.createObjectURL(f),probe=document.createElement("video");probe.preload="metadata";probe.muted=true;
+ probe.onloadedmetadata=function(){
+  var d=probe.duration;
+  if(isFinite(d)&&d>120){S.studioErr="Videos can be up to 2 minutes. This one is "+Math.floor(d/60)+":"+String(Math.round(d%60)).padStart(2,"0")+".";URL.revokeObjectURL(u);render(true);return}
+  var s=S.slots[S.active],replacing=!!(s.url||s.sample);
+  s.url=u;s.sample=false;s.land=probe.videoWidth>probe.videoHeight;s.views=0;s.dur=isFinite(d)?Math.floor(d/60)+":"+String(Math.round(d%60)).padStart(2,"0"):"";
+  S.studioErr=isFinite(d)&&d<30?"Tip: this video is under 30 seconds. 30–90 seconds works best.":"";
+  s.status="uploading";if(!S.slots.some(function(x,i){return i!==S.active&&(x.url||x.sample)}))S.primary=S.active;
+  render(true);if(replacing)toast("Old video archived privately for 30 days");
+  var slot=s;
+  setTimeout(function(){if(slot.status==="uploading"){slot.status="processing";if(route()==="me-video"||route()==="me-home")render(true)}},1500);
+  setTimeout(function(){if(slot.status==="processing"){slot.status="review";if(route()==="me-video"||route()==="me-home"||route()==="admin")render(true)}},4000);
+ };
+ probe.onerror=function(){S.studioErr="We couldn’t read this file. Try an MP4 or MOV video.";render(true)};
+ probe.src=u;
+});
+
+render();
+})();
+</script>
