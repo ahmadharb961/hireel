@@ -23,7 +23,9 @@
     "saved": "Saved",
     "savedCount": "Saved ({n})",
     "inbox": "Inbox",
-    "account": "Account"
+    "account": "Account",
+    "reels": "Reels",
+    "myArea": "My area"
   },
   "languages": {
     "EN": "English",
@@ -109,7 +111,10 @@
     "reason_required": "Write a reason so the candidate knows what to fix.",
     "plan_invalid": "Check the plan fields: names can’t be empty and limits must be 0 or more.",
     "UNAUTHORIZED": "Please log in again.",
-    "network": "Couldn’t save. Check your internet connection and try again. If it keeps happening, reload the page (Hireel may have just been updated)."
+    "network": "Couldn’t save. Check your internet connection and try again. If it keeps happening, reload the page (Hireel may have just been updated).",
+    "cv_too_big": "This file is larger than 5 MB. Please upload a smaller PDF or Word file.",
+    "cv_type": "Please upload a PDF or Word file (.pdf, .doc or .docx).",
+    "cv_missing": "Choose a file to upload."
   },
   "home": {
     "login": "Log in",
@@ -843,7 +848,8 @@
       "login": "Log in",
       "signup": "Sign up",
       "menu": "Menu",
-      "close": "Close menu"
+      "close": "Close menu",
+      "account": "My account"
     },
     "hero": {
       "pill": "Video talent marketplace",
@@ -1027,7 +1033,7 @@
     "skills": "Skills",
     "about": "About",
     "cv": "CV details",
-    "cvNote": "Work history and education the candidate typed in. Shared with a company only if the candidate accepts and ticks “CV”. (CV file uploads are not part of Hireel yet.)",
+    "cvNote": "The CV file and the work history and education the candidate typed in. Shared with a company only if the candidate accepts and ticks “CV”. Downloading is recorded.",
     "workHistory": "Work history",
     "education": "Education",
     "videos": "Videos",
@@ -1084,6 +1090,21 @@
     "requestsOut": "Intro requests sent",
     "by": "by {name}",
     "answered": "Answered",
-    "openCompany": "Open full details"
+    "openCompany": "Open full details",
+    "cvFile": "CV file",
+    "noCvFile": "No CV file uploaded."
+  },
+  "cvFile": {
+    "title": "CV file",
+    "none": "No CV uploaded yet.",
+    "upload": "Upload CV (PDF or Word)",
+    "replace": "Replace CV",
+    "remove": "Remove",
+    "download": "Download",
+    "uploaded": "CV uploaded",
+    "removed": "CV removed",
+    "removeConfirm": "Remove your CV? Companies you shared it with will no longer be able to download it.",
+    "help": "PDF or Word, up to 5 MB. Private: a company can download it only after you accept its request and choose to share your CV.",
+    "downloadCv": "Download CV file"
   }
 }

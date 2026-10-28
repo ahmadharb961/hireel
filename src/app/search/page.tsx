@@ -2,13 +2,13 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import type { Prisma } from "@/generated/prisma/client";
 import { Header } from "@/components/Header";
-import { EmployerNav } from "@/components/Nav";
+import { CandidateBrowseNav, EmployerNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
 import { AVAILABILITY, INDUSTRIES, VIDEO_LANGUAGES } from "@/lib/constants";
 import { savedCount } from "@/server/employer-data";
 import { initialsOf } from "@/server/profile-data";
 import { clientIp, rateLimit } from "@/server/ratelimit";
-import { employerOrNull } from "@/server/session";
+import { employerOrNull, getViewer } from "@/server/session";
 
 export const metadata = { robots: { index: false, follow: false } };
 
@@ -22,6 +22,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const ta = await getTranslations("availability");
   const tl = await getTranslations("languages");
   const emp = await employerOrNull();
+  const isCandidate = (await getViewer())?.role === "CANDIDATE";
   const q = (sp.q ?? "").trim().slice(0, 80);
   const loc = (sp.loc ?? "").trim().slice(0, 60);
   const industry = INDUSTRIES.find((x) => x === sp.industry);
@@ -102,7 +103,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         </div>
         <p className="note">{t("fair")}</p>
       </div></main>
-      <EmployerNav visitor={!emp} savedCount={n} />
+      {isCandidate ? <CandidateBrowseNav /> : <EmployerNav visitor={!emp} savedCount={n} />}
     </div></div>
   );
 }

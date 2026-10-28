@@ -1,5 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
+import { CvUpload } from "@/components/CvUpload";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SkillsInput } from "@/components/SkillsInput";
@@ -12,8 +13,9 @@ type V = {
   availability: string; skills: string[]; about: string; workHistory: string; education: string; contactEmail: string;
 };
 
-export function EditForm({ initial }: { initial: V }) {
+export function EditForm({ initial, candidateId, cv }: { initial: V; candidateId: string; cv: { fileName: string; size: number } | null }) {
   const t = useTranslations("onboarding");
+  const tc = useTranslations("cvFile");
   const tx = useTranslations("edit");
   const te = useTranslations("errors");
   const ti = useTranslations("industries");
@@ -65,6 +67,8 @@ export function EditForm({ initial }: { initial: V }) {
 
       <h2 className="h3" style={{ marginTop: 20 }}>{tx("cvTitle")} <span className="tag mute">{t("private")}</span></h2>
       <p className="note">{tx("cvNote")}</p>
+      <h3 className="lbl">{tc("title")}</h3>
+      <CvUpload candidateId={candidateId} initial={cv} />
       <label className="lbl" htmlFor="workHistory">{tx("workHistory")}</label><textarea className="i" id="workHistory" value={v.workHistory} onChange={set("workHistory")} placeholder={tx("workHistoryHint")} maxLength={3000} style={{ minHeight: 140 }} />
       <label className="lbl" htmlFor="education">{tx("education")}</label><textarea className="i" id="education" value={v.education} onChange={set("education")} maxLength={1500} />
 

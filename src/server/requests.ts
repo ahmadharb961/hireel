@@ -84,7 +84,7 @@ export async function sharedContact(companyId: string, candidateId: string) {
   const req = await prisma.introRequest.findFirst({
     where: { companyId, candidateId, status: "ACCEPTED" },
     orderBy: { respondedAt: "desc" },
-    include: { candidate: { include: { user: { select: { email: true } } } } },
+    include: { candidate: { include: { user: { select: { email: true } }, cvFile: { select: { fileName: true } } } } },
   });
   if (!req) return null;
   const c = req.candidate;
@@ -93,5 +93,6 @@ export async function sharedContact(companyId: string, candidateId: string) {
     phone: req.sharePhone && c.phone ? c.phone : null,
     workHistory: req.shareCv ? c.workHistory : null,
     education: req.shareCv ? c.education : null,
+    cvFileName: req.shareCv && c.cvFile ? c.cvFile.fileName : null,
   };
 }

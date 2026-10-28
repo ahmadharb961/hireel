@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { CvUpload } from "@/components/CvUpload";
 import { CandidateNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
 import { requireOnboardedCandidate, studioVideos } from "@/server/candidate-data";
@@ -9,9 +10,11 @@ import { PreviewCard } from "./PreviewCard";
 export default async function ProfilePreview() {
   const { profile } = await requireOnboardedCandidate();
   const t = await getTranslations("candidate");
-  const [videos, skills] = await Promise.all([
+  const tc = await getTranslations("cvFile");
+  const [videos, skills, cv] = await Promise.all([
     studioVideos(profile.id),
     prisma.candidateSkill.findMany({ where: { candidateId: profile.id }, include: { skill: true } }),
+    prisma.cvFile.findUnique({ where: { candidateId: profile.id }, select: { fileName: true, size: true } }),
   ]);
   const watchable = videos.filter((v) => v.hls || v.isDemo);
   return (
@@ -30,6 +33,7 @@ export default async function ProfilePreview() {
             videos={watchable.map((v) => ({ id: v.id, lang: v.lang, primary: v.primary, hls: v.hls, poster: v.poster, landscape: v.landscape }))}
           />
           <p className="note">{t("privateNote")}</p>
+          <section className="card"><h2 className="h3">🔒 {tc("title")}</h2><CvUpload candidateId={profile.id} initial={cv} /></section>
           <Link className="btn g w" href="/candidate/edit">{t("editProfile")}</Link>
         </div>
       </main>

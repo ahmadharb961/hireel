@@ -10,11 +10,12 @@ import { requireEmployer } from "@/server/session";
 export default async function InboxPage() {
   const { member, company } = await requireEmployer();
   const t = await getTranslations("inbox");
+  const tcv = await getTranslations("cvFile");
   const fmt = await getFormatter();
   const reqs = await prisma.introRequest.findMany({
     where: { companyId: company.id },
     orderBy: { createdAt: "desc" },
-    include: { candidate: { include: { user: { select: { email: true } } } } },
+    include: { candidate: { include: { user: { select: { email: true } }, cvFile: { select: { id: true } } } } },
     take: 100,
   });
   const n = await savedCount(member.id);
@@ -37,7 +38,7 @@ export default async function InboxPage() {
                 <div style={{ marginTop: 10 }}>
                   {r.shareEmail ? <div className="kv"><span>{t("email")}</span><b dir="ltr">{c.contactEmail || c.user.email}</b></div> : null}
                   {r.sharePhone && c.phone ? <div className="kv"><span>{t("phone")}</span><b dir="ltr">{c.phone}</b></div> : null}
-                  {r.shareCv ? <div className="kv"><span>{t("cv")}</span><b><Link href={`/c/${c.id}`}>{t("viewCv")}</Link></b></div> : null}
+                  {r.shareCv ? <div className="kv"><span>{t("cv")}</span><b><Link href={`/c/${c.id}`}>{t("viewCv")}</Link>{c.cvFile ? <> · <a href={`/api/cv/${c.id}`}>{tcv("downloadCv")}</a></> : null}</b></div> : null}
                   {!r.shareEmail && !r.sharePhone && !r.shareCv ? <p className="note">{t("sharedNothing")}</p> : null}
                   <p className="note" style={{ marginTop: 6 }}>{t("messagingSoon")}</p>
                 </div>

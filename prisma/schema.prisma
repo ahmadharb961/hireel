@@ -215,6 +215,7 @@ model CandidateProfile {
   skills       CandidateSkill[]
   videos       Video[]
   shareLink    ShareLink?
+  cvFile       CvFile?
   saves        SavedCandidate[]
   requests     IntroRequest[]
   blocks       Block[]
@@ -457,4 +458,17 @@ model PlatformSetting {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt
+}
+
+/// The candidate's uploaded CV (PDF or Word). Private: the candidate, admins, and companies
+/// whose request the candidate accepted with "share CV" can download it.
+model CvFile {
+  id          String           @id @default(cuid())
+  candidateId String           @unique
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  fileName    String
+  mimeType    String
+  size        Int
+  data        Bytes
+  createdAt   DateTime         @default(now())
 }

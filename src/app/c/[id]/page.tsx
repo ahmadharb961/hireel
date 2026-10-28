@@ -50,6 +50,7 @@ export default async function CandidateProfilePage({ params }: { params: Promise
     savedCount(emp.member.id),
   ]);
   const quota = await quotaFor(emp, await getLocale());
+  const tcv = await getTranslations("cvFile");
   const first = c.fullName.split(" ")[0];
   return (
     <div className="shell"><ToastProvider><div className="scr">
@@ -77,7 +78,8 @@ export default async function CandidateProfilePage({ params }: { params: Promise
               {contact.phone ? <div className="kv"><span>{t("phone")}</span><b dir="ltr">{contact.phone}</b></div> : null}
               {contact.workHistory ? <><h3 className="h3" style={{ marginTop: 10 }}>{t("workHistory")}</h3><p className="p" style={{ whiteSpace: "pre-wrap" }}>{contact.workHistory}</p></> : null}
               {contact.education ? <><h3 className="h3" style={{ marginTop: 10 }}>{t("education")}</h3><p className="p" style={{ whiteSpace: "pre-wrap" }}>{contact.education}</p></> : null}
-              {!contact.email && !contact.phone && !contact.workHistory ? <p className="p">{t("sharedNothing")}</p> : null}
+              {contact.cvFileName ? <a className="btn sm" style={{ marginTop: 10 }} href={`/api/cv/${c.id}`}>⬇ {tcv("downloadCv")}</a> : null}
+              {!contact.email && !contact.phone && !contact.workHistory && !contact.cvFileName ? <p className="p">{t("sharedNothing")}</p> : null}
             </>
           ) : <p className="p">🔒 {t("locked", { name: first })}</p>}
         </div>

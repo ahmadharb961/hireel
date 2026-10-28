@@ -38,6 +38,22 @@ export function CandidateNav() {
         { href: "/candidate/video", icon: "video", label: t("myVideo") },
         { href: "/candidate/profile", icon: "account", label: t("profile") },
         { href: "/candidate/share", icon: "share", label: t("share") },
+        { href: "/feed", icon: "discover", label: t("reels") },
+      ]}
+    />
+  );
+}
+
+/** Menu for a signed-in candidate who is browsing reels or search: a way back to their own area. */
+export function CandidateBrowseNav({ floating }: { floating?: boolean }) {
+  const t = useTranslations("nav");
+  return (
+    <NavBar
+      floating={floating}
+      items={[
+        { href: "/feed", icon: "discover", label: t("discover") },
+        { href: "/search", icon: "search", label: t("search") },
+        { href: "/candidate", icon: "account", label: t("myArea") },
       ]}
     />
   );

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { EmployerNav } from "@/components/Nav";
+import { CandidateBrowseNav, EmployerNav } from "@/components/Nav";
 import { Player } from "@/components/Player";
 import { Sheet } from "@/components/Sheet";
 import { LangSwitch } from "@/components/LangSwitch";
@@ -28,7 +28,7 @@ function posterOf(c: FeedCard) {
   return (c.videos.find((v) => v.lang === c.startLang) ?? c.videos[0])?.poster ?? null;
 }
 
-export function Feed({ initial, nextCursor, seed, filters, employer, limited }: { initial: FeedCard[]; nextCursor: string | null; seed: string; filters: FeedFilters; employer: Employer; candidateViewer: boolean; limited: boolean }) {
+export function Feed({ initial, nextCursor, seed, filters, employer, candidateViewer, limited }: { initial: FeedCard[]; nextCursor: string | null; seed: string; filters: FeedFilters; employer: Employer; candidateViewer: boolean; limited: boolean }) {
   const t = useTranslations("feed");
   const ti = useTranslations("industries");
   const tl = useTranslations("languages");
@@ -198,13 +198,13 @@ export function Feed({ initial, nextCursor, seed, filters, employer, limited }: 
           );
         })}
       </div>
-      <EmployerNav floating visitor={!employer} savedCount={savedN} onGate={() => setGate("account")} />
+      {candidateViewer ? <CandidateBrowseNav floating /> : <EmployerNav floating visitor={!employer} savedCount={savedN} onGate={() => setGate("account")} />}
     </div>
   );
 
   return (
     <div className="desk">
-      <DeskTop employer={employer} savedN={savedN} onGate={setGate} />
+      <DeskTop employer={employer} candidate={candidateViewer} savedN={savedN} onGate={setGate} />
 
       <aside className="side fside" aria-label={t("filters")}>
         <div className="fpanel">
@@ -335,15 +335,17 @@ function Peek({ c, side, label, onClick }: { c: FeedCard; side: "prev" | "next";
 }
 
 /** Top bar on computers: the phone's bottom menu moves up here. */
-function DeskTop({ employer, savedN, onGate }: { employer: Employer; savedN: number; onGate: (why: string) => void }) {
+function DeskTop({ employer, candidate, savedN, onGate }: { employer: Employer; candidate: boolean; savedN: number; onGate: (why: string) => void }) {
   const t = useTranslations("feed");
   const tn = useTranslations("nav");
   const path = usePathname();
   const links: { href: string; label: string; gate?: string }[] = [
     { href: "/feed", label: tn("discover") },
     { href: "/search", label: tn("search") },
-    { href: "/employer/saved", label: employer ? tn("savedCount", { n: savedN }) : tn("saved"), gate: "saved" },
-    { href: "/employer/inbox", label: tn("inbox"), gate: "inbox" },
+    ...(candidate ? [] : [
+      { href: "/employer/saved", label: employer ? tn("savedCount", { n: savedN }) : tn("saved"), gate: "saved" },
+      { href: "/employer/inbox", label: tn("inbox"), gate: "inbox" },
+    ]),
   ];
   return (
     <header className="ftop">
@@ -366,6 +368,8 @@ function DeskTop({ employer, savedN, onGate }: { employer: Employer; savedN: num
             <span className="ftop-av">{initials(employer.userName || employer.company).slice(0, 1)}</span>
             <span className="ftop-who"><b>{employer.userName}</b><span>{employer.company}</span></span>
           </Link>
+        ) : candidate ? (
+          <Link href="/candidate" className="btn sm">{tn("myArea")}</Link>
         ) : (
           <>
             <Link href="/login" className="ftop-login">{t("login")}</Link>

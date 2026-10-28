@@ -27,6 +27,7 @@ export default async function CandidateDetail({ params }: { params: Promise<{ id
       skills: { include: { skill: true } },
       videos: { orderBy: [{ archivedAt: "asc" }, { isPrimary: "desc" }, { createdAt: "desc" }] },
       shareLink: true,
+      cvFile: { select: { fileName: true, size: true, createdAt: true } },
       requests: { include: { company: { select: { id: true, name: true } } }, orderBy: { createdAt: "desc" }, take: 50 },
       _count: { select: { saves: true, blocks: true, profileViews: true } },
     },
@@ -104,6 +105,10 @@ export default async function CandidateDetail({ params }: { params: Promise<{ id
       <section className="card aprivate">
         <h2 className="h3">🔒 {ta("cv")}</h2>
         <p className="note">{ta("cvNote")}</p>
+        <h3 className="lbl">{ta("cvFile")}</h3>
+        {c.cvFile ? (
+          <p className="p"><a className="btn sm" href={`/api/cv/${c.id}`}>⬇ {c.cvFile.fileName}</a> <span className="note">{Math.max(1, Math.round(c.cvFile.size / 1024))} KB · {date(c.cvFile.createdAt)}</span></p>
+        ) : <p className="note">{ta("noCvFile")}</p>}
         <h3 className="lbl">{ta("workHistory")}</h3>
         <p className="p apre">{c.workHistory || "—"}</p>
         <h3 className="lbl">{ta("education")}</h3>

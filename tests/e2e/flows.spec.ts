@@ -93,6 +93,16 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.getByRole("heading", { name: "Welcome, Test" })).toBeVisible();
     await noSideScroll(page);
 
+    // Signed in, the candidate can still open the homepage and the reels, and get back.
+    await page.goto("/");
+    await expect(page.locator(".h2-hero")).toBeVisible();
+    await page.getByRole("link", { name: "My account" }).first().click();
+    await expect(page).toHaveURL(/\/candidate$/);
+    await page.getByRole("link", { name: "Reels" }).click();
+    await expect(page).toHaveURL(/\/feed/);
+    await page.getByRole("link", { name: "My area" }).click();
+    await expect(page).toHaveURL(/\/candidate$/);
+
     // Video studio honestly says uploads aren't connected (no Cloudflare keys in this test).
     await page.getByRole("link", { name: "My Video" }).click();
     await expect(page.getByText("Video uploads aren’t switched on yet")).toBeVisible();
@@ -159,6 +169,16 @@ test.describe.serial("Hireel core loop", () => {
 
   test("candidate accepts and chooses what to share; employer then sees only that", async ({ page }) => {
     await signIn(page, candEmail);
+    // CV file: a renamed picture is refused, a real PDF is accepted and downloadable by the candidate.
+    await page.goto("/candidate/profile");
+    const cvInput = page.locator('input[type="file"]');
+    await cvInput.setInputFiles({ name: "cv.pdf", mimeType: "application/pdf", buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4]) });
+    await expect(page.getByText("Please upload a PDF or Word file")).toBeVisible();
+    await cvInput.setInputFiles({ name: "My CV.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n% test cv\n") });
+    await expect(page.getByText("My CV.pdf")).toBeVisible();
+    const cvUrl = (await page.getByRole("link", { name: "Download" }).getAttribute("href"))!;
+    expect((await page.request.get(cvUrl)).status()).toBe(200);
+
     await page.goto("/candidate/requests");
     await expect(page.getByText(`Cedar Test ${id}`)).toBeVisible();
     await expect(page.getByText("They also asked to see your CV and contact details")).toBeVisible();
@@ -173,6 +193,10 @@ test.describe.serial("Hireel core loop", () => {
     await page.goto("/employer/inbox");
     await expect(page.getByText("Accepted")).toBeVisible();
     await expect(page.getByText(candEmail)).toBeVisible();
+    // The candidate didn't share the CV, so this company can't download it.
+    expect((await page.request.get(cvUrl)).status()).toBe(404);
+    await page.context().clearCookies();
+    expect((await page.request.get(cvUrl)).status()).toBe(404);
   });
 
   test("permissions are enforced on the server", async ({ page, request }) => {

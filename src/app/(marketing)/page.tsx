@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { redirect } from "next/navigation";
 import { CategoryStrip } from "@/components/landing/CategoryStrip";
 import { EmployerSearch } from "@/components/landing/EmployerSearch";
 import { LIcon } from "@/components/landing/icons";
@@ -19,14 +18,15 @@ function fmtDur(s: number | null) {
 
 export default async function Home() {
   const viewer = await getViewer();
-  if (viewer) redirect(homeFor(viewer.role));
+  // Signed-in people can still open the homepage; the top bar links back to their area.
+  const account = viewer ? homeFor(viewer.role) : null;
   const t = await getTranslations("landing");
   const th = await getTranslations("home");
   const featured = await featuredCandidates(6);
 
   return (
     <div className="site2">
-      <SiteNav />
+      <SiteNav account={account} />
       <main>
         {/* ---------- Hero ---------- */}
         <section className="h2-hero">

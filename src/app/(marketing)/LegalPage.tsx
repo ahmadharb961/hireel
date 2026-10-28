@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { SiteNav } from "@/components/landing/SiteNav";
+import { getViewer, homeFor } from "@/server/session";
 import type { LegalBlock, LegalDoc } from "@/content/legal";
 
 /** Turns plain web addresses inside legal text into links. */
@@ -19,9 +20,10 @@ function Block({ b }: { b: LegalBlock }) {
 /** Long legal document: numbered sections, a contents list that stays in view on computers, and the site footer. */
 export async function LegalPage({ doc }: { doc: LegalDoc }) {
   const t = await getTranslations("legal");
+  const viewer = await getViewer();
   return (
     <div className="site2">
-      <SiteNav />
+      <SiteNav account={viewer ? homeFor(viewer.role) : null} />
       <main>
         <header className="lg-hero" id="top">
           <div className="wrapx">
