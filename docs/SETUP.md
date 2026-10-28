@@ -84,8 +84,7 @@ Hostinger names its buttons slightly differently from time to time. If something
    - `SMTP_…` and `MAIL_FROM`: from Part 4
    - `CLOUDFLARE_…`: from Part 5 (leave the three "signing/webhook" ones empty for now)
    - `CRON_SECRET`: another long random password
-5. Click **Deploy**. When it's done, tell me and I'll do the first-time setup together with you:
-   - create the database tables and the Freemium/Premium plans
+5. Click **Deploy**. Each deploy creates or updates the database tables and the Freemium/Premium plans automatically. When it's done, tell me and we'll finish the first-time setup together:
    - create your Super Admin account
    - run the Cloudflare signing key + webhook step
 
