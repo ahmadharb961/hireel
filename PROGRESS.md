@@ -3,8 +3,8 @@
 Use this file to pick up where we left off.
 
 ## Current status
-- **Phase:** 1 (MVP) is **built and tested locally**. Not online yet.
-- **Waiting on you:** the accounts in `docs/SETUP.md` (GitHub repo, domain, Neon, Hostinger mailbox, Cloudflare Stream), then deployment and real-phone testing.
+- **Phase:** 1 (MVP) is **live at https://hireel.app** (Hostinger), with Neon database, Hostinger email and Cloudflare Stream connected.
+- **Waiting on you:** the real video test on a phone (sign up → record → admin approves → watch in feed), the daily cleanup cron job, and real iPhone/Android install testing.
 - **Phase 0 design link:** https://claude.ai/artifact/MnyqVAKSSyTLcXeALBjZBN (file: `docs/design/hireel-phase0.html`)
 
 ## Done
@@ -41,4 +41,9 @@ Use this file to pick up where we left off.
 - You: test on real phones and approve Phase 1 → then Phase 2
 
 ## Accounts you've created
+- Domain: hireel.app (GoDaddy, nameservers → Hostinger)
+- Hostinger web app (auto-deploys from GitHub main) · mailboxes no-reply@ and admin@hireel.app
+- Neon database `hireel` (Frankfurt)
+- Cloudflare Stream (account 232980f0004f8514b6e95f6521275287); signing key + webhook created automatically
+- Super Admin: admin@hireel.app (two-step sign-in on)
 - GitHub: code saved at https://github.com/ahmadharb961/hireel (private)
