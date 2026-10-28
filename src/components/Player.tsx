@@ -16,13 +16,15 @@ type Props = {
   onWatched3s?: () => void;
   onProgress?: (fraction: number) => void;
   onError?: () => void;
+  /** Browsers may refuse to start a video with sound before the person has tapped anything. */
+  onAutoplayBlocked?: () => void;
 };
 
 /**
  * HLS player. Safari plays HLS natively; other browsers get hls.js, loaded only when needed.
  * Landscape videos are shown whole (contain) over a blurred copy of their poster, never stretched.
  */
-export function Player({ src, poster, landscape, active, load, muted, paused, controls, loop = true, onWatched3s, onProgress, onError }: Props) {
+export function Player({ src, poster, landscape, active, load, muted, paused, controls, loop = true, onWatched3s, onProgress, onError, onAutoplayBlocked }: Props) {
   const ref = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const watched = useRef(0);
@@ -30,7 +32,8 @@ export function Player({ src, poster, landscape, active, load, muted, paused, co
   const reported = useRef(false);
   const [failed, setFailed] = useState(false);
   const onErrorRef = useRef(onError);
-  useEffect(() => { onErrorRef.current = onError; });
+  const onBlockedRef = useRef(onAutoplayBlocked);
+  useEffect(() => { onErrorRef.current = onError; onBlockedRef.current = onAutoplayBlocked; });
 
   useEffect(() => {
     const v = ref.current;
@@ -62,8 +65,16 @@ export function Player({ src, poster, landscape, active, load, muted, paused, co
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    if (active && !paused) v.play().catch(() => {});
-    else v.pause();
+    if (active && !paused) {
+      v.play().catch((e: unknown) => {
+        // Sound not allowed yet: start muted instead, and let the page show the sound button.
+        if ((e as { name?: string })?.name === "NotAllowedError" && !v.muted) {
+          v.muted = true;
+          onBlockedRef.current?.();
+          v.play().catch(() => {});
+        }
+      });
+    } else v.pause();
   }, [active, paused, load]);
 
   useEffect(() => { if (ref.current) ref.current.muted = muted; }, [muted]);

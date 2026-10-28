@@ -571,3 +571,18 @@ nav.bn a:active, nav.fn a:active, nav.fn button:active { opacity: .6; }
 .actions .btn:disabled { opacity: 1; }
 .actions .btn:disabled .ai { opacity: .55; }
 .actions .btn:active .ai { transform: scale(.92); }
+
+/* Instagram-style sound and play controls over the reel */
+.pz2 { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; pointer-events: none; }
+.pz2 button { pointer-events: auto; }
+.pz-snd, .pz-play, .snd-ic { border: 0; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(20,20,20,.42); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.18); }
+.pz-snd { width: 46px; height: 46px; border-radius: 50%; }
+.pz-play { width: 78px; height: 78px; border-radius: 50%; padding-inline-start: 4px; }
+.snd-ic { width: 38px; height: 38px; border-radius: 50%; }
+.pz2.flash .pz-snd { width: 64px; height: 64px; animation: sndflash .7s ease forwards; }
+@keyframes sndflash { 0% { opacity: 0; transform: scale(.8); } 20% { opacity: 1; transform: scale(1); } 75% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Side icons: see-through, in the same style as the skill tags */
+.actions .ai, .freel .actions .ai { background: rgba(179,226,205,.2); border: 1px solid rgba(179,226,205,.55); color: #fff; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: none; }
+.actions .btn.m .ai, .freel .actions .btn.m .ai { background: rgba(179,226,205,.42); border-color: rgba(179,226,205,.8); }
+.actions .btn.saved .ai, .freel .actions .btn.saved .ai { background: var(--mint); border-color: var(--mint); color: var(--g); }
