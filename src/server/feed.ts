@@ -2,6 +2,7 @@ import "server-only";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { FEED_PAGE_SIZE, type VideoLang } from "@/lib/constants";
+import { EXP_BANDS, FEED_PLACES } from "@/lib/feed-filters";
 import { publicViewCount } from "./rules/views";
 import { signedPlayback } from "./videos";
 
@@ -38,6 +39,11 @@ export type FeedQuery = {
   cursor?: string | null;
   industry?: string | null;
   lang?: VideoLang | null;
+  /** Experience band, e.g. "0-2", "3-5", "5-10", "10+". */
+  exp?: string | null;
+  /** A FEED_PLACES key, matched against the candidate's typed location. */
+  place?: string | null;
+  avail?: string | null;
   viewer: { kind: "visitor" } | { kind: "employer"; companyId: string; memberId: string };
   limit?: number;
 };
@@ -62,6 +68,11 @@ export async function feedPage(q: FeedQuery): Promise<{ cards: FeedCard[]; nextC
   if (q.viewer.kind === "visitor") conds.push(Prisma.sql`cp."visibility" = 'EVERYONE'`);
   else conds.push(Prisma.sql`NOT EXISTS (SELECT 1 FROM "Block" b WHERE b."candidateId" = cp."id" AND b."companyId" = ${q.viewer.companyId})`);
   if (q.industry) conds.push(Prisma.sql`cp."industry" = ${q.industry}`);
+  const band = q.exp ? EXP_BANDS[q.exp] : null;
+  if (band) conds.push(Prisma.sql`cp."yearsExperience" BETWEEN ${band[0]} AND ${band[1]}`);
+  const terms = q.place ? FEED_PLACES[q.place] : null;
+  if (terms) conds.push(Prisma.sql`(${Prisma.join(terms.map((w) => Prisma.sql`cp."location" ILIKE ${"%" + w + "%"}`), " OR ")})`);
+  if (q.avail) conds.push(Prisma.sql`cp."availability" = ${q.avail}`);
   if (q.cursor) conds.push(Prisma.sql`md5(cp."id" || ${seed}) > ${q.cursor}`);
 
   const rows = await prisma.$queryRaw<{ id: string; h: string }[]>`

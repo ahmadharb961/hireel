@@ -76,8 +76,11 @@ html[lang="ar"] .hand { font-family: var(--font-arabic), sans-serif; font-size: 
 .cat span { font-size: 12.5px; font-weight: 600; color: var(--tx); line-height: 1.25; }
 .cat:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(15,42,33,.08); }
 .cat.on { background: var(--soft); border-color: transparent; }
-.cats-next { display: none; position: absolute; top: 50%; inset-inline-end: -6px; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--bd); background: var(--card); color: var(--tx); cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,.08); align-items: center; justify-content: center; }
-[dir="rtl"] .cats-next svg { transform: scaleX(-1); }
+.cats-nav { display: none; position: absolute; z-index: 2; top: 50%; inset-inline-end: -6px; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--bd); background: var(--card); color: var(--tx); cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,.08); align-items: center; justify-content: center; }
+.cats-nav.prev { inset-inline-end: auto; inset-inline-start: -6px; }
+.cats-nav.prev svg { transform: scaleX(-1); }
+[dir="rtl"] .cats-nav:not(.prev) svg { transform: scaleX(-1); }
+[dir="rtl"] .cats-nav.prev svg { transform: none; }
 
 /* ---------- sections ---------- */
 .lsec { padding-top: 48px; scroll-margin-top: 80px; }
@@ -230,15 +233,15 @@ html[lang="ar"] .as-title { letter-spacing: 0; line-height: 1.3; }
   .h2-art { height: 460px; }
   .hand, .hand-arrow { display: flex; }
   .hand-arrow { display: block; }
-  .cats-next { display: flex; }
-  .cats-track { padding-inline-end: 40px; }
+  .cats-nav { display: flex; }
   .ftalent { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   .tempty { grid-template-columns: auto 1fr auto; padding: 28px; }
   .hsteps { grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .eband { padding: 40px; }
-  .esearch { grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr) auto; align-items: center; border-radius: 999px; padding: 6px; }
-  .esearch-f { background: transparent; border-inline-end: 1px solid var(--bd); border-radius: 0; }
-  .esearch-go { border-radius: 999px; padding-inline: 22px; }
+  /* keyword on its own row so every word stays readable; place, experience and button below */
+  .esearch { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: center; border-radius: 22px; padding: 8px; gap: 6px; }
+  .esearch-f:first-child { grid-column: 1 / -1; }
+  .esearch-go { border-radius: 14px; padding-inline: 22px; }
   .plans2 { grid-template-columns: 1fr 1fr; }
   .fcta { grid-template-columns: 1fr auto; align-items: center; padding: 36px 40px; }
   .fcta-btns { flex-direction: row; }
@@ -278,8 +281,11 @@ html[lang="ar"] .as-title { letter-spacing: 0; line-height: 1.3; }
   .authwrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(420px, 560px); min-height: 100dvh; }
   .authside { display: flex; }
   .authmain .shell { max-width: 520px; height: 100dvh; }
-  .authmain .main { display: flex; flex-direction: column; justify-content: center; }
-  .authmain .main > * { width: 100%; max-width: 440px; }
+  /* Auto margins centre short forms but, unlike justify-content, never push a tall form's top out of reach. */
+  .authmain .main { display: flex; flex-direction: column; }
+  .authmain .main > * { width: 100%; max-width: 440px; flex: none; }
+  .authmain .main > :first-child { margin-top: auto; }
+  .authmain .main > :last-child { margin-bottom: auto; }
 }
 @media (min-width: 1280px) {
   .as-body { grid-template-columns: 1fr 1fr; }

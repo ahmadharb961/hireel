@@ -14,12 +14,17 @@ const arabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "500"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
+  const locale = resolveLocale(await getLocale());
+  const og = { url: "/brand/og.jpg", width: 1200, height: 630, alt: t("ogAlt") };
   return {
-    title: { default: "Hireel", template: "%s · Hireel" },
+    metadataBase: new URL(process.env.APP_URL || "http://localhost:3000"),
+    title: { default: t("title"), template: "%s · Hireel" },
     description: t("description"),
     applicationName: "Hireel",
+    keywords: ["Hireel", "video CV", "video resume", "jobs Lebanon", "hiring Lebanon", "jobs Dubai", "GCC jobs", "talent marketplace", "وظائف لبنان", "سيرة ذاتية بالفيديو"],
+    openGraph: { type: "website", siteName: "Hireel", title: t("title"), description: t("description"), url: "/", locale: locale === "ar" ? "ar_LB" : "en_US", images: [og] },
+    twitter: { card: "summary_large_image", title: t("title"), description: t("description"), images: [og.url] },
     appleWebApp: { capable: true, title: "Hireel", statusBarStyle: "default" },
-    icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
   };
 }
 

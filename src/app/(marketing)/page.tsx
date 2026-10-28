@@ -11,6 +11,8 @@ import { featuredCandidates } from "@/server/landing-data";
 import { initialsOf } from "@/server/profile-data";
 import { getViewer, homeFor } from "@/server/session";
 
+export const metadata = { alternates: { canonical: "/" } };
+
 function fmtDur(s: number | null) {
   return s ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : null;
 }

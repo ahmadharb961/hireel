@@ -1,6 +1,8 @@
 {
   "meta": {
-    "description": "Hireel is a video-first talent marketplace. Candidates record short intro videos; employers discover talent in a vertical reels feed."
+    "description": "Hireel is a video-first talent marketplace for Lebanon and the GCC. Candidates record a short intro video for free; employers discover talent in a reels-style feed and send intro requests.",
+    "title": "Hireel – Video-first hiring in Lebanon & the GCC",
+    "ogAlt": "Hireel – Your next opportunity starts with a video."
   },
   "common": {
     "back": "Back",
@@ -525,7 +527,33 @@
     "keysNote": "Tip: use the ↑ and ↓ keys to move between candidates.",
     "deskGateTitle": "Want to know more?",
     "deskGateBody": "Create a free employer account to open full profiles and send intro requests.",
-    "signupFree": "Sign up free"
+    "signupFree": "Sign up free",
+    "clearAll": "Clear all",
+    "experience": "Experience level",
+    "location": "Location",
+    "availability": "Availability",
+    "expBand": "{a}–{b} years",
+    "expPlus": "{n}+ years",
+    "prev": "Previous candidate",
+    "next": "Next candidate",
+    "searchPh": "Search talent, skills or job titles…",
+    "viewProfile": "View full profile",
+    "saveCandidate": "Save candidate",
+    "keySkills": "Key skills",
+    "expLbl": "Experience",
+    "locLbl": "Location",
+    "indLbl": "Industry",
+    "yearsShort": "{n, plural, one {# year} other {# years}}",
+    "reqSub": "Send a short message. They decide whether to share contact details.",
+    "more": "More",
+    "emptyTitle": "Nothing here yet",
+    "clear": "Clear filters",
+    "howTitle": "How Discover works",
+    "how1": "Watch short intro videos, one candidate at a time.",
+    "how2": "Save the people you like and send intro requests.",
+    "how3": "Candidates choose what they share with you.",
+    "login": "Log in",
+    "signupEmp": "Sign up as employer"
   },
   "gate": {
     "title": "Sign up as an employer",
@@ -894,7 +922,8 @@
     "cats": {
       "label": "Browse by industry",
       "all": "All categories",
-      "more": "More categories"
+      "more": "More categories",
+      "back": "Previous categories"
     },
     "featured": {
       "title": "Featured Talent",

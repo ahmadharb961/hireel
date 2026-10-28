@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { getLocale, getTranslations } from "next-intl/server";
-import { INDUSTRIES, VIDEO_LANGUAGES, type VideoLang } from "@/lib/constants";
+import { FILTER_KEYS, parseFeedFilters } from "@/lib/feed-filters";
 import { feedPage } from "@/server/feed";
 import { quotaFor, savedCount } from "@/server/employer-data";
 import { clientIp, rateLimit } from "@/server/ratelimit";
@@ -14,31 +14,29 @@ export async function generateMetadata() {
 }
 
 /** Discover: open to everyone (like TikTok). Acting on a reel requires an employer account. */
-export default async function FeedPage({ searchParams }: { searchParams: Promise<{ industry?: string; lang?: string }> }) {
+export default async function FeedPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const viewer = await getViewer();
   if (viewer && viewer.role === "ADMIN") redirect("/admin");
   const emp = await employerOrNull();
   const sp = await searchParams;
-  const industry = sp.industry && (INDUSTRIES as readonly string[]).includes(sp.industry) ? sp.industry : null;
-  const lang = sp.lang && (VIDEO_LANGUAGES as readonly string[]).includes(sp.lang) ? (sp.lang as VideoLang) : null;
+  const filters = parseFeedFilters((k) => sp[k]);
   const seed = randomBytes(8).toString("hex");
   const allowed = await rateLimit(emp ? `feed:u:${emp.viewer.id}` : `feed:ip:${await clientIp()}`, emp ? 240 : 60, 600);
   const page = allowed
-    ? await feedPage({ seed, industry, lang, viewer: emp ? { kind: "employer", companyId: emp.company.id, memberId: emp.member.id } : { kind: "visitor" } })
+    ? await feedPage({ seed, ...filters, viewer: emp ? { kind: "employer", companyId: emp.company.id, memberId: emp.member.id } : { kind: "visitor" } })
     : { cards: [], nextCursor: null };
   const locale = await getLocale();
   const quota = emp ? await quotaFor(emp, locale) : null;
   return (
-    <div className="shell wide">
+    <div className="shell wide feedshell">
       <ToastProvider>
         <Feed
-          key={`${industry}-${lang}-${seed}`}
+          key={`${FILTER_KEYS.map((k) => filters[k]).join("-")}-${seed}`}
           initial={page.cards}
           nextCursor={page.nextCursor}
           seed={seed}
-          industry={industry}
-          lang={lang}
-          employer={emp && quota ? { quota: { introLeft: quota.introLeft, cvLeft: quota.cvLeft, planName: quota.planName, isPremium: quota.isPremium }, saved: await savedCount(emp.member.id), maxSaved: emp.company.plan.maxSaved } : null}
+          filters={filters}
+          employer={emp && quota ? { quota: { introLeft: quota.introLeft, cvLeft: quota.cvLeft, planName: quota.planName, isPremium: quota.isPremium }, saved: await savedCount(emp.member.id), maxSaved: emp.company.plan.maxSaved, company: emp.company.name, userName: emp.viewer.name } : null}
           candidateViewer={viewer?.role === "CANDIDATE"}
           limited={!allowed}
         />

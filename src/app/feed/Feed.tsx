@@ -1,26 +1,33 @@
 "use client";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EmployerNav } from "@/components/Nav";
 import { Player } from "@/components/Player";
 import { Sheet } from "@/components/Sheet";
 import { LangSwitch } from "@/components/LangSwitch";
 import { Logo } from "@/components/Logo";
+import { LIcon } from "@/components/landing/icons";
 import { useToast } from "@/components/Toast";
 import { GateSheet, RequestSheet, UpgradeBody, type Quota } from "@/components/employer/Sheets";
-import { INDUSTRIES, VIDEO_LANGUAGES, type VideoLang } from "@/lib/constants";
+import { AVAILABILITY, INDUSTRIES, VIDEO_LANGUAGES } from "@/lib/constants";
+import { EXP_BANDS, FEED_PLACES, filtersToQuery, type FeedFilters } from "@/lib/feed-filters";
 import type { FeedCard } from "@/server/feed";
 import { toggleSave } from "@/app/employer/actions";
 
-type Employer = { quota: Quota; saved: number; maxSaved: number } | null;
+type Employer = { quota: Quota; saved: number; maxSaved: number; company: string; userName: string } | null;
+type FilterKey = keyof FeedFilters;
 
 function initials(n: string) {
   return n.split(/\s+/).map((w) => w[0]).join("").slice(0, 3);
 }
 
-export function Feed({ initial, nextCursor, seed, industry, lang, employer, limited }: { initial: FeedCard[]; nextCursor: string | null; seed: string; industry: string | null; lang: VideoLang | null; employer: Employer; candidateViewer: boolean; limited: boolean }) {
+function posterOf(c: FeedCard) {
+  return (c.videos.find((v) => v.lang === c.startLang) ?? c.videos[0])?.poster ?? null;
+}
+
+export function Feed({ initial, nextCursor, seed, filters, employer, limited }: { initial: FeedCard[]; nextCursor: string | null; seed: string; filters: FeedFilters; employer: Employer; candidateViewer: boolean; limited: boolean }) {
   const t = useTranslations("feed");
   const ti = useTranslations("industries");
   const tl = useTranslations("languages");
@@ -35,7 +42,7 @@ export function Feed({ initial, nextCursor, seed, industry, lang, employer, limi
   const [active, setActive] = useState(0);
   const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState<Record<string, boolean>>({});
-  const [cardLang, setCardLang] = useState<Record<string, VideoLang>>({});
+  const [cardLang, setCardLang] = useState<Record<string, FeedCard["startLang"]>>({});
   const [progress, setProgress] = useState({ i: 0, p: 0 });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [gate, setGate] = useState<string | null>(null);
@@ -52,14 +59,14 @@ export function Feed({ initial, nextCursor, seed, industry, lang, employer, limi
     const cur = cursorRef.current;
     if (!cur || loadingRef.current) return;
     loadingRef.current = true;
-    const qs = new URLSearchParams({ seed, cursor: cur });
-    if (industry) qs.set("industry", industry);
-    if (lang) qs.set("lang", lang);
+    const qs = filtersToQuery(filters);
+    qs.set("seed", seed);
+    qs.set("cursor", cur);
     fetch(`/api/feed?${qs}`).then((r) => r.json()).then((d) => {
       cursorRef.current = d.cards ? d.nextCursor : null;
       if (d.cards) setCards((c) => [...c, ...d.cards.filter((x: FeedCard) => !c.some((y) => y.id === x.id))]);
     }).catch(() => {}).finally(() => { loadingRef.current = false; });
-  }, [seed, industry, lang]);
+  }, [seed, filters]);
 
   // Which card is on screen.
   useEffect(() => {
@@ -84,14 +91,17 @@ export function Feed({ initial, nextCursor, seed, industry, lang, employer, limi
     fetch("/api/views", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ videoId, watchedMs: 3000 }) }).catch(() => {});
   }, [employer]);
 
-  function setFilter(k: "industry" | "lang", v: string | null) {
-    const qs = new URLSearchParams();
-    const next = { industry, lang, [k]: v } as { industry: string | null; lang: string | null };
-    if (next.industry) qs.set("industry", next.industry);
-    if (next.lang) qs.set("lang", next.lang);
+  function applyFilters(next: Partial<FeedFilters>) {
+    const qs = filtersToQuery(next);
     setFiltersOpen(false);
     setCardLang({});
     router.replace(`/feed${qs.size ? `?${qs}` : ""}`);
+  }
+  const setFilter = (k: FilterKey, v: string | null) => applyFilters({ ...filters, [k]: v });
+
+  function go(step: number) {
+    const el = feedRef.current;
+    if (el) el.scrollBy({ top: step * el.clientHeight, behavior: "smooth" });
   }
 
   async function onSave(c: FeedCard) {
@@ -105,9 +115,12 @@ export function Feed({ initial, nextCursor, seed, industry, lang, employer, limi
     setSavedN((n) => n + (r.saved ? 1 : -1));
     toast(r.saved ? t("saved") : t("unsaved"));
   }
+  const openRequest = (c: FeedCard) => (employer ? setRequestOf(c) : setGate("req"));
 
-  const nFilters = (industry ? 1 : 0) + (lang ? 1 : 0);
+  const nFilters = Object.values(filters).filter(Boolean).length;
   const current = cards[active];
+  const prev = cards[active - 1];
+  const next = cards[active + 1];
 
   const feedColumn = (
     <div className="scr fs">
@@ -119,16 +132,21 @@ export function Feed({ initial, nextCursor, seed, industry, lang, employer, limi
       </header>
       {filtersOpen ? (
         <div className="chips">
-          <FilterGroups industry={industry} lang={lang} setFilter={setFilter} />
+          <FilterGroups filters={filters} setFilter={setFilter} />
           {!employer ? <p className="note">{t("visitorNote")}</p> : null}
           <LangSwitch variant="button" />
         </div>
       ) : null}
       <div className="feed" ref={feedRef} tabIndex={0} aria-label={t("aria")} onKeyDown={(e) => {
-        if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); feedRef.current?.scrollBy({ top: (e.key === "ArrowDown" ? 1 : -1) * feedRef.current.clientHeight, behavior: "smooth" }); }
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); go(e.key === "ArrowDown" ? 1 : -1); }
       }}>
         {cards.length === 0 ? (
-          <div className="empty" style={{ color: "#9fb0a8", paddingTop: 140 }}>{limited ? t("slowDown") : nFilters ? t("noMatch") : t("empty")}</div>
+          <div className="fempty">
+            <span className="fempty-ic"><LIcon name="video" size={30} /></span>
+            <h2>{t("emptyTitle")}</h2>
+            <p>{limited ? t("slowDown") : nFilters ? t("noMatch") : t("empty")}</p>
+            {nFilters ? <button type="button" className="btn m" onClick={() => applyFilters({})}>{t("clear")}</button> : null}
+          </div>
         ) : cards.map((c, i) => {
           const v = c.videos.find((x) => x.lang === (cardLang[c.id] ?? c.startLang)) ?? c.videos[0];
           const near = Math.abs(i - active) <= 1;
@@ -167,9 +185,9 @@ export function Feed({ initial, nextCursor, seed, industry, lang, employer, limi
                   <div className="meta">{t("years", { n: c.years })}{c.location ? ` · ${c.location}` : ""}</div>
                   <div className="skills">{c.skills.map((s) => <span key={s}>{s}</span>)}</div>
                   <div className="actions">
-                    <button type="button" className={`btn ${c.saved ? "saved" : "s"}`} onClick={() => onSave(c)}>{c.saved ? `${t("savedBtn")} ✓` : t("save")}</button>
-                    <button type="button" className="btn s" onClick={() => (employer ? setProfileOf(c) : setGate("prof"))}>{t("profile")}</button>
-                    <button type="button" className="btn m" disabled={c.requested} onClick={() => (employer ? setRequestOf(c) : setGate("req"))}>{c.requested ? t("requestSent") : t("requestIntro")}</button>
+                    <button type="button" className={`btn ${c.saved ? "saved" : "s"}`} onClick={() => onSave(c)}><i className="ai"><LIcon name="bookmark" size={22} fill={c.saved} /></i><span>{c.saved ? `${t("savedBtn")} ✓` : t("save")}</span></button>
+                    <button type="button" className="btn s" onClick={() => (employer ? setProfileOf(c) : setGate("prof"))}><i className="ai"><LIcon name="more" size={22} /></i><span>{t("profile")}</span></button>
+                    <button type="button" className="btn m" disabled={c.requested} onClick={() => openRequest(c)}><i className="ai"><LIcon name="send" size={22} /></i><span>{c.requested ? t("requestSent") : t("requestIntro")}</span></button>
                   </div>
                 </div>
                 {i === active ? <div className="prog" style={{ width: `${progress.i === i ? Math.round(progress.p * 100) : 0}%` }} /> : null}
@@ -184,31 +202,87 @@ export function Feed({ initial, nextCursor, seed, industry, lang, employer, limi
 
   return (
     <div className="desk">
-      <aside className="side" aria-label={t("filters")}>
-        <h2 className="h3" style={{ marginBottom: 12 }}>{t("filters")}</h2>
-        <FilterGroups industry={industry} lang={lang} setFilter={setFilter} />
-        <p className="note" style={{ marginTop: 16 }}>{t("fairNote")}</p>
-        <p className="note" style={{ marginTop: 8 }}>{t("keysNote")}</p>
+      <DeskTop employer={employer} savedN={savedN} onGate={setGate} />
+
+      <aside className="side fside" aria-label={t("filters")}>
+        <div className="fpanel">
+          <div className="fpanel-hd">
+            <h2>{t("filters")}</h2>
+            {nFilters ? <button type="button" className="linkbtn" onClick={() => applyFilters({})}>{t("clearAll")}</button> : null}
+          </div>
+          <FilterGroups filters={filters} setFilter={setFilter} />
+          <p className="note fpanel-note">{t("fairNote")}</p>
+        </div>
       </aside>
-      <div className="mid">{feedColumn}</div>
+
+      <div className="mid">
+        <div className="stage">
+          {prev ? <Peek c={prev} side="prev" label={t("prev")} onClick={() => go(-1)} /> : null}
+          <div className="freel">{feedColumn}</div>
+          {next ? <Peek c={next} side="next" label={t("next")} onClick={() => go(1)} /> : null}
+          {cards.length ? (
+            <>
+              <button type="button" className="snav prev" aria-label={t("prev")} disabled={active === 0} onClick={() => go(-1)}><LIcon name="chevron" size={22} /></button>
+              <button type="button" className="snav next" aria-label={t("next")} disabled={!next} onClick={() => go(1)}><LIcon name="chevron" size={22} /></button>
+            </>
+          ) : null}
+        </div>
+        <p className="stage-tip">{t("keysNote")}</p>
+      </div>
+
       <aside className="side r" aria-label={t("profile")}>
         {current ? (
-          employer ? (
-            <div className="stack">
-              <div><span className="tag">{ta(current.availability)}</span><h2 className="h2" style={{ marginTop: 8 }}>{current.name}</h2><p className="p">{current.headline} · {t("years", { n: current.years })} · {current.location}</p></div>
-              <div className="wrap">{current.skills.map((s) => <span key={s} className="sk">{s}</span>)}</div>
-              {current.about ? <div className="card"><h3 className="h3">{t("about")}</h3><p className="p">{current.about}</p></div> : null}
-              <p className="note">{t("contactPrivate")}</p>
-              <div className="row">
-                <button type="button" className="btn g" onClick={() => onSave(current)}>{current.saved ? `${t("savedBtn")} ✓` : t("save")}</button>
-                <button type="button" className="btn" disabled={current.requested} onClick={() => setRequestOf(current)}>{current.requested ? t("requestSent") : t("requestIntro")}</button>
+          <div className="ppanel">
+            <div className="pp-head">
+              <span className="pp-av">{posterOf(current) ? <img src={posterOf(current)!} alt="" /> : initials(current.name)}</span>
+              <div className="pp-id">
+                <h2>{current.name}</h2>
+                <p>{current.headline}</p>
+                {current.isDemo ? <span className="pp-demo">{t("demo")}</span> : null}
               </div>
-              <Link className="btn o w" href={`/c/${current.id}`}>{t("fullProfile")}</Link>
             </div>
-          ) : (
-            <div className="card"><h2 className="h3">{t("deskGateTitle")}</h2><p className="p" style={{ marginTop: 6 }}>{t("deskGateBody")}</p><Link className="btn w" style={{ marginTop: 12 }} href="/signup?role=employer">{t("signupFree")}</Link></div>
-          )
-        ) : null}
+            {employer ? (
+              <Link className="btn w pp-main" href={`/c/${current.id}`}>{t("viewProfile")} <LIcon name="arrow" size={16} className="flipx" /></Link>
+            ) : (
+              <button type="button" className="btn w pp-main" onClick={() => setGate("prof")}>{t("viewProfile")} <LIcon name="arrow" size={16} className="flipx" /></button>
+            )}
+            <button type="button" className={`btn o w pp-save${current.saved ? " on" : ""}`} onClick={() => onSave(current)}>
+              <LIcon name="bookmark" size={16} fill={current.saved} /> {current.saved ? `${t("savedBtn")} ✓` : t("saveCandidate")}
+            </button>
+
+            {current.about ? (
+              <section className="pp-sec"><h3>{t("about")}</h3><p>{current.about}</p></section>
+            ) : !employer ? (
+              <section className="pp-lock"><LIcon name="lock" size={20} /><div><b>{t("deskGateTitle")}</b><p>{t("deskGateBody")}</p></div></section>
+            ) : null}
+
+            {current.skills.length ? (
+              <section className="pp-sec"><h3>{t("keySkills")}</h3><div className="pp-skills">{current.skills.map((s) => <span key={s}>{s}</span>)}</div></section>
+            ) : null}
+
+            <div className="pp-facts">
+              <div><LIcon name="briefcase" size={20} /><b>{t("yearsShort", { n: current.years })}</b><span>{t("expLbl")}</span></div>
+              {current.location ? <div><LIcon name="pin" size={20} /><b>{current.location}</b><span>{t("locLbl")}</span></div> : null}
+              {current.industry ? <div><LIcon name={current.industry} size={20} /><b>{ti.has(current.industry) ? ti(current.industry) : current.industry}</b><span>{t("indLbl")}</span></div> : null}
+              <div><LIcon name="clock" size={20} /><b>{ta(current.availability)}</b><span>{t("availability")}</span></div>
+            </div>
+
+            <button type="button" className="pp-req" disabled={current.requested} onClick={() => openRequest(current)}>
+              <span className="pp-req-ic"><LIcon name="send" size={20} /></span>
+              <span className="pp-req-tx"><b>{current.requested ? t("requestSent") : t("requestIntro")}</b><span>{t("reqSub")}</span></span>
+              <LIcon name="chevron" size={18} className="flipx" />
+            </button>
+            <p className="note">{t("contactPrivate")}</p>
+          </div>
+        ) : (
+          <div className="ppanel">
+            <h2 className="pp-how">{t("howTitle")}</h2>
+            <ol className="pp-steps">
+              {(["how1", "how2", "how3"] as const).map((k, i) => <li key={k}><span>{i + 1}</span>{t(k)}</li>)}
+            </ol>
+            {!employer ? <Link className="btn w" href="/signup?role=employer">{t("signupFree")}</Link> : null}
+          </div>
+        )}
       </aside>
 
       <GateSheet open={Boolean(gate)} onClose={() => setGate(null)} why={gate ?? "save"} />
@@ -248,26 +322,83 @@ export function Feed({ initial, nextCursor, seed, industry, lang, employer, limi
   );
 }
 
-function FilterGroups({ industry, lang, setFilter }: { industry: string | null; lang: string | null; setFilter: (k: "industry" | "lang", v: string | null) => void }) {
+/** The cards above and below, shown dimmed beside the video on wide screens. */
+function Peek({ c, side, label, onClick }: { c: FeedCard; side: "prev" | "next"; label: string; onClick: () => void }) {
+  const poster = posterOf(c);
+  return (
+    <button type="button" className={`peek ${side}`} onClick={onClick} aria-label={label} tabIndex={-1}>
+      {poster ? <img src={poster} alt="" /> : <span>{initials(c.name)}</span>}
+    </button>
+  );
+}
+
+/** Top bar on computers: the phone's bottom menu moves up here. */
+function DeskTop({ employer, savedN, onGate }: { employer: Employer; savedN: number; onGate: (why: string) => void }) {
+  const t = useTranslations("feed");
+  const tn = useTranslations("nav");
+  const path = usePathname();
+  const links: { href: string; label: string; gate?: string }[] = [
+    { href: "/feed", label: tn("discover") },
+    { href: "/search", label: tn("search") },
+    { href: "/employer/saved", label: employer ? tn("savedCount", { n: savedN }) : tn("saved"), gate: "saved" },
+    { href: "/employer/inbox", label: tn("inbox"), gate: "inbox" },
+  ];
+  return (
+    <header className="ftop">
+      <Link href="/" className="ftop-logo" aria-label="Hireel"><Logo height={30} /></Link>
+      <nav className="ftop-nav">
+        {links.map((l) => (!employer && l.gate ? (
+          <button key={l.href} type="button" onClick={() => onGate(l.gate!)}>{l.label}</button>
+        ) : (
+          <Link key={l.href} href={l.href} className={path === l.href ? "on" : ""} aria-current={path === l.href ? "page" : undefined}>{l.label}</Link>
+        )))}
+      </nav>
+      <form className="ftop-search" action="/search" role="search">
+        <LIcon name="search" size={18} />
+        <input name="q" type="search" placeholder={t("searchPh")} aria-label={t("searchPh")} />
+      </form>
+      <div className="ftop-end">
+        <LangSwitch />
+        {employer ? (
+          <Link href="/employer/account" className="ftop-me">
+            <span className="ftop-av">{initials(employer.userName || employer.company).slice(0, 1)}</span>
+            <span className="ftop-who"><b>{employer.userName}</b><span>{employer.company}</span></span>
+          </Link>
+        ) : (
+          <>
+            <Link href="/login" className="ftop-login">{t("login")}</Link>
+            <Link href="/signup?role=employer" className="btn sm">{t("signupEmp")}</Link>
+          </>
+        )}
+      </div>
+    </header>
+  );
+}
+
+function FilterGroups({ filters, setFilter }: { filters: FeedFilters; setFilter: (k: FilterKey, v: string | null) => void }) {
   const t = useTranslations("feed");
   const ti = useTranslations("industries");
   const tl = useTranslations("languages");
+  const ta = useTranslations("availability");
+  const tc = useTranslations("signup.countries");
+  const groups: { k: FilterKey; title: string; icon: string; anyLabel: string; options: [string, string][] }[] = [
+    { k: "industry", title: t("industry"), icon: "all", anyLabel: t("all"), options: INDUSTRIES.map((k) => [k, ti(k)]) },
+    { k: "exp", title: t("experience"), icon: "briefcase", anyLabel: t("any"), options: Object.entries(EXP_BANDS).map(([k, [a, b]]) => [k, k.endsWith("+") ? t("expPlus", { n: a }) : t("expBand", { a, b })]) },
+    { k: "place", title: t("location"), icon: "pin", anyLabel: t("any"), options: Object.keys(FEED_PLACES).map((k) => [k, tc(k)]) },
+    { k: "lang", title: t("videoLanguage"), icon: "connect", anyLabel: t("any"), options: VIDEO_LANGUAGES.map((k) => [k, tl(k)]) },
+    { k: "avail", title: t("availability"), icon: "clock", anyLabel: t("any"), options: AVAILABILITY.map((k) => [k, ta(k)]) },
+  ];
   return (
     <>
-      <div>
-        <h4>{t("industry")}</h4>
-        <div className="wrap">
-          <button type="button" className={`chip${!industry ? " on" : ""}`} onClick={() => setFilter("industry", null)}>{t("all")}</button>
-          {INDUSTRIES.map((k) => <button key={k} type="button" className={`chip${industry === k ? " on" : ""}`} onClick={() => setFilter("industry", k)}>{ti(k)}</button>)}
-        </div>
-      </div>
-      <div style={{ marginTop: 12 }}>
-        <h4>{t("videoLanguage")}</h4>
-        <div className="wrap">
-          <button type="button" className={`chip${!lang ? " on" : ""}`} onClick={() => setFilter("lang", null)}>{t("any")}</button>
-          {VIDEO_LANGUAGES.map((k) => <button key={k} type="button" className={`chip${lang === k ? " on" : ""}`} onClick={() => setFilter("lang", k)}>{tl(k)}</button>)}
-        </div>
-      </div>
+      {groups.map((g) => (
+        <details key={g.k} className="fgrp" open>
+          <summary><LIcon name={g.icon} size={16} /><h4>{g.title}</h4><LIcon name="down" size={16} className="fgrp-chev" /></summary>
+          <div className="wrap">
+            <button type="button" className={`chip${!filters[g.k] ? " on" : ""}`} onClick={() => setFilter(g.k, null)}>{g.anyLabel}</button>
+            {g.options.map(([k, label]) => <button key={k} type="button" className={`chip${filters[g.k] === k ? " on" : ""}`} onClick={() => setFilter(g.k, k)}>{label}</button>)}
+          </div>
+        </details>
+      ))}
     </>
   );
 }
