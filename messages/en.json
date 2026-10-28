@@ -1122,5 +1122,35 @@
     "remove": "Remove",
     "saved": "Photo saved",
     "removed": "Photo removed"
+  },
+  "push": {
+    "newRequestTitle": "New intro request",
+    "newRequestBody": "{company} wants to meet you for {role}.",
+    "acceptedTitle": "Request accepted",
+    "acceptedBody": "{name} accepted your request for {role} and shared their details.",
+    "declinedTitle": "Request declined",
+    "declinedBody": "{name} declined your request for {role}.",
+    "videoLiveTitle": "Your video is live",
+    "videoLiveBody": "Employers can now see your intro video.",
+    "videoRejectedTitle": "Your video needs changes",
+    "videoRejectedBody": "Open Hireel to see why and record a new one.",
+    "reviewTitle": "Video waiting for review",
+    "reviewBody": "{name} uploaded a video. Tap to review it."
+  },
+  "pushCard": {
+    "title": "Turn on notifications",
+    "onTitle": "Notifications are on",
+    "onBody": "This device gets a notification for important updates. You can turn them off any time.",
+    "why": {
+      "candidate": "Get notified the moment a company sends you an intro request, and when your video goes live.",
+      "employer": "Get notified when a candidate answers your intro request.",
+      "admin": "Get notified when a new video is waiting for review."
+    },
+    "turnOn": "Turn on",
+    "turnOff": "Turn off",
+    "notNow": "Not now",
+    "iosInstall": "On iPhone, notifications work after you add Hireel to your Home Screen: tap Share, then “Add to Home Screen”, and open Hireel from there.",
+    "blocked": "Notifications are blocked for Hireel on this device. To allow them, open your phone’s Settings → Notifications (iPhone) or the site settings in your browser (Android).",
+    "unsupported": "This browser can’t show notifications."
   }
 }

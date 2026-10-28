@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { REJECTION_REASONS } from "@/lib/constants";
 import { adminOrNull } from "@/server/session";
 import { approveVideo } from "@/server/videos";
+import { notifyUsers } from "@/server/push";
 
 type R = { ok: true } | { ok: false; error: string };
 
@@ -33,6 +34,11 @@ export async function moderateVideo(videoId: string, decision: "approve" | "reje
     const reason = `${key}::${text}`;
     await prisma.video.update({ where: { id: v.id }, data: { moderation: "REJECTED", rejectionReason: reason } });
     await audit(a.id, "video.reject", "Video", v.id, reason);
+  }
+  const owner = await prisma.candidateProfile.findUnique({ where: { id: v.candidateId }, select: { userId: true } });
+  if (owner) {
+    const ok = decision === "approve";
+    void notifyUsers([owner.userId], (t) => ({ title: t(ok ? "videoLiveTitle" : "videoRejectedTitle"), body: t(ok ? "videoLiveBody" : "videoRejectedBody"), url: "/candidate/video", tag: `video-${v.id}` }));
   }
   revalidatePath("/admin", "layout");
   return { ok: true };

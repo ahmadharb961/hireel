@@ -591,3 +591,12 @@ nav.bn a:active, nav.fn a:active, nav.fn button:active { opacity: .6; }
 .fbtn.ic { position: relative; width: 44px; height: 44px; min-height: 0; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; background: rgba(20,20,20,.42); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.18); }
 .fbtn-n { position: absolute; top: -3px; inset-inline-end: -3px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--mint); color: var(--g); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
 .pz-snd.big { width: 64px; height: 64px; }
+
+/* Notifications card */
+.pushcard { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 18px; background: var(--soft); border: 1px solid color-mix(in srgb, var(--g) 18%, transparent); }
+.pushcard.on { background: var(--card); border-color: var(--bd); }
+.pushcard.blocked, .pushcard.ios-needs-install { background: var(--warnbg); border-color: transparent; }
+.pushcard-ic { font-size: 22px; line-height: 1; margin-top: 2px; }
+.pushcard-tx { flex: 1; min-width: 0; }
+.pushcard-tx b { font-size: 15px; }
+.pushcard-tx p { font-size: 13.5px; line-height: 1.5; color: var(--tx2); margin-top: 2px; }

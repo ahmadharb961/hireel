@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
+import { PushCard } from "@/components/PushCard";
 import { Header } from "@/components/Header";
 import { LangSwitch } from "@/components/LangSwitch";
 import { EmployerNav } from "@/components/Nav";
@@ -43,6 +44,7 @@ export default async function AccountPage() {
           {meter(t("savedLimit"), saved, plan.maxSaved)}
           <p className="note" style={{ marginTop: 10 }}>{t("fairNote")}</p>
         </div>
+        <PushCard variant="settings" who="employer" />
         <LangSwitch variant="button" />
         <SignOut />
         <p className="note">{t("teamSoon")}</p>

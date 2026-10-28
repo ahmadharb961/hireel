@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PushCard } from "@/components/PushCard";
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/server/session";
@@ -31,6 +32,7 @@ export default async function AdminOverview() {
         ? <Link key={k} href={href} className="stat link"><b>{v}</b><span>{k} →</span></Link>
         : <div key={k} className="stat"><b>{v}</b><span>{k}</span></div>)}</div>
       <p className="note">{t("realOnly")}{demo ? ` ${t("demoCount", { n: demo })}` : ""}</p>
+      <PushCard variant="settings" who="admin" />
       <div className="card"><h2 className="h3">{t("securityTitle")}</h2><p className="p">{t("securityBody")}</p></div>
     </AdminFrame>
   );

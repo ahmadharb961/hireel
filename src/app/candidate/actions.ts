@@ -1,4 +1,5 @@
 "use server";
+import { notifyUsers } from "@/server/push";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { MAX_VIDEOS, slugify } from "@/lib/constants";
@@ -150,6 +151,15 @@ export async function respondToRequest(id: string, decision: "accept" | "decline
       ? { status: "ACCEPTED", respondedAt: new Date(), shareEmail: Boolean(share?.email), sharePhone: Boolean(share?.phone), shareCv: Boolean(share?.cv) }
       : { status: "DECLINED", respondedAt: new Date() },
   });
+  const members = await prisma.companyMember.findMany({ where: { companyId: req.companyId }, select: { userId: true } });
+  const name = profile.fullName.split(" ")[0] || profile.fullName;
+  const accepted = decision === "accept";
+  void notifyUsers(members.map((m) => m.userId), (t) => ({
+    title: t(accepted ? "acceptedTitle" : "declinedTitle"),
+    body: t(accepted ? "acceptedBody" : "declinedBody", { name, role: req.roleTitle }),
+    url: "/employer/inbox",
+    tag: `req-${req.id}`,
+  }));
   revalidatePath("/candidate", "layout");
   return { ok: true };
 }

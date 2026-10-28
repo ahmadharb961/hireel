@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PushCard } from "@/components/PushCard";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Header } from "@/components/Header";
 import { EmployerNav } from "@/components/Nav";
@@ -25,6 +26,7 @@ export default async function InboxPage() {
       <Header home="/feed" />
       <main className="main"><div className="stack">
         <div><h1 className="h2">{t("title")}</h1><p className="p">{t("subtitle")}</p></div>
+        {reqs.length ? <PushCard variant="prompt" who="employer" /> : null}
         <div className="stack cards2">
         {reqs.length === 0 ? <div className="empty">{t("empty")}</div> : reqs.map((r) => {
           const c = r.candidate;

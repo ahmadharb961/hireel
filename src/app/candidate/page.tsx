@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PushCard } from "@/components/PushCard";
 import { getTranslations } from "next-intl/server";
 import { CandidateNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
@@ -30,6 +31,7 @@ export default async function CandidateHome() {
             <h1 className="h2">{t("welcome", { name: firstName })}</h1>
             <p className="p">{t("welcomeSub")}</p>
           </div>
+          {profile.status === "PUBLISHED" ? <PushCard variant="prompt" who="candidate" /> : null}
           <div className="card">
             <h2 className="h3">{t("complete", { pct })}</h2>
             <div className="bar"><i style={{ width: `${pct}%` }} /></div>

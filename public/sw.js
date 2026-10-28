@@ -1,6 +1,6 @@
 // Hireel service worker: makes the app installable and shows an offline page.
 // It never caches API calls, account pages or videos, so nothing private is stored on the phone.
-const CACHE = "hireel-v1";
+const CACHE = "hireel-v2";
 const OFFLINE = "/offline.html";
 
 self.addEventListener("install", (event) => {
@@ -30,4 +30,28 @@ self.addEventListener("fetch", (event) => {
   if (req.mode === "navigate") {
     event.respondWith(fetch(req).catch(() => caches.match(OFFLINE)));
   }
+});
+
+// Notifications (only after the person tapped Allow). The message says where to go when tapped.
+self.addEventListener("push", (event) => {
+  let d = {};
+  try { d = event.data ? event.data.json() : {}; } catch { d = { title: "Hireel", body: event.data ? event.data.text() : "" }; }
+  event.waitUntil(self.registration.showNotification(d.title || "Hireel", {
+    body: d.body || "",
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-96.png",
+    tag: d.tag || undefined,
+    data: { url: d.url || "/" },
+  }));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL((event.notification.data && event.notification.data.url) || "/", self.location.origin).href;
+  event.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+    for (const c of list) {
+      if (c.url.startsWith(self.location.origin) && "focus" in c) { c.navigate(url).catch(() => {}); return c.focus(); }
+    }
+    return self.clients.openWindow(url);
+  }));
 });

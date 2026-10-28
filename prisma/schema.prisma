@@ -108,6 +108,7 @@ model User {
   views      VideoView[]
   reports    Report[]          @relation("reporter")
   audit      AuditLog[]
+  pushSubs   PushSubscription[]
 
   @@map("user")
 }
@@ -482,4 +483,17 @@ model ProfilePhoto {
   candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
   data        Bytes
   updatedAt   DateTime         @updatedAt
+}
+
+/// A device (phone or browser) that agreed to receive notifications for this person.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }

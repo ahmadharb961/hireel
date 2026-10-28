@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { forgetDevice } from "@/lib/push-client";
 import { Icon } from "./Icons";
 
 /** Profile icon in the top bar: shows who is signed in, quick links, and Sign out. */
@@ -22,6 +23,7 @@ export function AccountMenu({ name, email, links }: { name: string; email: strin
   }, [open]);
   async function signOut() {
     setBusy(true);
+    await forgetDevice();
     await authClient.signOut().catch(() => null);
     window.location.href = "/";
   }

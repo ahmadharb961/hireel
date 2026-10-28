@@ -66,6 +66,8 @@ test.describe.serial("Hireel core loop", () => {
   });
 
   test("candidate signs up, verifies email, onboards and publishes", async ({ page }) => {
+    // Headless browsers always report notifications as blocked; act like a phone that hasn't been asked yet.
+    await page.addInitScript(() => { try { Object.defineProperty(Notification, "permission", { get: () => "default" }); } catch { /* ignore */ } });
     await page.goto("/signup");
     await page.fill("#firstName", "Test");
     await page.fill("#lastName", lastName);
@@ -102,6 +104,12 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page).toHaveURL(/\/candidate$/);
     await expect(page.getByRole("heading", { name: "Welcome, Test" })).toBeVisible();
     await noSideScroll(page);
+
+    // A friendly ask for notifications (the phone's own question only comes after "Turn on").
+    const ask = page.getByRole("region", { name: "Turn on notifications" });
+    await expect(ask).toBeVisible();
+    await ask.getByRole("button", { name: "Not now" }).click();
+    await expect(ask).toHaveCount(0);
 
     // Signed in, the candidate can still open the homepage and the reels, and get back.
     await page.goto("/");

@@ -226,7 +226,8 @@ After **every** phase: run the app → run automated tests → fix problems → 
 - [ ] In-app chat, only between a company and a candidate after the candidate accepts its intro request;
       phone numbers stay private, block and report work inside the chat, with new-message notifications
 - [ ] Shortlists with private notes
-- [ ] In-app notifications + email notifications (with per-user settings)
+- [x] Phone notifications (new request, request answered, video approved/rejected, admin review queue), on/off per device
+- [ ] Email notifications (with per-user settings)
 - [ ] Employer team members, invites and roles
 
 ### Phase 3: Business, admin and reach

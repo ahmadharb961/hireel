@@ -1,4 +1,5 @@
 "use server";
+import { notifyUsers } from "@/server/push";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { introRequestSchema, firstError } from "@/lib/validation";
@@ -37,6 +38,11 @@ export async function requestIntro(input: unknown): Promise<R> {
   const { candidateId, ...rest } = p.data;
   const res = await sendIntroRequest({ companyId: emp.company.id, memberId: emp.member.id, candidateId, input: rest });
   if (!res.ok) return { ok: false, error: res.error };
+  const cand = await prisma.candidateProfile.findUnique({ where: { id: candidateId }, select: { userId: true } });
+  if (cand) {
+    const company = emp.company.name;
+    void notifyUsers([cand.userId], (t) => ({ title: t("newRequestTitle"), body: t("newRequestBody", { company, role: rest.roleTitle }), url: "/candidate/requests", tag: `req-${res.id}` }));
+  }
   revalidatePath("/employer/inbox");
   revalidatePath("/employer/account");
   return { ok: true };

@@ -46,6 +46,7 @@ export const DYNAMIC: string[] = [
   ...["UNVERIFIED", "VERIFIED", "SUSPENDED"].map((k) => `admin.companyStatus.${k}`),
   ...["COMPANY", "CANDIDATE"].map((k) => `admin.target.${k}`),
   ...["PUBLISHED", "DRAFT", "UNPUBLISHED"].map((k) => `adminC.status.${k}`),
+  ...["candidate", "employer", "admin"].map((k) => `pushCard.why.${k}`),
   ...["PENDING", "APPROVED", "REJECTED"].map((k) => `adminC.mod.${k}`),
   ...["UPLOADING", "PROCESSING", "READY", "FAILED"].map((k) => `adminC.proc.${k}`),
   ...[1, 2, 3].flatMap((n) => [`home.cand${n}`, `home.cand${n}Sub`, `home.emp${n}`, `home.emp${n}Sub`]),

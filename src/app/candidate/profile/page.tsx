@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PushCard } from "@/components/PushCard";
 import { getTranslations } from "next-intl/server";
 import { CvUpload } from "@/components/CvUpload";
 import { PhotoUpload } from "@/components/PhotoUpload";
@@ -40,6 +41,7 @@ export default async function ProfilePreview() {
           <p className="note">{t("privateNote")}</p>
           <section className="card"><h2 className="h3">🔒 {tc("title")}</h2><CvUpload candidateId={profile.id} initial={cv} /></section>
           <Link className="btn g w" href="/candidate/edit">{t("editProfile")}</Link>
+          <PushCard variant="settings" who="candidate" />
           <SignOut />
         </div>
       </main>

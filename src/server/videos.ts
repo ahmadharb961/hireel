@@ -1,4 +1,5 @@
 import "server-only";
+import { adminIds, notifyUsers } from "./push";
 import { prisma } from "@/lib/db";
 import { ARCHIVE_DAYS } from "@/lib/constants";
 import type { Prisma, Video } from "@/generated/prisma/client";
@@ -33,6 +34,16 @@ export async function applyStreamInfo(video: Video, info: ReturnType<typeof pars
   if (info.failed) data.processing = "FAILED";
   else if (info.ready) data.processing = "READY";
   else data.processing = "PROCESSING";
+  if (data.processing === "READY" && video.moderation === "PENDING") {
+    // Only the call that actually flips the video to READY tells the admins.
+    const flipped = await prisma.video.updateMany({ where: { id: video.id, processing: { notIn: ["READY", "FAILED"] } }, data: { ...data, processing: "READY" } as Prisma.VideoUpdateManyMutationInput });
+    if (flipped.count) {
+      const c = await prisma.candidateProfile.findUnique({ where: { id: video.candidateId }, select: { fullName: true } });
+      const name = c?.fullName || "A candidate";
+      void adminIds().then((ids) => notifyUsers(ids, (t) => ({ title: t("reviewTitle"), body: t("reviewBody", { name }), url: "/admin/videos", tag: "review" })));
+    }
+    return (await prisma.video.findUnique({ where: { id: video.id } }))!;
+  }
   return prisma.video.update({ where: { id: video.id }, data });
 }
 
