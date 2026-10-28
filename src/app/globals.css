@@ -529,3 +529,27 @@ nav.bn a:active, nav.fn a:active, nav.fn button:active { opacity: .6; }
 .pv-name { display: flex; align-items: center; gap: 10px; }
 .pv-av, .fav { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; flex: none; }
 .fname { display: flex; align-items: center; gap: 10px; }
+
+/* Reel overlay: more compact on tablets and computers (phones keep the large touch sizes). */
+@media (min-width: 720px) {
+  .info { padding-top: 12px; }
+  .info .h2 { font-size: 18px; }
+  .info .fav { width: 32px; height: 32px; }
+  .role { font-size: 14px; }
+  .meta { font-size: 12px; margin-top: 4px; }
+  .avail { font-size: 11px; padding: 3px 9px; }
+  .skills { gap: 5px; margin: 8px 0; }
+  .skills span { font-size: 11px; padding: 3px 9px; }
+  .langs button { font-size: 12px; padding: 4px 10px; min-height: 30px; }
+  .actions .btn { min-height: 44px; padding: 10px 6px; font-size: 14px; }
+}
+@media (min-width: 1024px) {
+  .freel .info { padding: 12px 64px 18px 16px; }
+  [dir="rtl"] .freel .info { padding: 12px 16px 18px 64px; }
+  .freel .info .h2 { font-size: 19px; }
+  .freel .actions { inset-inline-end: 10px; bottom: 96px; gap: 12px; }
+  .freel .actions .btn { width: 52px; min-height: 0; padding: 0; font-size: 10.5px; gap: 4px; }
+  .freel .actions .ai { width: 40px; height: 40px; }
+  .freel .actions .ai svg { width: 18px; height: 18px; }
+  .freel .top .pill { font-size: 11px; padding: 5px 9px; }
+}
