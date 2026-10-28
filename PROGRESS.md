@@ -35,9 +35,10 @@ Use this file to pick up where we left off.
 - "Full CV" in Phase 1 = typed work history + education; PDF upload in Phase 2
 
 ## Next
-- You: follow `docs/SETUP.md` Parts 1–5 and send me your GitHub username
-- Me: push the code, help with Hostinger deployment, first-time setup (tables, plans, your admin account, Cloudflare webhook)
+- ~~GitHub~~ done
+- You: follow `docs/SETUP.md` Parts 2–5 (domain, Neon, mailbox, Cloudflare)
+- Me: help with Hostinger deployment, first-time setup (tables, plans, your admin account, Cloudflare webhook)
 - You: test on real phones and approve Phase 1 → then Phase 2
 
 ## Accounts you've created
-- GitHub (existing)
+- GitHub: code saved at https://github.com/ahmadharb961/hireel (private)
