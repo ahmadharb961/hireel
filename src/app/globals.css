@@ -175,9 +175,9 @@ h1, h2, h3, p { margin: 0; }
   .player .poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
   /* sheet + toast */
-  .sheet { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: flex-end; z-index: 20; }
-  .panel { background: var(--card); color: var(--tx); width: 100%; border-radius: 24px 24px 0 0; padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px)); max-height: 88%; overflow: auto; }
-  .toast { position: absolute; inset-inline: 16px; bottom: 84px; z-index: 30; background: var(--tx); color: var(--bg); padding: 14px 16px; border-radius: 14px; font-size: 14px; font-weight: 600; text-align: center; }
+  .sheet { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: flex-end; justify-content: center; z-index: 900; }
+  .panel { background: var(--card); color: var(--tx); width: 100%; max-width: 560px; border-radius: 24px 24px 0 0; padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px)); max-height: 88dvh; overflow: auto; overscroll-behavior: contain; }
+  .toast { position: fixed; inset-inline: 16px; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); z-index: 950; max-width: 480px; margin: 0 auto; background: var(--tx); color: var(--bg); padding: 14px 16px; border-radius: 14px; font-size: 14px; font-weight: 600; text-align: center; }
 
   /* marketing */
   .reels { display: flex; gap: 10px; overflow-x: auto; padding: 4px 0 6px; scrollbar-width: none; }
@@ -552,4 +552,10 @@ nav.bn a:active, nav.fn a:active, nav.fn button:active { opacity: .6; }
   .freel .actions .ai { width: 40px; height: 40px; }
   .freel .actions .ai svg { width: 18px; height: 18px; }
   .freel .top .pill { font-size: 11px; padding: 5px 9px; }
+}
+
+/* On tablets and computers the sheet becomes a centred dialog. */
+@media (min-width: 720px) {
+  .sheet { align-items: center; padding: 24px; }
+  .panel { border-radius: 24px; padding: 24px; max-height: 86dvh; box-shadow: 0 30px 80px rgba(0,0,0,.3); }
 }

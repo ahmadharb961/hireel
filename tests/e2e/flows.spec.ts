@@ -201,6 +201,13 @@ test.describe.serial("Hireel core loop", () => {
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("Phone").uncheck();
     await dialog.getByLabel(/CV/).uncheck();
+    // Nothing (like the bottom menu) may sit on top of the dialog's buttons.
+    const covered = await dialog.getByRole("button", { name: "Accept and share" }).evaluate((b) => {
+      const r = b.getBoundingClientRect();
+      const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      return !(hit && b.contains(hit));
+    });
+    expect(covered).toBe(false);
     await dialog.getByRole("button", { name: "Accept and share" }).click();
     await expect(page.getByText("You shared: Email.")).toBeVisible();
 
