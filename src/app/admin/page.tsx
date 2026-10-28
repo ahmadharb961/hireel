@@ -25,7 +25,7 @@ export default async function AdminOverview() {
   ];
   return (
     <AdminFrame tab="overview">
-      <div className="grid2">{stats.map(([k, v]) => <div key={k} className="stat"><b>{v}</b><span>{k}</span></div>)}</div>
+      <div className="grid2 stats4">{stats.map(([k, v]) => <div key={k} className="stat"><b>{v}</b><span>{k}</span></div>)}</div>
       <p className="note">{t("realOnly")}{demo ? ` ${t("demoCount", { n: demo })}` : ""}</p>
       <div className="card"><h2 className="h3">{t("securityTitle")}</h2><p className="p">{t("securityBody")}</p></div>
     </AdminFrame>

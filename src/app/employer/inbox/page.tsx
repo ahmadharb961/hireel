@@ -23,6 +23,7 @@ export default async function InboxPage() {
       <Header home="/feed" />
       <main className="main"><div className="stack">
         <div><h1 className="h2">{t("title")}</h1><p className="p">{t("subtitle")}</p></div>
+        <div className="stack cards2">
         {reqs.length === 0 ? <div className="empty">{t("empty")}</div> : reqs.map((r) => {
           const c = r.candidate;
           const accepted = r.status === "ACCEPTED";
@@ -44,6 +45,7 @@ export default async function InboxPage() {
             </div>
           );
         })}
+        </div>
       </div></main>
       <EmployerNav savedCount={n} />
     </div>

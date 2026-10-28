@@ -38,7 +38,7 @@ test.describe.serial("Hireel core loop", () => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Your Experience Deserves to Be Seen." })).toBeVisible();
     await noSideScroll(page);
-    await page.getByRole("link", { name: "Discover Talent" }).click();
+    await page.getByRole("link", { name: "Discover Talent" }).first().click();
     await expect(page).toHaveURL(/\/feed/);
     await expect(page.locator(".item").first()).toBeVisible();
     // Employers-only demo candidate is hidden from visitors.
@@ -263,5 +263,29 @@ test.describe.serial("Hireel core loop", () => {
     await page.getByRole("button", { name: "Not now" }).click();
     await page.goto("/terms");
     await expect(page.getByRole("region", { name: "Install Hireel" })).toHaveCount(0);
+  });
+
+  test("desktop: wide layouts, not a phone column", async ({ browser }) => {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page = await ctx.newPage();
+    await page.goto("/");
+    const hero = await page.locator(".hero-band").boundingBox();
+    expect(hero!.width).toBeGreaterThan(1400);
+    const copy = await page.locator(".hero-copy").boundingBox();
+    const art = await page.locator(".hero-art").boundingBox();
+    expect(art!.x).toBeGreaterThan(copy!.x + copy!.width - 1); // side by side
+    await noSideScroll(page);
+    await page.goto("/login");
+    await expect(page.locator(".authside")).toBeVisible();
+    await page.fill("#email", candEmail);
+    await page.fill("#password", PASSWORD);
+    await page.getByRole("button", { name: "Log in" }).last().click();
+    await page.waitForURL(/\/candidate/);
+    const nav = await page.locator("nav.bn").boundingBox();
+    expect(nav!.height).toBeGreaterThan(nav!.width); // menu runs down the side
+    const main = await page.locator(".main").boundingBox();
+    expect(main!.width).toBeGreaterThan(1000);
+    await noSideScroll(page);
+    await ctx.close();
   });
 });

@@ -34,8 +34,9 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
   const videos = c.profileType === "VIDEO" ? await liveVideos(c.id) : [];
   return (
     <div className="shell"><div className="scr"><Header />
-      <main className="main"><div className="stack">
-        {videos.length ? <ProfileVideo videos={videos} initials={initialsOf(c.fullName)} countViews={viewer?.role === "EMPLOYER"} /> : null}
+      <main className="main"><div className={`stack${videos.length ? " split" : ""}`}>
+        {videos.length ? <div className="split-media"><ProfileVideo videos={videos} initials={initialsOf(c.fullName)} countViews={viewer?.role === "EMPLOYER"} /></div> : null}
+        <div className="stack">
         <div>
           <h1 className="h2">{c.fullName}</h1>
           <p className="p">{c.headline}</p>
@@ -44,6 +45,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
         <Link className="btn w m" href={viewer?.role === "EMPLOYER" ? `/c/${c.id}` : `/signup?role=employer`}>{t("requestIntro")}</Link>
         {viewer?.role !== "EMPLOYER" ? <p className="note">{t("needsEmployer")} <Link href="/login">{t("login")}</Link></p> : null}
         <p className="note">{t("privacy")}</p>
+        </div>
       </div></main>
     </div></div>
   );

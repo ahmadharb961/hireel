@@ -54,8 +54,9 @@ export default async function CandidateProfilePage({ params }: { params: Promise
   return (
     <div className="shell"><ToastProvider><div className="scr">
       <Header back="/feed" home="/feed" />
-      <main className="main"><div className="stack">
-        {c.profileType === "VIDEO" ? <ProfileVideo videos={videos} initials={initialsOf(c.fullName)} countViews demoLabel={c.isDemo ? t("demo") : undefined} /> : null}
+      <main className="main"><div className={`stack${c.profileType === "VIDEO" ? " split" : ""}`}>
+        {c.profileType === "VIDEO" ? <div className="split-media"><ProfileVideo videos={videos} initials={initialsOf(c.fullName)} countViews demoLabel={c.isDemo ? t("demo") : undefined} /></div> : null}
+        <div className="stack">
         <div>
           <span className="tag">{ta(c.availability)}</span>
           {c.isDemo ? <span className="demo-flag" style={{ marginInlineStart: 6 }}>{t("demo")}</span> : null}
@@ -81,6 +82,7 @@ export default async function CandidateProfilePage({ params }: { params: Promise
           ) : <p className="p">🔒 {t("locked", { name: first })}</p>}
         </div>
         <ProfileActions candidate={{ id: c.id, name: c.fullName }} saved={Boolean(saved)} requested={Boolean(req)} quota={{ introLeft: quota.introLeft, cvLeft: quota.cvLeft, planName: quota.planName, isPremium: quota.isPremium }} />
+        </div>
       </div></main>
       <EmployerNav savedCount={nSaved} />
     </div></ToastProvider></div>

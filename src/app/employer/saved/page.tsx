@@ -19,12 +19,14 @@ export default async function SavedPage() {
       <Header home="/feed" />
       <main className="main"><div className="stack">
         <div><h1 className="h2">{t("title")}</h1><p className="p">{t("count", { n: rows.length, max: company.plan.maxSaved })}</p></div>
+        <div className="stack cards2">
         {rows.length === 0 ? <div className="empty">{t("empty")}</div> : rows.map(({ candidate: c }) => (
           <Link key={c.id} className="list-row" href={`/c/${c.id}`}>
             <div className="thumb">{initialsOf(c.fullName)}</div>
             <div className="t"><b>{c.fullName}</b><span>{c.headline}</span><span>{c.location} · {c.skills.map((s) => s.skill.name).join(", ")}</span></div>
           </Link>
         ))}
+        </div>
         <p className="note">{t("phase2")}</p>
       </div></main>
       <EmployerNav savedCount={rows.length} />

@@ -23,6 +23,7 @@ export default async function RequestsPage() {
         <div className="stack">
           <div><h1 className="h2">{t("title")}</h1><p className="p">{t("subtitle")}</p></div>
           {reqs.length === 0 ? <div className="empty">{t("empty")}</div> : null}
+          <div className="stack cards2">
           {reqs.map((r) => (
             <RequestCard
               key={r.id}
@@ -47,6 +48,7 @@ export default async function RequestsPage() {
               }}
             />
           ))}
+          </div>
         </div>
       </main>
       <CandidateNav />

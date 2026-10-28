@@ -84,7 +84,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           </div>
         </form>
         {!allowed ? <p className="empty">{t("slowDown")}</p> : <p className="note">{t("count", { n: results.length })}</p>}
-        <div className="stack" style={{ gap: 8 }}>
+        <div className="stack cards2" style={{ gap: 8 }}>
           {results.map((c) => (
             <Link key={c.id} className="list-row" href={`/c/${c.id}`}>
               <div className="thumb">{initialsOf(c.fullName)}</div>
