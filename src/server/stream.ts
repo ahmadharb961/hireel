@@ -2,6 +2,7 @@ import "server-only";
 import { createHmac, createPrivateKey, timingSafeEqual } from "node:crypto";
 import { importPKCS8, SignJWT } from "jose";
 import { env, streamConfigured } from "@/lib/env";
+import { customerCodeFromUrl, saveStreamSetting, streamSettings } from "@/lib/stream-settings";
 
 /** Cloudflare Stream: uploads, status, signed playback and deletion. */
 
@@ -76,16 +77,16 @@ export async function deleteStreamVideo(uid: string) {
   if (!res.ok && res.status !== 404) throw new Error(`STREAM_DELETE_FAILED ${res.status}`);
 }
 
-let keyPromise: ReturnType<typeof importPKCS8> | null = null;
+let keyPromise: { id: string; key: ReturnType<typeof importPKCS8> } | null = null;
 
 /** Short-lived playback token so videos can't be hot-linked or bulk-downloaded by URL. */
 export async function playbackToken(uid: string, ttlSec = 60 * 60): Promise<string> {
-  const c = env.cloudflare;
+  const c = await streamSettings();
   if (c.signingKeyId && c.signingKeyPem) {
     // Cloudflare gives the key base64-encoded; it may also be pasted as raw PEM.
     const pem = c.signingKeyPem.includes("BEGIN") ? c.signingKeyPem : Buffer.from(c.signingKeyPem, "base64").toString("utf8");
-    keyPromise ??= importPKCS8(toPkcs8(pem), "RS256");
-    const key = await keyPromise;
+    if (keyPromise?.id !== c.signingKeyId) keyPromise = { id: c.signingKeyId, key: importPKCS8(toPkcs8(pem), "RS256") };
+    const key = await keyPromise.key;
     return new SignJWT({ sub: uid, kid: c.signingKeyId })
       .setProtectedHeader({ alg: "RS256", kid: c.signingKeyId })
       .setExpirationTime(Math.floor(Date.now() / 1000) + ttlSec)
@@ -106,8 +107,21 @@ function toPkcs8(pem: string) {
   return createPrivateKey(pem).export({ type: "pkcs8", format: "pem" }).toString();
 }
 
-export function playbackUrls(token: string) {
-  const base = `https://customer-${env.cloudflare.customerCode}.cloudflarestream.com/${token}`;
+/** Account-specific playback host code; learned from Cloudflare the first time it's needed. */
+async function customerCode(uid: string) {
+  const s = await streamSettings();
+  if (s.customerCode) return s.customerCode;
+  const res = await fetch(`${api()}/${uid}`, { headers: authHeaders(), cache: "no-store" });
+  if (!res.ok) return null;
+  const code = customerCodeFromUrl(((await res.json()) as { result?: { playback?: { hls?: string } } }).result?.playback?.hls);
+  if (code) await saveStreamSetting("customerCode", code);
+  return code;
+}
+
+export async function playbackUrls(uid: string, token: string) {
+  const code = await customerCode(uid);
+  if (!code) return null;
+  const base = `https://customer-${code}.cloudflarestream.com/${token}`;
   return { hls: `${base}/manifest/video.m3u8`, poster: `${base}/thumbnails/thumbnail.jpg?time=1s&height=720` };
 }
 

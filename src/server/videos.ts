@@ -47,7 +47,7 @@ export async function refreshFromStream(video: Video) {
 export async function signedPlayback(video: Pick<Video, "streamUid">) {
   if (!video.streamUid || !streamConfigured()) return null;
   try {
-    return playbackUrls(await playbackToken(video.streamUid));
+    return await playbackUrls(video.streamUid, await playbackToken(video.streamUid));
   } catch (e) {
     console.error("playback token failed", e);
     return null;
@@ -89,6 +89,16 @@ export async function ensurePrimary(tx: Prisma.TransactionClient, candidateId: s
   const pick = primaries[0] ?? active.find((v) => v.moderation === "APPROVED") ?? active[0];
   await tx.video.updateMany({ where: { candidateId, id: { not: pick.id } }, data: { isPrimary: false } });
   await tx.video.update({ where: { id: pick.id }, data: { isPrimary: true } });
+}
+
+/** Safety net if a "video ready" webhook is missed: ask Cloudflare about videos still processing. */
+export async function refreshStuckVideos(limit = 20) {
+  const stuck = await prisma.video.findMany({
+    where: { archivedAt: null, processing: { in: ["UPLOADING", "PROCESSING"] }, streamUid: { not: null }, updatedAt: { lt: new Date(Date.now() - 60_000) } },
+    take: limit,
+  });
+  for (const v of stuck) await refreshFromStream(v).catch(() => {});
+  return stuck.length;
 }
 
 /** Daily cleanup: delete archived videos past their 30 days, and abandoned uploads older than a day. */

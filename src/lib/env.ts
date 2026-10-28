@@ -28,5 +28,6 @@ export function smtpConfigured() {
 
 export function streamConfigured() {
   const c = env.cloudflare;
-  return Boolean(c.accountId && c.apiToken && c.customerCode);
+  // The signing key, webhook and customer code are set up automatically (see lib/stream-settings).
+  return Boolean(c.accountId && c.apiToken);
 }

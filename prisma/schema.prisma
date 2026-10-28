@@ -451,3 +451,10 @@ model AppRateLimit {
   windowStart DateTime
   count       Int
 }
+
+/** Values the app sets up for itself (e.g. Cloudflare signing key, webhook secret). */
+model PlatformSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

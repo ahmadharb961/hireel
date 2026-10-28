@@ -1,13 +1,14 @@
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/server/session";
-import { signedPlayback } from "@/server/videos";
+import { refreshStuckVideos, signedPlayback } from "@/server/videos";
 import { AdminFrame } from "../AdminFrame";
 import { ModerationCard } from "./ModerationCard";
 
 export default async function VideosQueue() {
   await requireAdmin();
   const t = await getTranslations("admin");
+  await refreshStuckVideos();
   const queue = await prisma.video.findMany({
     where: { archivedAt: null, processing: "READY", moderation: "PENDING" },
     orderBy: { createdAt: "asc" },

@@ -1,9 +1,11 @@
 // Runs on every deploy. Safe to run many times.
 // 1. Creates the Freemium and Premium plans if they're missing.
 // 2. If ADMIN_EMAIL is set, turns that (email-verified) account into a Super Admin.
+// 3. Finishes the Cloudflare Stream setup (signing key, webhook) once the API token is set.
 import "dotenv/config";
 import { prisma } from "../src/lib/db";
 import { DEFAULT_PLANS } from "../src/lib/default-plans";
+import { ensureStreamSetup } from "../src/lib/stream-settings";
 
 async function ensurePlans() {
   for (const p of DEFAULT_PLANS) {
@@ -41,6 +43,7 @@ async function main() {
   await ensurePlans();
   const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   if (adminEmail) await promoteAdmin(adminEmail);
+  await ensureStreamSetup(process.env.APP_URL ?? "").catch((e) => console.log(`Video: setup check failed (${e.message}). The site still works; try redeploying.`));
   console.log("Setup complete.");
 }
 main().finally(() => prisma.$disconnect());
