@@ -457,7 +457,10 @@
     "since": "On Hireel since",
     "verifiedExplain": "Verified: the Hireel team checked that this company is real.",
     "notVerifiedExplain": "Not verified yet: the Hireel team hasn’t checked this company. Look at their website before sharing your details.",
-    "safetyTip": "Hireel never asks candidates to pay. If a company asks you for money, decline and report it."
+    "safetyTip": "Hireel never asks candidates to pay. If a company asks you for money, decline and report it.",
+    "viewCompany": "View company profile",
+    "sentBy": "Request sent by {name}",
+    "close": "Close"
   },
   "onboarding": {
     "stepOf": "Step {step} of {total}",

@@ -25,7 +25,7 @@ export function RequestCard({ r }: { r: RequestView }) {
   const te = useTranslations("errors");
   const router = useRouter();
   const toast = useToast();
-  const [sheet, setSheet] = useState<null | "accept" | "report">(null);
+  const [sheet, setSheet] = useState<null | "accept" | "report" | "company">(null);
   const [confirmBlock, setConfirmBlock] = useState(false);
   const [share, setShare] = useState({ email: true, phone: r.wantsCv, cv: r.wantsCv });
   const [reason, setReason] = useState<(typeof REPORT_REASONS)[number]>("fake");
@@ -57,41 +57,16 @@ export function RequestCard({ r }: { r: RequestView }) {
     <div className="card">
       <div className="sw">
         <div className="pv-name" style={{ alignItems: "flex-start" }}>
-          {r.logo ? <img className="clogo" src={r.logo} alt="" /> : <span className="clogo ini">{r.company.slice(0, 1)}</span>}
+          <button type="button" className="clink" onClick={() => setSheet("company")} aria-label={t("viewCompany")}>{r.logo ? <img className="clogo" src={r.logo} alt="" /> : <span className="clogo ini">{r.company.slice(0, 1)}</span>}</button>
           <div>
-          <h2 className="h3">{r.company} {r.verified ? <span className="tag">✓ {t("verified")}</span> : <span className="tag mute">{t("notVerified")}</span>}</h2>
+          <h2 className="h3"><button type="button" className="clink cname" onClick={() => setSheet("company")}>{r.company}</button> {r.verified ? <span className="tag">✓ {t("verified")}</span> : <span className="tag mute">{t("notVerified")}</span>}</h2>
           <p className="p">{r.rep}</p>
           </div>
         </div>
         {tag}
       </div>
       <p className="note" style={{ marginTop: 4 }}>{[r.industry && ti.has(r.industry) ? ti(r.industry) : r.industry, r.size, r.country].filter(Boolean).join(" · ")}</p>
-      <details className="cinfo" open={r.status === "PENDING"}>
-        <summary>{t("aboutCompany", { company: r.company })}</summary>
-        <div className="cinfo-body">
-          {r.banner ? (
-            <div className="chead">
-              <div className="chead-banner" style={{ backgroundImage: `url(${r.banner})` }} />
-              <span className="chead-logo">{r.logo ? <img src={r.logo} alt="" /> : r.company.slice(0, 1)}</span>
-            </div>
-          ) : null}
-          {r.description ? <p className="p" style={{ color: "var(--tx)", whiteSpace: "pre-wrap" }}>{r.description}</p> : <p className="note">{t("noDescription")}</p>}
-          <div className="kv"><span>{t("website")}</span><b>{site ? <a href={site.href} target="_blank" rel="noopener noreferrer nofollow">{site.label} ↗</a> : "—"}</b></div>
-          <div className="kv"><span>{t("industry")}</span><b>{r.industry ? (ti.has(r.industry) ? ti(r.industry) : r.industry) : "—"}</b></div>
-          <div className="kv"><span>{t("size")}</span><b>{r.size ? t("employees", { size: r.size }) : "—"}</b></div>
-          <div className="kv"><span>{t("country")}</span><b>{r.country || "—"}</b></div>
-          <div className="kv"><span>{t("since")}</span><b>{r.since}</b></div>
-          {Object.values(r.social).some(Boolean) ? (
-            <div className="csocial">
-              {(["linkedin", "instagram", "facebook"] as const).filter((k) => r.social[k]).map((k) => (
-                <a key={k} href={r.social[k]} target="_blank" rel="noopener noreferrer nofollow" aria-label={`${r.company} · ${k}`}><LIcon name={k} size={18} /><span>{k === "linkedin" ? "LinkedIn" : k === "instagram" ? "Instagram" : "Facebook"}</span></a>
-              ))}
-            </div>
-          ) : null}
-          <p className="note" style={{ marginTop: 8 }}>{r.verified ? t("verifiedExplain") : t("notVerifiedExplain")}</p>
-          <p className="note">{t("safetyTip")}</p>
-        </div>
-      </details>
+      <button type="button" className="btn sm o cview" onClick={() => setSheet("company")}>{t("viewCompany")} →</button>
       <div style={{ marginTop: 10 }}>
         <div className="kv"><span>{t("opportunity")}</span><b>{r.roleTitle}</b></div>
         <div className="kv"><span>{t("typeLocation")}</span><b>{tm(r.employment)}{r.workLocation ? ` · ${r.workLocation}` : ""}</b></div>
@@ -149,6 +124,35 @@ export function RequestCard({ r }: { r: RequestView }) {
         <div className="row" style={{ marginTop: 12 }}>
           <button type="button" className="btn g" onClick={() => setSheet(null)}>{t("cancel")}</button>
           <button type="button" className="btn" disabled={busy} onClick={() => run(reportCompany(r.id, reason, details), t("reportSent"))}>{t("send")}</button>
+        </div>
+      </Sheet>
+
+      <Sheet open={sheet === "company"} onClose={() => setSheet(null)} label={r.company}>
+        <div className="cprof">
+          <div className="cprof-banner" style={r.banner ? { backgroundImage: `url(${r.banner})` } : undefined} />
+          <button type="button" className="cprof-x" onClick={() => setSheet(null)} aria-label={t("close")}>✕</button>
+          <span className="chead-logo cprof-logo">{r.logo ? <img src={r.logo} alt="" /> : r.company.slice(0, 1)}</span>
+          <h2 className="h2" style={{ marginTop: 8 }}>{r.company} {r.verified ? <span className="tag">✓ {t("verified")}</span> : <span className="tag mute">{t("notVerified")}</span>}</h2>
+          <p className="p">{[r.industry && ti.has(r.industry) ? ti(r.industry) : r.industry, r.country].filter(Boolean).join(" · ")}</p>
+          <p className="note">{t("sentBy", { name: r.rep })}</p>
+          <div className="cprof-body">
+          {r.description ? <p className="p" style={{ color: "var(--tx)", whiteSpace: "pre-wrap" }}>{r.description}</p> : <p className="note">{t("noDescription")}</p>}
+          <div className="kv"><span>{t("website")}</span><b>{site ? <a href={site.href} target="_blank" rel="noopener noreferrer nofollow">{site.label} ↗</a> : "—"}</b></div>
+          <div className="kv"><span>{t("industry")}</span><b>{r.industry ? (ti.has(r.industry) ? ti(r.industry) : r.industry) : "—"}</b></div>
+          <div className="kv"><span>{t("size")}</span><b>{r.size ? t("employees", { size: r.size }) : "—"}</b></div>
+          <div className="kv"><span>{t("country")}</span><b>{r.country || "—"}</b></div>
+          <div className="kv"><span>{t("since")}</span><b>{r.since}</b></div>
+          {Object.values(r.social).some(Boolean) ? (
+            <div className="csocial">
+              {(["linkedin", "instagram", "facebook"] as const).filter((k) => r.social[k]).map((k) => (
+                <a key={k} href={r.social[k]} target="_blank" rel="noopener noreferrer nofollow" aria-label={`${r.company} · ${k}`}><LIcon name={k} size={18} /><span>{k === "linkedin" ? "LinkedIn" : k === "instagram" ? "Instagram" : "Facebook"}</span></a>
+              ))}
+            </div>
+          ) : null}
+          <p className="note" style={{ marginTop: 8 }}>{r.verified ? t("verifiedExplain") : t("notVerifiedExplain")}</p>
+          <p className="note">{t("safetyTip")}</p>
+                  </div>
+          <button type="button" className="btn g w" style={{ marginTop: 14 }} onClick={() => setSheet(null)}>{t("close")}</button>
         </div>
       </Sheet>
     </div>

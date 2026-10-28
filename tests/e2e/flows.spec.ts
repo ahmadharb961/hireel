@@ -224,14 +224,18 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.getByRole("heading", { name: new RegExp(`Cedar Test ${id}`) })).toBeVisible();
     await expect(page.getByText("They also asked to see your CV and contact details")).toBeVisible();
     // Before answering, the candidate can read about the company.
-    await expect(page.getByText(`About Cedar Test ${id}`)).toBeVisible();
-    await expect(page.getByText("On Hireel since")).toBeVisible();
-    await expect(page.getByText("We build retail software in Beirut")).toBeVisible();
-    await expect(page.getByRole("link", { name: /cedar\.example\.com/ })).toHaveAttribute("href", "https://cedar.example.com/");
+    await page.getByRole("button", { name: `Cedar Test ${id}` }).click();
+    const company = page.getByRole("dialog", { name: `Cedar Test ${id}` });
+    await expect(company).toBeVisible();
+    await expect(company.getByText("On Hireel since")).toBeVisible();
+    await expect(company.getByText("We build retail software in Beirut")).toBeVisible();
+    await expect(company.getByRole("link", { name: /cedar\.example\.com/ })).toHaveAttribute("href", "https://cedar.example.com/");
+    await expect(company.locator(".cprof-banner")).toHaveAttribute("style", /company-banner/);
+    await expect(company.getByRole("link", { name: /instagram/i })).toHaveAttribute("href", "https://www.instagram.com/cedar.test");
+    await company.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/req-company.png" }).catch(() => {});
+    await company.getByRole("button", { name: "Close" }).last().click();
+    await expect(company).toHaveCount(0);
     await expect(page.locator("img.clogo").first()).toBeVisible();
-    await expect(page.locator(".chead-banner").first()).toBeVisible();
-    await expect(page.getByRole("link", { name: /instagram/i })).toHaveAttribute("href", "https://www.instagram.com/cedar.test");
-    await page.locator(".card").filter({ hasText: `Cedar Test ${id}` }).screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/req-company.png" }).catch(() => {});
     await page.getByRole("button", { name: "Accept", exact: true }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("Phone").uncheck();

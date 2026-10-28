@@ -46,7 +46,7 @@ export default async function CandidateHome() {
           <div className="grid3">
             <div className="stat"><b>{profileViews}</b><span>{t("stats.profileViews")}</span></div>
             <div className="stat"><b>{saves}</b><span>{t("stats.saves")}</span></div>
-            <div className="stat"><b>{requests}</b><span>{t("stats.requests")}</span></div>
+            <Link className="stat link" href="/candidate/requests"><b>{requests}</b><span>{t("stats.requests")} →</span></Link>
           </div>
           <div className="card">
             <h2 className="h3">{t("videoViews")}</h2>
