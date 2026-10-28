@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/server/session";
@@ -18,14 +19,17 @@ export default async function AdminOverview() {
     prisma.report.count({ where: { status: "OPEN" } }),
     prisma.candidateProfile.count({ where: { isDemo: true } }),
   ]);
-  const stats: [string, number][] = [
-    [t("stats.candidates"), candidates], [t("stats.published"), published], [t("stats.employers"), employers],
-    [t("stats.verified"), verified], [t("stats.toReview"), toReview], [t("stats.requests"), requests],
-    [t("stats.accepted"), accepted], [t("stats.reports"), reports],
+  const stats: [string, number, string | null][] = [
+    [t("stats.candidates"), candidates, "/admin/candidates"], [t("stats.published"), published, "/admin/candidates?status=PUBLISHED"],
+    [t("stats.employers"), employers, "/admin/employers"], [t("stats.verified"), verified, "/admin/employers?status=VERIFIED"],
+    [t("stats.toReview"), toReview, "/admin/videos"], [t("stats.requests"), requests, null],
+    [t("stats.accepted"), accepted, null], [t("stats.reports"), reports, "/admin/reports"],
   ];
   return (
     <AdminFrame tab="overview">
-      <div className="grid2 stats4">{stats.map(([k, v]) => <div key={k} className="stat"><b>{v}</b><span>{k}</span></div>)}</div>
+      <div className="grid2 stats4">{stats.map(([k, v, href]) => href
+        ? <Link key={k} href={href} className="stat link"><b>{v}</b><span>{k} →</span></Link>
+        : <div key={k} className="stat"><b>{v}</b><span>{k}</span></div>)}</div>
       <p className="note">{t("realOnly")}{demo ? ` ${t("demoCount", { n: demo })}` : ""}</p>
       <div className="card"><h2 className="h3">{t("securityTitle")}</h2><p className="p">{t("securityBody")}</p></div>
     </AdminFrame>

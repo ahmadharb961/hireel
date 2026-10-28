@@ -100,3 +100,25 @@ export async function resolveReport(reportId: string, suspendTarget: boolean): P
   revalidatePath("/admin/reports");
   return { ok: true };
 }
+
+/** Suspends (signs out and blocks) or restores a candidate's account. */
+export async function setCandidateSuspended(candidateId: string, suspend: boolean, reason = ""): Promise<R> {
+  const a = await admin();
+  const c = await prisma.candidateProfile.findUnique({ where: { id: candidateId }, select: { userId: true } });
+  if (!c) return { ok: false, error: "not_found" };
+  await prisma.user.update({ where: { id: c.userId }, data: { suspendedAt: suspend ? new Date() : null } });
+  if (suspend) await prisma.session.deleteMany({ where: { userId: c.userId } });
+  await audit(a.id, suspend ? "candidate.suspend" : "candidate.restore", "CandidateProfile", candidateId, reason);
+  revalidatePath(`/admin/candidates/${candidateId}`);
+  return { ok: true };
+}
+
+/** Takes a profile out of the feed and search. The candidate can publish again after fixing it. */
+export async function unpublishCandidate(candidateId: string, reason = ""): Promise<R> {
+  const a = await admin();
+  const r = await prisma.candidateProfile.updateMany({ where: { id: candidateId, status: "PUBLISHED" }, data: { status: "UNPUBLISHED" } });
+  if (!r.count) return { ok: false, error: "not_found" };
+  await audit(a.id, "candidate.unpublish", "CandidateProfile", candidateId, reason);
+  revalidatePath(`/admin/candidates/${candidateId}`);
+  return { ok: true };
+}

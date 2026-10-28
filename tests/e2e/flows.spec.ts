@@ -219,6 +219,17 @@ test.describe.serial("Hireel core loop", () => {
     await card.getByRole("button", { name: "Verify" }).click();
     await expect(card.getByText("Verified")).toBeVisible();
 
+    // Admin can open every detail of a candidate and a company.
+    await page.goto(`/admin/candidates?q=${lastName}`);
+    await page.getByRole("link", { name: new RegExp(lastName) }).click();
+    await expect(page.getByRole("heading", { name: `Test ${lastName}` })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Private contact details/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /CV details/ })).toBeVisible();
+    await expect(page.getByText("QA Lead").first()).toBeVisible();
+    await page.getByRole("link", { name: `Cedar Test ${id}` }).first().click();
+    await expect(page.getByRole("heading", { name: new RegExp(`Cedar Test ${id}`) })).toBeVisible();
+    await expect(page.getByText(empEmail)).toBeVisible();
+
     await signIn(page, empEmail);
     await page.goto("/employer/account");
     await expect(page.getByText("/ 7").first()).toBeVisible();

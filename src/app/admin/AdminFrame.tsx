@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { SignOut } from "@/components/SignOut";
 import { prisma } from "@/lib/db";
 
-export async function AdminFrame({ tab, children }: { tab: "overview" | "videos" | "employers" | "plans" | "reports"; children: React.ReactNode }) {
+export async function AdminFrame({ tab, children }: { tab: "overview" | "candidates" | "videos" | "employers" | "plans" | "reports"; children: React.ReactNode }) {
   const t = await getTranslations("admin");
   const [pendingVideos, openReports] = await Promise.all([
     prisma.video.count({ where: { archivedAt: null, processing: "READY", moderation: "PENDING" } }),
@@ -12,6 +12,7 @@ export async function AdminFrame({ tab, children }: { tab: "overview" | "videos"
   ]);
   const tabs = [
     { k: "overview", href: "/admin", label: t("tabs.overview") },
+    { k: "candidates", href: "/admin/candidates", label: t("tabs.candidates") },
     { k: "videos", href: "/admin/videos", label: t("tabs.videos", { n: pendingVideos }) },
     { k: "employers", href: "/admin/employers", label: t("tabs.employers") },
     { k: "plans", href: "/admin/plans", label: t("tabs.plans") },
