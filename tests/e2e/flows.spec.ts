@@ -50,6 +50,10 @@ test.describe.serial("Hireel core loop", () => {
     // Employers-only demo candidate is hidden from visitors.
     await expect(page.getByText("Karim Nassar")).toHaveCount(0);
     await expect(page.locator(".item")).toHaveCount(5);
+    // The action buttons sit fully above the bottom menu, never behind it.
+    const actions = await page.locator(".item").first().locator(".actions").boundingBox();
+    const menu = await page.locator("nav.fn").boundingBox();
+    expect(actions!.y + actions!.height).toBeLessThanOrEqual(menu!.y - 8);
     await page.locator(".item").first().getByRole("button", { name: "Save" }).click();
     await expect(page.getByRole("dialog", { name: "Sign up as an employer" })).toBeVisible();
     await page.getByRole("button", { name: "Keep watching" }).click();

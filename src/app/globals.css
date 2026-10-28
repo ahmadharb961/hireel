@@ -223,7 +223,7 @@ h1, h2, h3, p { margin: 0; }
 .mute { cursor: pointer; min-height: 36px; }
 .pz { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 1; }
 .pz span { width: 72px; height: 72px; border-radius: 50%; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; font-size: 28px; }
-.info { position: relative; padding: 16px 16px 88px; z-index: 2; }
+.info { position: relative; padding: 16px 16px calc(92px + env(safe-area-inset-bottom, 0px)); z-index: 2; }
 .info .h2 { font-size: 22px; color: #fff; }
 .role { margin-top: 2px; opacity: .92; font-size: 15px; }
 .meta { margin-top: 6px; font-size: 13px; opacity: .85; }
