@@ -1,26 +1,73 @@
 import { getTranslations } from "next-intl/server";
-import { Header } from "@/components/Header";
+import { SiteFooter } from "@/components/landing/SiteFooter";
+import { SiteNav } from "@/components/landing/SiteNav";
+import type { LegalBlock, LegalDoc } from "@/content/legal";
 
-/** Plain legal page. The text is a starting draft and is labeled as such until a lawyer reviews it. */
-export async function LegalPage({ ns }: { ns: "privacy" | "terms" }) {
-  const t = await getTranslations(ns);
-  const tl = await getTranslations("legal");
-  const sections = t.raw("sections") as { h: string; p: string }[];
+/** Turns plain web addresses inside legal text into links. */
+function linkify(text: string) {
+  return text.split(/(https:\/\/hireel\.app\S*?)(?=[.,)]?(?:\s|$))/).map((part, i) =>
+    part.startsWith("https://hireel.app") ? <a key={i} href={part}>{part.replace("https://", "")}</a> : part,
+  );
+}
+
+function Block({ b }: { b: LegalBlock }) {
+  if (Array.isArray(b)) return <ul>{b.map((li) => <li key={li}>{linkify(li)}</li>)}</ul>;
+  if (typeof b === "object") return <h3>{b.h}</h3>;
+  return <p>{linkify(b)}</p>;
+}
+
+/** Long legal document: numbered sections, a contents list that stays in view on computers, and the site footer. */
+export async function LegalPage({ doc }: { doc: LegalDoc }) {
+  const t = await getTranslations("legal");
   return (
-    <div className="shell"><div className="scr">
-      <Header back="/" />
-      <main className="main prose">
-        <h1 className="h2">{t("title")}</h1>
-        <p className="tag warn" style={{ marginTop: 8, whiteSpace: "normal" }}>{tl("draft")}</p>
-        <div className="stack" style={{ marginTop: 16 }}>
-          {sections.map((s, i) => (
-            <section key={i} id={i === sections.length - 1 ? "contact" : undefined}>
-              <h2 className="h3">{s.h}</h2>
-              <p className="p" style={{ marginTop: 4, whiteSpace: "pre-wrap" }}>{s.p}</p>
-            </section>
-          ))}
+    <div className="site2">
+      <SiteNav />
+      <main>
+        <header className="lg-hero" id="top">
+          <div className="wrapx">
+            <span className="pillx">Hireel · LYVE</span>
+            <h1>{doc.title}</h1>
+            {doc.effective || doc.updated ? (
+              <p className="lg-dates">
+                {doc.effective ? <span>{t("effective")}: <b>{doc.effective}</b></span> : null}
+                {doc.updated ? <span>{t("updated")}: <b>{doc.updated}</b></span> : null}
+              </p>
+            ) : null}
+            {doc.note ? <p className="lg-note">{doc.note}</p> : null}
+          </div>
+        </header>
+
+        <div className="wrapx lg-grid">
+          <nav className="lg-toc" aria-label={t("contents")}>
+            {/* Folded on phones, always open beside the text on computers. */}
+            <details className="lg-toc-m">
+              <summary>{t("contents")}</summary>
+              <ol>{doc.sections.map((s) => <li key={s.id}><a href={`#${s.id}`}>{s.h}</a></li>)}</ol>
+            </details>
+            <div className="lg-toc-d">
+              <b>{t("contents")}</b>
+              <ol>{doc.sections.map((s) => <li key={s.id}><a href={`#${s.id}`}>{s.h}</a></li>)}</ol>
+            </div>
+          </nav>
+
+          <article className="lg-doc">
+            {doc.facts ? (
+              <dl className="lg-facts">
+                {doc.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{linkify(v)}</dd></div>)}
+              </dl>
+            ) : null}
+            {doc.sections.map((s, i) => (
+              <section key={s.id} id={s.id} className="lg-sec">
+                <h2><span className="lg-n">{i + 1}</span>{s.h}</h2>
+                {s.body.map((b, j) => <Block key={j} b={b} />)}
+              </section>
+            ))}
+            {doc.closing ? <footer className="lg-closing">{doc.closing.map((l, i) => <p key={i}>{l}</p>)}</footer> : null}
+            <a className="lg-top" href="#top">↑ {t("backTop")}</a>
+          </article>
         </div>
       </main>
-    </div></div>
+      <SiteFooter />
+    </div>
   );
 }

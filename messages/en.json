@@ -823,69 +823,10 @@
     "toAdmin": "Go to admin"
   },
   "legal": {
-    "draft": "Draft: this text has not been reviewed by a lawyer yet."
-  },
-  "privacy": {
-    "title": "Privacy Policy",
-    "sections": [
-      {
-        "h": "What we collect",
-        "p": "Account details (name, email, password stored as a secure hash), your profile (headline, location, skills, experience), the videos you upload, and the requests you send or receive. We also record basic technical data needed to keep the service safe, such as sign-in times and approximate request counts for rate limits."
-      },
-      {
-        "h": "Who can see what",
-        "p": "Candidates choose whether their reel is visible to everyone or only to signed-in employers. Phone number, contact email and CV details are never public; a company sees them only after you accept its request and choose to share them. Share links show only your video, headline and skills."
-      },
-      {
-        "h": "Videos",
-        "p": "Videos are stored and streamed by Cloudflare Stream using short-lived signed links. Every video is reviewed by a person before it goes live. Replaced or removed videos are kept privately for 30 days and then deleted."
-      },
-      {
-        "h": "View counts",
-        "p": "A view is counted only when a signed-in employer watches at least 3 seconds, once per employer per video per day. Your own views and automated traffic are not counted. View counts are never used to rank candidates."
-      },
-      {
-        "h": "Your choices",
-        "p": "You can edit your profile, unpublish it, pause your job search, block companies and remove videos at any time. Data export and account deletion tools are coming; until then, contact us and we will do it for you."
-      },
-      {
-        "h": "Contact",
-        "p": "Questions about privacy: contact the Hireel team at the support email shown on this site."
-      }
-    ]
-  },
-  "terms": {
-    "title": "Terms and Conditions",
-    "sections": [
-      {
-        "h": "Using Hireel",
-        "p": "Hireel connects candidates and employers through short introduction videos. You must give accurate information and use Hireel only for genuine recruitment."
-      },
-      {
-        "h": "Candidate content",
-        "p": "You keep ownership of your videos and profile. By publishing, you allow Hireel to show them as set in your visibility settings. Videos must be professional introductions and must not include other people’s personal information."
-      },
-      {
-        "h": "Employers",
-        "p": "Employers may contact candidates only through intro requests, within their plan’s limits. Scraping, bulk downloading, or using candidate information for anything other than recruitment is not allowed."
-      },
-      {
-        "h": "Fair hiring",
-        "p": "Hireel does not allow filtering or decisions based on ethnicity, religion, appearance or other protected characteristics, and does not use AI to judge faces, voices or personality."
-      },
-      {
-        "h": "Plans",
-        "p": "Employer plan limits are shown in your account. Online payment is not yet available; any plan change is made by the Hireel team."
-      },
-      {
-        "h": "Suspension",
-        "p": "We may suspend accounts that break these terms, including fake companies and abusive messages."
-      },
-      {
-        "h": "Contact",
-        "p": "Questions about these terms: contact the Hireel team at the support email shown on this site."
-      }
-    ]
+    "effective": "Effective date",
+    "updated": "Last updated",
+    "contents": "Contents",
+    "backTop": "Back to top"
   },
   "landing": {
     "nav": {
@@ -992,8 +933,7 @@
       "product": "Product",
       "legal": "Legal",
       "privacy": "Privacy",
-      "terms": "Terms",
-      "contact": "Contact"
+      "terms": "Terms"
     }
   },
   "authside": {

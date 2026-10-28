@@ -48,7 +48,6 @@ export const DYNAMIC: string[] = [
   ...[1, 2, 3].flatMap((n) => [`home.cand${n}`, `home.cand${n}Sub`, `home.emp${n}`, `home.emp${n}Sub`]),
   ...["why1", "why2", "why3"].flatMap((k) => [`home.${k}`, `home.${k}Sub`]),
   ...[1, 2, 3, 4, 5].flatMap((n) => [`home.faq${n}`, `home.faq${n}A`]),
-  "privacy.title", "privacy.sections", "terms.title", "terms.sections",
   // server action error codes shown through errors.*
   ...["required", "too_long", "email", "password_short", "agree", "url", "phone", "years", "skills_min", "skills_max", "message_short", "invalid",
     "generic", "rate_limited", "email_taken", "consent", "incomplete", "about_short", "not_found", "stream_not_configured", "video_consent",
