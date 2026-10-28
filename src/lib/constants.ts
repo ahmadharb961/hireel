@@ -2,7 +2,7 @@
 
 export const INDUSTRIES = [
   "marketing", "technology", "finance", "sales", "design", "hospitality",
-  "engineering", "healthcare", "education", "logistics", "retail", "other",
+  "engineering", "healthcare", "education", "logistics", "retail", "hr", "other",
 ] as const;
 export type Industry = (typeof INDUSTRIES)[number];
 

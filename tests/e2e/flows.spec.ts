@@ -36,7 +36,7 @@ test.beforeEach(async ({ page }, info) => {
 test.describe.serial("Hireel core loop", () => {
   test("visitor can watch reels but must sign up to act", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: "Your Experience Deserves to Be Seen." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Your next opportunity starts with a video/ })).toBeVisible();
     await noSideScroll(page);
     await page.getByRole("link", { name: "Discover Talent" }).first().click();
     await expect(page).toHaveURL(/\/feed/);
@@ -225,7 +225,7 @@ test.describe.serial("Hireel core loop", () => {
     await page.goto("/");
     await page.getByRole("button", { name: /Language/ }).click();
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.getByRole("heading", { name: "خبرتك تستحق أن تُرى." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /فرصتك القادمة تبدأ بفيديو/ })).toBeVisible();
     for (const p of ["/", "/signup", "/login", "/feed", "/search", "/privacy", "/terms"]) {
       const r = await page.goto(p);
       expect(r?.status(), p).toBeLessThan(400);
@@ -269,10 +269,10 @@ test.describe.serial("Hireel core loop", () => {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const page = await ctx.newPage();
     await page.goto("/");
-    const hero = await page.locator(".hero-band").boundingBox();
+    const hero = await page.locator(".h2-hero").boundingBox();
     expect(hero!.width).toBeGreaterThan(1400);
-    const copy = await page.locator(".hero-copy").boundingBox();
-    const art = await page.locator(".hero-art").boundingBox();
+    const copy = await page.locator(".h2-copy").boundingBox();
+    const art = await page.locator(".h2-art").boundingBox();
     expect(art!.x).toBeGreaterThan(copy!.x + copy!.width - 1); // side by side
     await noSideScroll(page);
     await page.goto("/login");

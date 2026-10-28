@@ -7,6 +7,7 @@ import { EmployerNav } from "@/components/Nav";
 import { Player } from "@/components/Player";
 import { Sheet } from "@/components/Sheet";
 import { LangSwitch } from "@/components/LangSwitch";
+import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/Toast";
 import { GateSheet, RequestSheet, UpgradeBody, type Quota } from "@/components/employer/Sheets";
 import { INDUSTRIES, VIDEO_LANGUAGES, type VideoLang } from "@/lib/constants";
@@ -111,7 +112,7 @@ export function Feed({ initial, nextCursor, seed, industry, lang, employer, limi
   const feedColumn = (
     <div className="scr fs">
       <header className="fh">
-        <Link className="logo" href="/">Hireel</Link>
+        <Link className="logo" href="/" aria-label="Hireel"><Logo white height={26} /></Link>
         <button type="button" className="fbtn" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(!filtersOpen)}>
           {t("filters")}{nFilters ? ` · ${nFilters}` : ""}
         </button>

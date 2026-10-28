@@ -1,23 +1,24 @@
-// Generates every PWA icon size (normal + maskable + Apple touch) from one SVG mark.
-import sharp from "sharp";
+// Generates every PWA icon size (normal + maskable + Apple touch) from the Hireel mark.
 import path from "node:path";
+import sharp from "sharp";
 
-const out = path.join(__dirname, "..", "public", "icons");
-const mark = (pad: number) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#195C48"/>
-  <g transform="translate(${pad} ${pad}) scale(${(512 - pad * 2) / 512})">
-    <rect x="132" y="96" width="248" height="320" rx="44" fill="none" stroke="#B3E2CD" stroke-width="28"/>
-    <path d="M220 196 L316 256 L220 316 Z" fill="#FAF9F6"/>
-  </g>
-</svg>`;
+const pub = path.join(__dirname, "..", "public");
+const out = path.join(pub, "icons");
+const mark = path.join(pub, "brand", "mark.png");
+const BG = { r: 250, g: 249, b: 246, alpha: 1 };
+
+async function icon(size: number, padRatio: number, file: string) {
+  const inner = Math.round(size * (1 - padRatio * 2));
+  const m = await sharp(mark).resize({ width: inner, height: inner, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).toBuffer();
+  await sharp({ create: { width: size, height: size, channels: 4, background: BG } }).composite([{ input: m, gravity: "center" }]).png().toFile(path.join(out, file));
+}
 
 async function main() {
-  const sizes = [48, 72, 96, 128, 144, 152, 192, 256, 384, 512];
-  for (const s of sizes) await sharp(Buffer.from(mark(40))).resize(s, s).png().toFile(path.join(out, `icon-${s}.png`));
-  // Maskable icons keep the mark inside the 80% safe zone.
-  for (const s of [192, 512]) await sharp(Buffer.from(mark(110))).resize(s, s).png().toFile(path.join(out, `maskable-${s}.png`));
-  await sharp(Buffer.from(mark(60))).resize(180, 180).png().toFile(path.join(out, "apple-touch-icon.png"));
-  await sharp(Buffer.from(mark(40))).resize(32, 32).png().toFile(path.join(out, "favicon-32.png"));
+  for (const s of [48, 72, 96, 128, 144, 152, 192, 256, 384, 512]) await icon(s, 0.16, `icon-${s}.png`);
+  // Maskable icons keep the mark inside the central safe zone.
+  for (const s of [192, 512]) await icon(s, 0.24, `maskable-${s}.png`);
+  await icon(180, 0.14, "apple-touch-icon.png");
+  await icon(32, 0.08, "favicon-32.png");
   console.log("Icons written to public/icons");
 }
 main();

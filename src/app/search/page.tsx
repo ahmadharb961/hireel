@@ -12,7 +12,7 @@ import { employerOrNull } from "@/server/session";
 
 export const metadata = { robots: { index: false, follow: false } };
 
-type SP = { q?: string; industry?: string; availability?: string; lang?: string; minYears?: string };
+type SP = { q?: string; loc?: string; industry?: string; availability?: string; lang?: string; minYears?: string };
 
 /** Search by job-related details only. Never by age, gender, religion, ethnicity or appearance. */
 export default async function SearchPage({ searchParams }: { searchParams: Promise<SP> }) {
@@ -23,6 +23,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const tl = await getTranslations("languages");
   const emp = await employerOrNull();
   const q = (sp.q ?? "").trim().slice(0, 80);
+  const loc = (sp.loc ?? "").trim().slice(0, 60);
   const industry = INDUSTRIES.find((x) => x === sp.industry);
   const availability = AVAILABILITY.find((x) => x === sp.availability);
   const lang = VIDEO_LANGUAGES.find((x) => x === sp.lang);
@@ -38,6 +39,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     ...(industry ? { industry } : {}),
     ...(availability ? { availability } : {}),
     ...(minYears ? { yearsExperience: { gte: minYears } } : {}),
+    ...(loc ? { location: { contains: loc, mode: "insensitive" as const } } : {}),
     ...(lang ? { videos: { some: { language: lang, archivedAt: null, moderation: "APPROVED", processing: "READY" } } } : {}),
     ...(q ? { OR: [
       { fullName: { contains: q, mode: "insensitive" } },
@@ -58,6 +60,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         <form className="stack" action="/search" method="get" role="search">
           <label className="lbl" htmlFor="q" style={{ margin: 0 }}>{t("label")}</label>
           <input className="i" id="q" name="q" type="search" defaultValue={q} placeholder={t("placeholder")} autoComplete="off" />
+          {loc ? <input type="hidden" name="loc" value={loc} /> : null}
           <div className="row">
             <select className="i" name="industry" defaultValue={industry ?? ""} aria-label={t("industry")}>
               <option value="">{t("anyIndustry")}</option>

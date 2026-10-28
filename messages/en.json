@@ -39,7 +39,8 @@
     "education": "Education",
     "logistics": "Logistics",
     "retail": "Retail",
-    "other": "Other"
+    "other": "Other",
+    "hr": "HR & People"
   },
   "availability": {
     "AVAILABLE_NOW": "Available now",
@@ -857,5 +858,118 @@
         "p": "Questions about these terms: contact the Hireel team at the support email shown on this site."
       }
     ]
+  },
+  "landing": {
+    "nav": {
+      "forCandidates": "For Candidates",
+      "forEmployers": "For Employers",
+      "howItWorks": "How It Works",
+      "browse": "Browse Talent",
+      "search": "Search",
+      "login": "Log in",
+      "signup": "Sign up",
+      "menu": "Menu",
+      "close": "Close menu"
+    },
+    "hero": {
+      "pill": "Video talent marketplace",
+      "title1": "Your next",
+      "title2": "opportunity",
+      "title3": "starts with a video.",
+      "lead": "Show who you are beyond a CV, or discover exceptional talent through short, authentic videos.",
+      "ctaCandidate": "Create Your Video Profile",
+      "ctaEmployer": "Discover Talent",
+      "note": "Free for candidates · Employers watch reels free, no account needed",
+      "hand1": "Real people",
+      "hand2": "Real stories",
+      "hand3": "Real opportunities",
+      "c1Role": "Marketing Specialist",
+      "c1Meta": "5+ years · Beirut",
+      "c2Role": "Software Engineer",
+      "c2Meta": "4+ years · Remote",
+      "c3Role": "HR Specialist",
+      "c3Meta": "4+ years · Dubai",
+      "example": "Example profiles"
+    },
+    "cats": {
+      "label": "Browse by industry",
+      "all": "All categories",
+      "more": "More categories"
+    },
+    "featured": {
+      "title": "Featured Talent",
+      "sub": "Real candidates who published a video intro on Hireel.",
+      "viewAll": "View all talent",
+      "emptyTitle": "Your video could be here",
+      "emptyBody": "Hireel has just opened. Publish your intro video and be among the first candidates employers discover.",
+      "emptyCta": "Create your video profile",
+      "demo": "Demo",
+      "years": "{n}+ years",
+      "more": "+{n}",
+      "watch": "Watch {name}"
+    },
+    "how": {
+      "title": "How Hireel Works",
+      "sub": "Simple, fast, and built for real people.",
+      "learnMore": "Learn more",
+      "s1t": "Create your video profile",
+      "s1b": "Record a short video introducing yourself, your experience and what you're looking for.",
+      "s1cta": "For candidates",
+      "s2t": "Get discovered",
+      "s2b": "Employers browse and search for talent through short videos and job-related filters.",
+      "s3t": "Connect for opportunities",
+      "s3b": "Receive intro requests, decide who sees your contact details, and take the next step in your career."
+    },
+    "emp": {
+      "pill": "For employers",
+      "title": "Find the right talent, faster.",
+      "body": "Discover, save and contact qualified candidates through authentic video profiles.",
+      "getStarted": "Get started",
+      "seePricing": "See pricing",
+      "role": "Job title or skill",
+      "rolePh": "e.g. Marketing Manager",
+      "location": "Location",
+      "anyLocation": "Anywhere",
+      "years": "Experience",
+      "anyYears": "Any",
+      "yearsPlus": "{n}+ years",
+      "search": "Search talent"
+    },
+    "plans": {
+      "pill": "Employer plans",
+      "title": "Start free. Upgrade when you hire more.",
+      "sub": "Watching reels is always free. Plans set how many candidates you can contact each month.",
+      "recommended": "Best for active hiring",
+      "browse": "Unlimited reel browsing & search",
+      "intro": "{n} intro requests / month",
+      "cv": "{n} CV & contact requests / month",
+      "saved": "Save up to {n} candidates",
+      "filters": "Fair, job-related filters",
+      "ctaFree": "Start free",
+      "ctaPremium": "Ask for Premium",
+      "note": "Online payment isn't available yet. The Hireel team switches companies to Premium on request."
+    },
+    "faq": {
+      "title": "Frequently asked questions"
+    },
+    "final": {
+      "title": "Ready to be seen?",
+      "body": "Create your profile and record your first video today. It's free for candidates.",
+      "ctaC": "Create Your Video Profile",
+      "ctaE": "I'm hiring"
+    },
+    "footer": {
+      "tagline": "Video-first hiring for Lebanon and the GCC.",
+      "product": "Product",
+      "legal": "Legal",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    }
+  },
+  "authside": {
+    "pill": "Video talent marketplace",
+    "title1": "Your Experience",
+    "title2": "Deserves to Be Seen."
   }
 }

@@ -1,13 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
+import { Caveat, IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { dirOf, resolveLocale } from "@/i18n/locales";
 import { InstallBanner } from "@/components/InstallBanner";
 import { SwRegister } from "@/components/SwRegister";
 import "./globals.css";
+import "./landing.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const hand = Caveat({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-hand", display: "swap" });
 const arabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "500", "600", "700"], variable: "--font-arabic", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -34,7 +36,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = resolveLocale(await getLocale());
   return (
-    <html lang={locale} dir={dirOf(locale)} className={`${inter.variable} ${arabic.variable}`}>
+    <html lang={locale} dir={dirOf(locale)} className={`${inter.variable} ${arabic.variable} ${hand.variable}`}>
       <body>
         <NextIntlClientProvider>
           {children}
