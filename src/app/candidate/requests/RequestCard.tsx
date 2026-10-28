@@ -8,6 +8,7 @@ import { blockCompany, reportCompany, respondToRequest } from "../safe-actions";
 
 export type RequestView = {
   id: string; company: string; verified: boolean; rep: string; description: string; industry: string; size: string;
+  website: string; country: string; since: string;
   roleTitle: string; employment: string; workLocation: string; payRange: string; message: string; wantsCv: boolean;
   status: "PENDING" | "ACCEPTED" | "DECLINED" | "WITHDRAWN" | "BLOCKED"; date: string;
   shared: { email: boolean; phone: boolean; cv: boolean }; isDemo: boolean;
@@ -41,6 +42,13 @@ export function RequestCard({ r }: { r: RequestView }) {
     : r.status === "ACCEPTED" ? <span className="tag">{t("accepted")}</span>
     : r.status === "BLOCKED" ? <span className="tag bad">{t("blocked")}</span>
     : <span className="tag mute">{t("declined")}</span>;
+  // Only http(s) links, shown as the bare domain.
+  const site = (() => {
+    try {
+      const u = new URL(/^https?:\/\//i.test(r.website) ? r.website : `https://${r.website}`);
+      return r.website && /^https?:$/.test(u.protocol) && u.hostname.includes(".") ? { href: u.href, label: u.hostname.replace(/^www\./, "") } : null;
+    } catch { return null; }
+  })();
   const sharedList = [r.shared.email && t("shareEmail"), r.shared.phone && t("sharePhone"), r.shared.cv && t("shareCv")].filter(Boolean).join(", ");
 
   return (
@@ -52,7 +60,20 @@ export function RequestCard({ r }: { r: RequestView }) {
         </div>
         {tag}
       </div>
-      <p className="note" style={{ marginTop: 4 }}>{r.description || [r.industry && ti.has(r.industry) ? ti(r.industry) : r.industry, r.size].filter(Boolean).join(" · ")}</p>
+      <p className="note" style={{ marginTop: 4 }}>{[r.industry && ti.has(r.industry) ? ti(r.industry) : r.industry, r.size, r.country].filter(Boolean).join(" · ")}</p>
+      <details className="cinfo" open={r.status === "PENDING"}>
+        <summary>{t("aboutCompany", { company: r.company })}</summary>
+        <div className="cinfo-body">
+          {r.description ? <p className="p" style={{ color: "var(--tx)", whiteSpace: "pre-wrap" }}>{r.description}</p> : <p className="note">{t("noDescription")}</p>}
+          <div className="kv"><span>{t("website")}</span><b>{site ? <a href={site.href} target="_blank" rel="noopener noreferrer nofollow">{site.label} ↗</a> : "—"}</b></div>
+          <div className="kv"><span>{t("industry")}</span><b>{r.industry ? (ti.has(r.industry) ? ti(r.industry) : r.industry) : "—"}</b></div>
+          <div className="kv"><span>{t("size")}</span><b>{r.size ? t("employees", { size: r.size }) : "—"}</b></div>
+          <div className="kv"><span>{t("country")}</span><b>{r.country || "—"}</b></div>
+          <div className="kv"><span>{t("since")}</span><b>{r.since}</b></div>
+          <p className="note" style={{ marginTop: 8 }}>{r.verified ? t("verifiedExplain") : t("notVerifiedExplain")}</p>
+          <p className="note">{t("safetyTip")}</p>
+        </div>
+      </details>
       <div style={{ marginTop: 10 }}>
         <div className="kv"><span>{t("opportunity")}</span><b>{r.roleTitle}</b></div>
         <div className="kv"><span>{t("typeLocation")}</span><b>{tm(r.employment)}{r.workLocation ? ` · ${r.workLocation}` : ""}</b></div>

@@ -205,8 +205,12 @@ test.describe.serial("Hireel core loop", () => {
     expect((await page.request.get(cvUrl)).status()).toBe(200);
 
     await page.goto("/candidate/requests");
-    await expect(page.getByText(`Cedar Test ${id}`)).toBeVisible();
+    await expect(page.getByRole("heading", { name: new RegExp(`Cedar Test ${id}`) })).toBeVisible();
     await expect(page.getByText("They also asked to see your CV and contact details")).toBeVisible();
+    // Before answering, the candidate can read about the company.
+    await expect(page.getByText(`About Cedar Test ${id}`)).toBeVisible();
+    await expect(page.getByText("On Hireel since")).toBeVisible();
+    await page.locator(".card").filter({ hasText: `Cedar Test ${id}` }).screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/req-company.png" }).catch(() => {});
     await page.getByRole("button", { name: "Accept", exact: true }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("Phone").uncheck();

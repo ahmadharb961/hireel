@@ -427,7 +427,7 @@
     "declinedDone": "Request declined. The company isn’t told why.",
     "blockConfirm": "Block {company}? They won’t see your profile or be able to contact you again.",
     "blockedDone": "Company blocked",
-    "youShared": "You shared: {list}. Messaging arrives in the next update.",
+    "youShared": "You shared: {list}. The company will contact you directly using these details.",
     "nothing": "nothing yet",
     "acceptTitle": "Accept {company}",
     "acceptBody": "Choose what to share. Only this company will see it.",
@@ -445,7 +445,18 @@
       "other": "Something else"
     },
     "details": "Details (optional)",
-    "reportSent": "Report sent to the Hireel team"
+    "reportSent": "Report sent to the Hireel team",
+    "aboutCompany": "About {company}",
+    "noDescription": "The company hasn’t added a description yet.",
+    "website": "Website",
+    "industry": "Industry",
+    "size": "Company size",
+    "employees": "{size} employees",
+    "country": "Country",
+    "since": "On Hireel since",
+    "verifiedExplain": "Verified: the Hireel team checked that this company is real.",
+    "notVerifiedExplain": "Not verified yet: the Hireel team hasn’t checked this company. Look at their website before sharing your details.",
+    "safetyTip": "Hireel never asks candidates to pay. If a company asks you for money, decline and report it."
   },
   "onboarding": {
     "stepOf": "Step {step} of {total}",
