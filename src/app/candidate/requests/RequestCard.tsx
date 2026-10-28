@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Sheet } from "@/components/Sheet";
 import { useToast } from "@/components/Toast";
-import { blockCompany, reportCompany, respondToRequest } from "../actions";
+import { blockCompany, reportCompany, respondToRequest } from "../safe-actions";
 
 export type RequestView = {
   id: string; company: string; verified: boolean; rep: string; description: string; industry: string; size: string;

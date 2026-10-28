@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Sheet } from "@/components/Sheet";
 import { EMPLOYMENT_TYPES } from "@/lib/constants";
-import { requestIntro } from "@/app/employer/actions";
+import { requestIntro } from "@/app/employer/safe-actions";
 
 export type Quota = { introLeft: number; cvLeft: number; planName: string; isPremium: boolean };
 

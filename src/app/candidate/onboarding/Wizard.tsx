@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SkillsInput } from "@/components/SkillsInput";
 import { AVAILABILITY, CITY_SUGGESTIONS, INDUSTRIES } from "@/lib/constants";
-import { chooseProfileType, publishProfile, saveBasics, saveExperience } from "../actions";
+import { chooseProfileType, publishProfile, saveBasics, saveExperience } from "../safe-actions";
 
 type Init = {
   fullName: string; headline: string; location: string; phone: string; currentTitle: string; industry: string;
@@ -22,18 +22,19 @@ export function Wizard({ initialStep, initial }: { initialStep: number; initial:
   const [v, setV] = useState(initial);
   const [consent, setConsent] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [offline, setOffline] = useState(false);
   const [busy, setBusy] = useState(false);
   const set = (k: keyof Init) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setV({ ...v, [k]: e.target.value });
 
   async function next() {
-    setErr(null); setBusy(true);
+    setErr(null); setOffline(false); setBusy(true);
     let res: { ok: boolean; error?: string } = { ok: true };
     if (step === 1) res = await saveBasics({ fullName: v.fullName, headline: v.headline, location: v.location, phone: v.phone }, 2);
     if (step === 2) res = await saveExperience({ currentTitle: v.currentTitle, industry: v.industry, yearsExperience: v.yearsExperience, availability: v.availability, skills: v.skills }, 3);
     if (step === 3) res = await chooseProfileType(v.profileType, v.about);
     if (step === 4) res = await publishProfile({ consent, visibility: v.visibility });
     setBusy(false);
-    if (!res.ok) return setErr(te(res.error ?? "generic"));
+    if (!res.ok) { setOffline(res.error === "network"); return setErr(te(res.error ?? "generic")); }
     if (step < 4) { setStep(step + 1); document.querySelector(".main")?.scrollTo(0, 0); return; }
     router.push(v.profileType === "VIDEO" ? "/candidate/video" : "/candidate");
     router.refresh();
@@ -124,6 +125,7 @@ export function Wizard({ initialStep, initial }: { initialStep: number; initial:
       ) : null}
 
       {err ? <p className="err" role="alert">{err}</p> : null}
+      {offline ? <button type="button" className="btn o w" style={{ marginTop: 8 }} onClick={() => window.location.reload()}>{tc("reload")}</button> : null}
       <div className="row" style={{ marginTop: 18 }}>
         {step > 1 ? <button type="button" className="btn g" onClick={() => { setErr(null); setStep(step - 1); }}>{tc("back")}</button> : null}
         <button type="button" className="btn" disabled={busy} onClick={next}>{busy ? tc("pleaseWait") : step === 4 ? t("publish") : t("continue")}</button>

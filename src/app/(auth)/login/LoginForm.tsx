@@ -12,6 +12,7 @@ export function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [unverified, setUnverified] = useState<string | null>(null);
+  const te = useTranslations("errors");
   const [pending, setPending] = useState(false);
   const [resent, setResent] = useState(false);
 
@@ -23,8 +24,9 @@ export function LoginForm() {
     setError(null); setUnverified(null);
     if (!email || !password) return setError(t("missing"));
     setPending(true);
-    const res = await authClient.signIn.email({ email, password, callbackURL: "/welcome" });
+    const res = await authClient.signIn.email({ email, password, callbackURL: "/welcome" }).catch(() => null);
     setPending(false);
+    if (!res) return setError(te("network"));
     if (res.error) {
       const code = String(res.error.code ?? res.error.message ?? "");
       if (/EMAIL_NOT_VERIFIED/i.test(code)) return setUnverified(email);

@@ -10,7 +10,7 @@ import { useToast } from "@/components/Toast";
 import { MAX_UPLOAD_BYTES, VIDEO_LANGUAGES, type VideoLang } from "@/lib/constants";
 import type { StudioVideo } from "@/server/candidate-data";
 import { parseReason } from "@/lib/reason";
-import { changeVideoLanguage, makePrimary, removeVideo, setTextOnly, startVideo } from "../actions";
+import { changeVideoLanguage, makePrimary, removeVideo, setTextOnly, startVideo } from "../safe-actions";
 
 type Upload = { slot: number; pct: number; phase: "uploading" | "processing" | "error"; error?: string; videoId?: string };
 
@@ -144,7 +144,6 @@ export function Studio({ videos, uploadsEnabled, textOnly, aboutOk }: { videos: 
       </div>
 
       <div className="vid">
-        {slot && status ? <span className="st"><span className={`tag ${status === "live" ? "" : status === "rejected" || status === "failed" ? "bad" : "warn"}`}>{ts(status)}</span></span> : null}
         {slot?.isDemo ? <span>{t("demoVideo")}</span> : slot?.hls ? (
           <Player src={slot.hls} poster={slot.poster} landscape={slot.landscape} active={false} load muted={false} controls loop={false} />
         ) : upload && upload.slot === active && upload.phase === "uploading" ? (
@@ -152,7 +151,12 @@ export function Studio({ videos, uploadsEnabled, textOnly, aboutOk }: { videos: 
         ) : <span>{slot ? ts(slot.status) : t("noVideo")}</span>}
       </div>
       {slot?.landscape ? <p className="note" style={{ textAlign: "center" }}>{t("landscapeNote")}</p> : null}
-      {statusMsg ? <p className="note" style={{ textAlign: "center" }}>{statusMsg}</p> : null}
+      {slot && status && status !== "rejected" ? (
+        <div className={`vstatus ${status}`} role="status">
+          <span className="vstatus-ic" aria-hidden="true">{status === "live" ? "✓" : status === "failed" ? "!" : status === "review" ? "⏳" : "…"}</span>
+          <div><b>{status === "review" ? t("pendingTitle") : ts(status)}</b>{statusMsg ? <p>{statusMsg}</p> : null}</div>
+        </div>
+      ) : null}
 
       {slot && slot.status === "rejected" ? (
         <div className="card" style={{ background: "var(--badbg)", borderColor: "transparent" }}>

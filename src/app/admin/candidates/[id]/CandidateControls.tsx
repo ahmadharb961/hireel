@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useToast } from "@/components/Toast";
-import { setCandidateSuspended, unpublishCandidate } from "../../actions";
+import { setCandidateSuspended, unpublishCandidate } from "../../safe-actions";
 
 export function CandidateControls({ id, suspended, published }: { id: string; suspended: boolean; published: boolean }) {
   const t = useTranslations("adminC");

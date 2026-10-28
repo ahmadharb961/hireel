@@ -10,7 +10,8 @@
     "login": "Log in",
     "pleaseWait": "Please wait…",
     "signOut": "Sign out",
-    "switchLanguage": "Language"
+    "switchLanguage": "Language",
+    "reload": "Reload page"
   },
   "nav": {
     "home": "Home",
@@ -107,7 +108,8 @@
     "cv_limit": "You’ve used all your CV and contact requests for this month. Untick the box or upgrade.",
     "reason_required": "Write a reason so the candidate knows what to fix.",
     "plan_invalid": "Check the plan fields: names can’t be empty and limits must be 0 or more.",
-    "UNAUTHORIZED": "Please log in again."
+    "UNAUTHORIZED": "Please log in again.",
+    "network": "Couldn’t save. Check your internet connection and try again. If it keeps happening, reload the page (Hireel may have just been updated)."
   },
   "home": {
     "login": "Log in",
@@ -328,7 +330,7 @@
     "statusMsg": {
       "uploading": "Uploading. Keep this screen open until it reaches 100%.",
       "processing": "Preparing your video for all phones. This usually takes under a minute.",
-      "review": "Our team checks every video before it goes live, usually within 24 hours.",
+      "review": "Your video is uploaded. Our team checks every video before employers can see it, usually within 24 hours. You can watch it here meanwhile.",
       "live": "Live. Employers can see this video."
     },
     "rejectedTitle": "Your video wasn’t approved",
@@ -363,7 +365,8 @@
     "textOnlyBody": "Prefer not to appear on camera? Show a written introduction instead.",
     "textOnlyOn": "Text-only profile on",
     "textOnlyOff": "Video profile on",
-    "textOnlyNeedsAbout": "To use a text-only profile, first write at least 40 characters in <link>Edit profile</link>."
+    "textOnlyNeedsAbout": "To use a text-only profile, first write at least 40 characters in <link>Edit profile</link>.",
+    "pendingTitle": "Uploaded · waiting for admin approval"
   },
   "share": {
     "title": "Share and privacy",
@@ -945,6 +948,33 @@
       "ctaE": "Start hiring free",
       "badge": "Free",
       "note": "To protect candidates from spam, each company has a fair monthly limit on requests."
+    },
+    "demo": {
+      "pill": "See it in action",
+      "title1": "A video says",
+      "title2": "more than a CV.",
+      "lead": "Discover real people, real stories and real potential through short, authentic videos.",
+      "f1t": "Watch short videos",
+      "f1b": "Get to know candidates in under a minute.",
+      "f2t": "See real personalities",
+      "f2b": "Go beyond skills and experience.",
+      "f3t": "Find the right fit faster",
+      "f3b": "Make more confident hiring decisions.",
+      "explore": "Explore Talent",
+      "learn": "Learn how it works",
+      "chip": "Real introductions",
+      "hand1": "Get to know",
+      "hand2": "the person behind",
+      "hand3": "the skills",
+      "role": "Software Engineer",
+      "meta": "Software Engineer · 4+ years",
+      "tags": [
+        "Technology",
+        "Product",
+        "AI"
+      ],
+      "viewProfile": "View Full Profile",
+      "example": "Example"
     }
   },
   "authside": {

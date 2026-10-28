@@ -17,7 +17,9 @@ export function SignUpForm({ initialRole }: { initialRole: "candidate" | "employ
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    start(async () => setState(await signUpAction(state, fd)));
+    start(async () => {
+      try { setState(await signUpAction(state, fd)); } catch { setState({ ...state, error: "network", field: undefined }); }
+    });
   };
   const [resent, setResent] = useState(false);
 

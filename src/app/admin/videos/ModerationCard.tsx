@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Player } from "@/components/Player";
 import { useToast } from "@/components/Toast";
 import { REJECTION_REASONS } from "@/lib/constants";
-import { moderateVideo } from "../actions";
+import { moderateVideo } from "../safe-actions";
 
 type Item = { id: string; name: string; headline: string; lang: "EN" | "AR" | "FR"; duration: number | null; landscape: boolean; hls: string | null; poster: string | null; consent: boolean; isReplacement: boolean };
 

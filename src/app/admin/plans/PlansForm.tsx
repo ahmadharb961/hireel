@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/components/Toast";
-import { savePlans } from "../actions";
+import { savePlans } from "../safe-actions";
 
 type P = { id: string; key: string; nameEn: string; nameAr: string; priceLabelEn: string; priceLabelAr: string; monthlyIntroRequests: number; monthlyCvRequests: number; maxSaved: number; companies: number };
 

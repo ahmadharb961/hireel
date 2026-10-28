@@ -15,7 +15,7 @@ import { GateSheet, RequestSheet, UpgradeBody, type Quota } from "@/components/e
 import { AVAILABILITY, INDUSTRIES, VIDEO_LANGUAGES } from "@/lib/constants";
 import { EXP_BANDS, FEED_PLACES, filtersToQuery, type FeedFilters } from "@/lib/feed-filters";
 import type { FeedCard } from "@/server/feed";
-import { toggleSave } from "@/app/employer/actions";
+import { toggleSave } from "@/app/employer/safe-actions";
 
 type Employer = { quota: Quota; saved: number; maxSaved: number; company: string; userName: string } | null;
 type FilterKey = keyof FeedFilters;

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Toggle } from "@/components/Toggle";
 import { useToast } from "@/components/Toast";
-import { setPaused, setPublished, setShareLink, setVisibility } from "../actions";
+import { setPaused, setPublished, setShareLink, setVisibility } from "../safe-actions";
 
 export function ShareSettings({ shareOn, shareUrl, visibility, published, paused }: { shareOn: boolean; shareUrl: string; visibility: "EVERYONE" | "EMPLOYERS_ONLY"; published: boolean; paused: boolean }) {
   const t = useTranslations("share");

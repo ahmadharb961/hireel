@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Sheet } from "@/components/Sheet";
 import { useToast } from "@/components/Toast";
-import { reportCandidate, toggleSave } from "@/app/employer/actions";
+import { reportCandidate, toggleSave } from "@/app/employer/safe-actions";
 import { GateSheet, RequestSheet, UpgradeBody, type Quota } from "./Sheets";
 
 const REASONS = ["fake", "inappropriate", "contact_in_video", "other"] as const;

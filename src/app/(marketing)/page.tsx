@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { CategoryStrip } from "@/components/landing/CategoryStrip";
 import { EmployerSearch } from "@/components/landing/EmployerSearch";
 import { LIcon } from "@/components/landing/icons";
+import { SeeItInAction } from "@/components/landing/SeeItInAction";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { SiteNav } from "@/components/landing/SiteNav";
 import { featuredCandidates } from "@/server/landing-data";
@@ -110,6 +111,9 @@ export default async function Home() {
             </ol>
           </section>
         </div>
+
+        {/* ---------- See it in action ---------- */}
+        <div className="wrapx"><SeeItInAction /></div>
 
         {/* ---------- Employer banner with a working search ---------- */}
         <div className="wrapx">

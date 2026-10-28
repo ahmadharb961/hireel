@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/components/Toast";
-import { resolveReport } from "../actions";
+import { resolveReport } from "../safe-actions";
 
 export function ReportControls({ id }: { id: string }) {
   const t = useTranslations("admin");

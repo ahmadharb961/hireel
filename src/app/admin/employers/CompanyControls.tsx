@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/Toast";
-import { setCompanyPlan, setCompanyStatus } from "../actions";
+import { setCompanyPlan, setCompanyStatus } from "../safe-actions";
 
 export function CompanyControls({ id, status, planId, plans }: { id: string; status: "UNVERIFIED" | "VERIFIED" | "SUSPENDED"; planId: string; plans: { id: string; name: string }[] }) {
   const t = useTranslations("admin");

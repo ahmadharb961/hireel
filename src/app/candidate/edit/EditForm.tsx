@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SkillsInput } from "@/components/SkillsInput";
 import { useToast } from "@/components/Toast";
 import { AVAILABILITY, CITY_SUGGESTIONS, INDUSTRIES } from "@/lib/constants";
-import { saveAbout, saveBasics, saveExperience } from "../actions";
+import { saveAbout, saveBasics, saveExperience } from "../safe-actions";
 
 type V = {
   fullName: string; headline: string; location: string; phone: string; currentTitle: string; industry: string; yearsExperience: string;

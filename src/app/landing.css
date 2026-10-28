@@ -367,3 +367,94 @@ html[lang="ar"] .lg-sec h2 { letter-spacing: 0; }
   .lg-grid { display: block; }
   .lg-closing { color: #000; background: none; border: 1px solid #ccc; }
 }
+
+/* ---------- See it in action ---------- */
+.sia { position: relative; display: grid; gap: 36px; margin-top: 56px; padding: 32px 20px; border-radius: 32px; overflow: hidden;
+  background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--soft) 60%, #fff)); border: 1px solid var(--bd); }
+@media (prefers-color-scheme: dark) { .sia { background: var(--card); } }
+.sia-blob { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(45% 55% at 78% 55%, rgba(179,226,205,.65), rgba(179,226,205,0) 70%), radial-gradient(30% 30% at 100% 0%, rgba(179,226,205,.5), rgba(179,226,205,0) 70%); }
+[dir="rtl"] .sia-blob { transform: scaleX(-1); }
+.sia-copy, .sia-art { position: relative; }
+.sia-title { margin: 16px 0 0; font-size: 38px; line-height: 1.05; font-weight: 800; letter-spacing: -1.4px; color: var(--tx); text-wrap: balance; }
+.sia-title span { display: block; color: var(--g); }
+@media (prefers-color-scheme: dark) { .sia-title span { color: var(--mint); } }
+html[lang="ar"] .sia-title { letter-spacing: 0; line-height: 1.3; }
+.sia-lead { margin-top: 14px; font-size: 16px; line-height: 1.6; color: var(--tx2); max-width: 520px; }
+.sia-feats { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 18px; }
+.sia-feats li { display: flex; gap: 16px; align-items: center; }
+.sia-ic { width: 56px; height: 56px; border-radius: 16px; background: var(--soft); color: var(--g); display: flex; align-items: center; justify-content: center; flex: none; transition: transform .2s; }
+.sia-feats li:hover .sia-ic { transform: scale(1.08) rotate(-4deg); }
+.sia-feats b { display: block; font-size: 17px; color: var(--tx); }
+.sia-feats span:not(.sia-ic) { display: block; font-size: 14px; color: var(--tx2); margin-top: 2px; }
+.sia-ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-top: 28px; }
+.sia-go { min-height: 56px; padding-inline: 26px; border-radius: 14px; box-shadow: 0 10px 24px rgba(25,92,72,.25); }
+.sia-link { color: var(--brand); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.sia-link:hover { text-decoration: underline; }
+
+.sia-art { min-height: 520px; display: flex; justify-content: center; align-items: center; }
+.sia-phone { position: relative; display: block; width: 250px; aspect-ratio: 9 / 19.2; border-radius: 42px; overflow: hidden; background: #111; border: 9px solid #1d1f1e;
+  box-shadow: 0 0 0 2px #4a4d4c, 0 40px 80px rgba(15,42,33,.35); transform: rotate(3deg); transition: transform .35s ease; color: #fff; text-decoration: none; }
+.sia-phone:hover { transform: rotate(0deg) translateY(-6px); }
+.sia-phone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.sia-shade { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,.45), transparent 25%, transparent 70%, rgba(0,0,0,.55)); }
+.sia-notch { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 80px; height: 22px; border-radius: 20px; background: #000; z-index: 3; }
+.sia-status { position: absolute; top: 10px; inset-inline: 18px; z-index: 2; display: flex; justify-content: space-between; font-size: 12px; }
+.sia-status i { width: 22px; height: 10px; border-radius: 3px; border: 1.5px solid #fff; margin-top: 2px; }
+.sia-top { position: absolute; top: 46px; inset-inline: 16px; z-index: 2; display: flex; flex-direction: column; }
+.sia-top b { font-size: 16px; } .sia-top span { font-size: 11px; opacity: .9; }
+.sia-ex { position: absolute; top: 96px; inset-inline-start: 16px; z-index: 2; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; background: rgba(0,0,0,.45); padding: 3px 8px; border-radius: 6px; }
+.sia-x { position: absolute; top: 46px; inset-inline-end: 14px; z-index: 2; }
+.sia-player { position: absolute; bottom: 14px; inset-inline: 16px; z-index: 2; display: grid; gap: 8px; }
+.sia-bar { height: 4px; border-radius: 4px; background: rgba(255,255,255,.35); overflow: hidden; }
+.sia-bar i { display: block; height: 100%; width: 46%; background: var(--mint); border-radius: 4px; }
+.sia-ctrl { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.sia-full { margin-inline-start: auto; font-size: 14px; }
+.sia-chip { position: absolute; top: 22%; inset-inline-start: calc(50% - 215px); z-index: 2; display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 18px;
+  background: color-mix(in srgb, var(--soft) 88%, #fff); color: var(--g); box-shadow: 0 14px 30px rgba(15,42,33,.12); transform: rotate(-3deg); }
+.sia-chip b { font-size: 13px; line-height: 1.25; max-width: 110px; }
+.sia-card { position: absolute; bottom: 14%; inset-inline-end: calc(50% - 250px); z-index: 2; width: 230px; padding: 14px; border-radius: 18px; background: #fff; color: var(--tx); box-shadow: 0 20px 44px rgba(15,42,33,.2); transform: rotate(-5deg); display: flex; flex-direction: column; gap: 10px; }
+@media (prefers-color-scheme: dark) { .sia-card { background: var(--card); } }
+.sia-card-hd { display: flex; gap: 10px; align-items: center; }
+.sia-card-hd img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; }
+.sia-card-hd b { display: block; font-size: 14px; } .sia-card-hd span span { font-size: 11px; color: var(--tx2); }
+.sia-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.sia-tags em { font-style: normal; font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--bd); color: var(--tx2); }
+.sia-card-btn { display: flex; justify-content: center; align-items: center; gap: 6px; background: var(--g); color: #fff; font-size: 12.5px; font-weight: 700; padding: 10px; border-radius: 12px; }
+.sia-hand { top: 0; inset-inline-end: 0; transform: rotate(-8deg); font-size: 24px; }
+.sia-arrow1, .sia-arrow2 { display: none; position: absolute; fill: none; stroke: var(--g); stroke-width: 2; stroke-linecap: round; }
+.sia-arrow1 { width: 64px; top: 110px; inset-inline-end: 6%; }
+.sia-arrow2 { width: 60px; top: 42%; inset-inline-start: calc(50% - 205px); }
+[dir="rtl"] .sia-arrow1, [dir="rtl"] .sia-arrow2 { transform: scaleX(-1); }
+@media (prefers-reduced-motion: no-preference) {
+  .sia-chip { animation: siaF1 6s ease-in-out infinite; }
+  .sia-card { animation: siaF2 7s ease-in-out infinite; }
+  .sia-bar i { animation: siaPlay 8s linear infinite; }
+  @keyframes siaF1 { 50% { transform: rotate(-3deg) translateY(-8px); } }
+  @keyframes siaF2 { 50% { transform: rotate(-5deg) translateY(-10px); } }
+  @keyframes siaPlay { from { width: 0; } to { width: 100%; } }
+}
+@media (max-width: 560px) {
+  .sia-art { min-height: 480px; }
+  .sia-phone { width: 220px; }
+  .sia-chip { inset-inline-start: 0; top: 36%; }
+  .sia-card { inset-inline-end: 0; width: 200px; bottom: 4%; }
+}
+@media (min-width: 720px) {
+  .sia { padding: 48px 40px; }
+  .sia-title { font-size: 50px; }
+  .sia-arrow1, .sia-arrow2 { display: block; }
+}
+@media (min-width: 1024px) {
+  .sia { grid-template-columns: 1fr 1fr; align-items: center; padding: 64px 64px; margin-top: 80px; }
+  .sia-title { font-size: 62px; letter-spacing: -2px; }
+  .sia-lead { font-size: 18px; }
+  /* phone sits toward the text so the note, card and chip have room around it */
+  .sia-art { min-height: 600px; justify-content: flex-start; }
+  .sia-phone { width: 262px; margin-inline-start: 70px; }
+  .sia-chip { inset-inline-start: 0; top: 30%; }
+  .sia-card { inset-inline-end: 0; bottom: 10%; }
+  .sia-hand { top: 4%; inset-inline-end: 0; font-size: 22px; }
+  .sia-arrow1 { top: 128px; inset-inline-end: 12%; }
+  .sia-arrow2 { top: 50%; inset-inline-start: 14px; }
+}
