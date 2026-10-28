@@ -8,6 +8,7 @@ import { Player } from "@/components/Player";
 import { Sheet } from "@/components/Sheet";
 import { LangSwitch } from "@/components/LangSwitch";
 import { Logo } from "@/components/Logo";
+import { startNavProgress } from "@/components/NavProgress";
 import { LIcon } from "@/components/landing/icons";
 import { useToast } from "@/components/Toast";
 import { GateSheet, RequestSheet, UpgradeBody, type Quota } from "@/components/employer/Sheets";
@@ -95,6 +96,7 @@ export function Feed({ initial, nextCursor, seed, filters, employer, limited }: 
     const qs = filtersToQuery(next);
     setFiltersOpen(false);
     setCardLang({});
+    startNavProgress();
     router.replace(`/feed${qs.size ? `?${qs}` : ""}`);
   }
   const setFilter = (k: FilterKey, v: string | null) => applyFilters({ ...filters, [k]: v });

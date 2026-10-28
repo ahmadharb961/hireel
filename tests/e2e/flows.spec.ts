@@ -133,8 +133,11 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page).toHaveURL(/\/feed/);
     // Signed-in employers also see employers-only candidates.
     await expect(page.locator(".item")).toHaveCount(5);
-    await page.locator(".feed").evaluate((el) => el.scrollTo(0, el.scrollHeight));
-    await expect(page.locator(".item")).toHaveCount(6);
+    // The page now shows before it is fully interactive, so keep scrolling until more load.
+    await expect(async () => {
+      await page.locator(".feed").evaluate((el) => el.scrollTo(0, el.scrollHeight));
+      await expect(page.locator(".item")).toHaveCount(6, { timeout: 1000 });
+    }).toPass({ timeout: 10000 });
 
     await page.goto(`/search?q=${lastName}`);
     await page.getByRole("link", { name: new RegExp(lastName) }).click();
@@ -269,6 +272,7 @@ test.describe.serial("Hireel core loop", () => {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const page = await ctx.newPage();
     await page.goto("/");
+    await expect(page.locator(".h2-art")).toBeVisible();
     const hero = await page.locator(".h2-hero").boundingBox();
     expect(hero!.width).toBeGreaterThan(1400);
     const copy = await page.locator(".h2-copy").boundingBox();
@@ -281,6 +285,7 @@ test.describe.serial("Hireel core loop", () => {
     await page.fill("#password", PASSWORD);
     await page.getByRole("button", { name: "Log in" }).last().click();
     await page.waitForURL(/\/candidate/);
+    await expect(page.locator("nav.bn")).toBeVisible();
     const nav = await page.locator("nav.bn").boundingBox();
     expect(nav!.height).toBeGreaterThan(nav!.width); // menu runs down the side
     const main = await page.locator(".main").boundingBox();

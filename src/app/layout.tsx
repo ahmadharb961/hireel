@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { dirOf, resolveLocale } from "@/i18n/locales";
 import { InstallBanner } from "@/components/InstallBanner";
+import { NavProgress } from "@/components/NavProgress";
 import { SwRegister } from "@/components/SwRegister";
 import "./globals.css";
 import "./landing.css";
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} dir={dirOf(locale)} className={`${inter.variable} ${arabic.variable} ${hand.variable}`}>
       <body>
         <NextIntlClientProvider>
+          <NavProgress />
           {children}
           <InstallBanner />
           <SwRegister />
