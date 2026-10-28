@@ -433,7 +433,7 @@
     "acceptBody": "Choose what to share. Only this company will see it.",
     "shareEmail": "Email",
     "sharePhone": "Phone",
-    "shareCv": "CV (work history and education)",
+    "shareCv": "CV (file, work history and education)",
     "acceptShare": "Accept and share",
     "acceptedDone": "Accepted. {company} can now see what you shared.",
     "reportTitle": "Report this company",
