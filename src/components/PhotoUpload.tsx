@@ -3,9 +3,13 @@ import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { useToast } from "@/components/Toast";
 
-/** Round profile photo with add / change / remove. The server crops it square and removes location data. */
-export function PhotoUpload({ initialUrl, name }: { initialUrl: string | null; name: string }) {
-  const t = useTranslations("photo");
+/**
+ * Profile photo (round) or company logo (rounded square) with add / change / remove.
+ * The server resizes the image and removes location and other hidden data.
+ */
+export function PhotoUpload({ initialUrl, name, kind = "photo" }: { initialUrl: string | null; name: string; kind?: "photo" | "logo" }) {
+  const t = useTranslations(kind === "logo" ? "logo" : "photo");
+  const api = kind === "logo" ? "/api/company-logo" : "/api/photo";
   const te = useTranslations("errors");
   const toast = useToast();
   const input = useRef<HTMLInputElement>(null);
@@ -21,7 +25,7 @@ export function PhotoUpload({ initialUrl, name }: { initialUrl: string | null; n
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const d = await fetch("/api/photo", { method: "POST", body: fd }).then((r) => r.json()).catch(() => ({ ok: false, error: "network" }));
+      const d = await fetch(api, { method: "POST", body: fd }).then((r) => r.json()).catch(() => ({ ok: false, error: "network" }));
       if (!d.ok) return setErr(te(d.error ?? "generic"));
       setUrl(d.url);
       toast(t("saved"));
@@ -32,7 +36,7 @@ export function PhotoUpload({ initialUrl, name }: { initialUrl: string | null; n
   async function remove() {
     setBusy(true);
     try {
-      const r = await fetch("/api/photo", { method: "DELETE" }).catch(() => null);
+      const r = await fetch(api, { method: "DELETE" }).catch(() => null);
       if (r?.ok) { setUrl(null); toast(t("removed")); } else setErr(te("network"));
     } finally {
       setBusy(false);
@@ -41,7 +45,7 @@ export function PhotoUpload({ initialUrl, name }: { initialUrl: string | null; n
   const initials = name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
-    <div className="phup">
+    <div className={`phup${kind === "logo" ? " logo" : ""}`}>
       <input ref={input} type="file" accept="image/*" hidden onChange={(e) => { send(e.target.files?.[0]); e.target.value = ""; }} />
       <button type="button" className="phup-av" onClick={() => input.current?.click()} disabled={busy} aria-label={url ? t("change") : t("add")}>
         {url ? <img src={url} alt="" /> : <span>{initials || "+"}</span>}

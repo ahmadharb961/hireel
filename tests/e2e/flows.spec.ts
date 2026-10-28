@@ -184,6 +184,15 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.getByText("Fair-use limits this month")).toBeVisible();
     await expect(page.locator(".meter").first()).toBeVisible();
     await expect(page.getByText(/^1$/).first()).toBeVisible();
+
+    // Company profile: description, website and logo that candidates see on requests.
+    await page.getByRole("link", { name: "Edit company profile" }).click();
+    await page.fill("#description", "We build retail software in Beirut and care about our people.");
+    await page.fill("#website", "cedar.example.com");
+    await page.getByRole("button", { name: "Save company profile" }).click();
+    await expect(page.getByText("Company profile saved")).toBeVisible();
+    await page.locator('.phup input[type="file"]').setInputFiles({ name: "logo.png", mimeType: "image/png", buffer: await sharpPng() });
+    await expect(page.locator(".phup-av img")).toBeVisible();
     await noSideScroll(page);
   });
 
@@ -210,6 +219,9 @@ test.describe.serial("Hireel core loop", () => {
     // Before answering, the candidate can read about the company.
     await expect(page.getByText(`About Cedar Test ${id}`)).toBeVisible();
     await expect(page.getByText("On Hireel since")).toBeVisible();
+    await expect(page.getByText("We build retail software in Beirut")).toBeVisible();
+    await expect(page.getByRole("link", { name: /cedar\.example\.com/ })).toHaveAttribute("href", "https://cedar.example.com/");
+    await expect(page.locator("img.clogo").first()).toBeVisible();
     await page.locator(".card").filter({ hasText: `Cedar Test ${id}` }).screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/req-company.png" }).catch(() => {});
     await page.getByRole("button", { name: "Accept", exact: true }).click();
     const dialog = page.getByRole("dialog");

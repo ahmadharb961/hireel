@@ -609,3 +609,8 @@ nav.bn a:active, nav.fn a:active, nav.fn button:active { opacity: .6; }
 .cinfo[open] > summary::after { transform: rotate(45deg); }
 .cinfo-body { padding: 0 14px 12px; }
 .cinfo-body a { color: var(--brand); font-weight: 700; }
+.phup.logo .phup-av, .phup.logo .phup-av img { border-radius: 22px; }
+.phup.logo .phup-av { background: var(--card); color: var(--brand); border: 1px solid var(--bd); }
+.phup.logo .phup-av img { object-fit: contain; }
+.clogo { width: 40px; height: 40px; border-radius: 12px; object-fit: contain; background: #fff; border: 1px solid var(--bd); flex: none; }
+.clogo.ini { display: inline-flex; align-items: center; justify-content: center; font-weight: 800; color: var(--brand); background: var(--soft); border-color: transparent; }

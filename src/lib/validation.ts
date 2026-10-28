@@ -30,6 +30,15 @@ export const employerSignUpSchema = z.object({
   agree: z.literal("on", { message: "agree" }),
 });
 
+/** What an employer can change on their company profile (the name needs the Hireel team). */
+export const companyProfileSchema = z.object({
+  description: text(1200),
+  website: z.union([z.literal(""), z.string().trim().url("url").max(200)]),
+  industry: z.enum(INDUSTRIES, { message: "required" }),
+  size: z.enum(COMPANY_SIZES, { message: "required" }),
+  country: required(60),
+});
+
 export const profileBasicsSchema = z.object({
   fullName: required(100),
   headline: required(100),

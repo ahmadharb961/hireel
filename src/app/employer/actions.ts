@@ -2,7 +2,7 @@
 import { notifyUsers } from "@/server/push";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { introRequestSchema, firstError } from "@/lib/validation";
+import { companyProfileSchema, introRequestSchema, firstError } from "@/lib/validation";
 import { employerOrNull } from "@/server/session";
 import { rateLimit } from "@/server/ratelimit";
 import { sendIntroRequest } from "@/server/requests";
@@ -66,5 +66,17 @@ export async function reportCandidate(candidateId: string, reason: string, detai
   if (!emp) return { ok: false, error: "signup_required" };
   if (!(await rateLimit(`report:${emp.viewer.id}`, 10, 3600))) return { ok: false, error: "rate_limited" };
   await prisma.report.create({ data: { reporterId: emp.viewer.id, targetType: "CANDIDATE", targetId: candidateId, reason: reason.slice(0, 60), details: details.slice(0, 1000) } });
+  return { ok: true };
+}
+
+/** A company member updates the company's public details (not the name, which the Hireel team changes). */
+export async function updateCompanyProfile(input: unknown): Promise<R> {
+  const emp = await employerOrNull();
+  if (!emp) return { ok: false, error: "signup_required" };
+  if (!(await rateLimit(`company-edit:${emp.viewer.id}`, 30, 3600))) return { ok: false, error: "rate_limited" };
+  const p = companyProfileSchema.safeParse(input);
+  if (!p.success) { const e = firstError(p.error); return { ok: false, error: e.code, field: e.field }; }
+  await prisma.company.update({ where: { id: emp.company.id }, data: p.data });
+  revalidatePath("/employer", "layout");
   return { ok: true };
 }

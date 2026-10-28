@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { getLocale, getTranslations } from "next-intl/server";
 import { FILTER_KEYS, parseFeedFilters } from "@/lib/feed-filters";
+import { logoUrl } from "@/lib/logo";
 import { feedPage } from "@/server/feed";
 import { quotaFor, savedCount } from "@/server/employer-data";
 import { clientIp, rateLimit } from "@/server/ratelimit";
@@ -36,7 +37,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           nextCursor={page.nextCursor}
           seed={seed}
           filters={filters}
-          employer={emp && quota ? { quota: { introLeft: quota.introLeft, cvLeft: quota.cvLeft, planName: quota.planName, isPremium: quota.isPremium }, saved: await savedCount(emp.member.id), maxSaved: emp.company.plan.maxSaved, company: emp.company.name, userName: emp.viewer.name } : null}
+          employer={emp && quota ? { quota: { introLeft: quota.introLeft, cvLeft: quota.cvLeft, planName: quota.planName, isPremium: quota.isPremium }, saved: await savedCount(emp.member.id), maxSaved: emp.company.plan.maxSaved, company: emp.company.name, userName: emp.viewer.name, logo: logoUrl(emp.company) } : null}
           candidateViewer={viewer?.role === "CANDIDATE"}
           limited={!allowed}
         />

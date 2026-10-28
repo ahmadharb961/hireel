@@ -334,6 +334,8 @@ model Company {
   size        String        @default("")
   country     String        @default("Lebanon")
   description String        @default("")
+  // set when a logo exists; also used to refresh cached copies
+  logoUpdatedAt DateTime?
   status      CompanyStatus @default(UNVERIFIED)
   planId      String
   plan        Plan          @relation(fields: [planId], references: [id])
@@ -346,6 +348,7 @@ model Company {
   blocks       Block[]
   usage        UsageLedger[]
   profileViews ProfileView[]
+  logo         CompanyLogo?
 }
 
 model CompanyMember {
@@ -496,4 +499,12 @@ model PushSubscription {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+/// Company logo (resized WebP, metadata removed). Public, like a company's own branding.
+model CompanyLogo {
+  companyId String   @id
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  data      Bytes
+  updatedAt DateTime @updatedAt
 }

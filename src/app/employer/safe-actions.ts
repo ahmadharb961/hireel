@@ -5,3 +5,4 @@ import * as a from "./actions";
 export const toggleSave = safe(a.toggleSave);
 export const requestIntro = safe(a.requestIntro);
 export const reportCandidate = safe(a.reportCandidate);
+export const updateCompanyProfile = safe(a.updateCompanyProfile);

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { logoUrl } from "@/lib/logo";
 import { notFound } from "next/navigation";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
@@ -46,7 +47,7 @@ export default async function CompanyDetail({ params }: { params: Promise<{ id: 
     <AdminFrame tab="employers">
       <Link href="/admin/employers" className="aback">← {ta("backCompanies")}</Link>
       <div className="card ahead">
-        <span className="arow-av lg">{c.name.slice(0, 1)}</span>
+        <span className="arow-av lg">{logoUrl(c) ? <img src={logoUrl(c)!} alt="" style={{ objectFit: "contain", background: "#fff" }} /> : c.name.slice(0, 1)}</span>
         <div style={{ minWidth: 0, flex: 1 }}>
           <h1 className="h2">{c.name} {c.isDemo ? <span className="demo-flag">Demo</span> : null}</h1>
           <p className="p">{[c.industry && (ti.has(c.industry) ? ti(c.industry) : c.industry), c.country, c.size].filter(Boolean).join(" · ")}</p>

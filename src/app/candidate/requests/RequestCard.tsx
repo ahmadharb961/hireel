@@ -8,7 +8,7 @@ import { blockCompany, reportCompany, respondToRequest } from "../safe-actions";
 
 export type RequestView = {
   id: string; company: string; verified: boolean; rep: string; description: string; industry: string; size: string;
-  website: string; country: string; since: string;
+  website: string; country: string; since: string; logo: string | null;
   roleTitle: string; employment: string; workLocation: string; payRange: string; message: string; wantsCv: boolean;
   status: "PENDING" | "ACCEPTED" | "DECLINED" | "WITHDRAWN" | "BLOCKED"; date: string;
   shared: { email: boolean; phone: boolean; cv: boolean }; isDemo: boolean;
@@ -54,9 +54,12 @@ export function RequestCard({ r }: { r: RequestView }) {
   return (
     <div className="card">
       <div className="sw">
-        <div>
+        <div className="pv-name" style={{ alignItems: "flex-start" }}>
+          {r.logo ? <img className="clogo" src={r.logo} alt="" /> : <span className="clogo ini">{r.company.slice(0, 1)}</span>}
+          <div>
           <h2 className="h3">{r.company} {r.verified ? <span className="tag">✓ {t("verified")}</span> : <span className="tag mute">{t("notVerified")}</span>}</h2>
           <p className="p">{r.rep}</p>
+          </div>
         </div>
         {tag}
       </div>

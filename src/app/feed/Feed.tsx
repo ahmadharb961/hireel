@@ -17,7 +17,7 @@ import { EXP_BANDS, FEED_PLACES, filtersToQuery, type FeedFilters } from "@/lib/
 import type { FeedCard } from "@/server/feed";
 import { toggleSave } from "@/app/employer/safe-actions";
 
-type Employer = { quota: Quota; saved: number; maxSaved: number; company: string; userName: string } | null;
+type Employer = { quota: Quota; saved: number; maxSaved: number; company: string; userName: string; logo: string | null } | null;
 type FilterKey = keyof FeedFilters;
 
 function initials(n: string) {
@@ -386,7 +386,7 @@ function DeskTop({ employer, candidate, savedN, onGate }: { employer: Employer; 
         <LangSwitch />
         {employer ? (
           <Link href="/employer/account" className="ftop-me">
-            <span className="ftop-av">{initials(employer.userName || employer.company).slice(0, 1)}</span>
+            {employer.logo ? <img className="clogo" src={employer.logo} alt="" /> : <span className="ftop-av">{initials(employer.userName || employer.company).slice(0, 1)}</span>}
             <span className="ftop-who"><b>{employer.userName}</b><span>{employer.company}</span></span>
           </Link>
         ) : candidate ? (

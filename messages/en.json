@@ -1179,5 +1179,27 @@
     "iosInstall": "On iPhone, notifications work after you add Hireel to your Home Screen: tap Share, then “Add to Home Screen”, and open Hireel from there.",
     "blocked": "Notifications are blocked for Hireel on this device. To allow them, open your phone’s Settings → Notifications (iPhone) or the site settings in your browser (Android).",
     "unsupported": "This browser can’t show notifications."
+  },
+  "logo": {
+    "title": "Company logo",
+    "help": "Square logos look best (PNG with a transparent background works well). Candidates see it on your requests.",
+    "add": "Add logo",
+    "change": "Change logo",
+    "remove": "Remove",
+    "saved": "Logo saved",
+    "removed": "Logo removed"
+  },
+  "companyEdit": {
+    "title": "Company profile",
+    "sub": "Candidates see this on every intro request you send. A clear description and website help them say yes.",
+    "name": "Company name",
+    "nameNote": "To change the company name, contact the Hireel team (it affects verification).",
+    "description": "About the company",
+    "descriptionHint": "What you do, your team and culture, and what it’s like to work with you.",
+    "descriptionNote": "{n} characters left",
+    "website": "Website",
+    "save": "Save company profile",
+    "saved": "Company profile saved",
+    "editButton": "Edit company profile"
   }
 }
