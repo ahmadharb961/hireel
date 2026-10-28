@@ -41,7 +41,20 @@ export async function requestIntro(input: unknown): Promise<R> {
   const cand = await prisma.candidateProfile.findUnique({ where: { id: candidateId }, select: { userId: true } });
   if (cand) {
     const company = emp.company.name;
-    void notifyUsers([cand.userId], (t) => ({ title: t("newRequestTitle"), body: t("newRequestBody", { company, role: rest.roleTitle }), url: "/candidate/requests", tag: `req-${res.id}` }));
+    void notifyUsers([cand.userId], (t) => ({
+      title: t("push.newRequestTitle"),
+      body: t("push.newRequestBody", { company, role: rest.roleTitle }),
+      url: "/candidate/requests",
+      tag: `req-${res.id}`,
+      cta: t("push.ctaRequest"),
+      lines: [
+        `${t("push.lineRole")}: ${rest.roleTitle} · ${t.has(`employment.${rest.employment}` as "employment.FULL_TIME") ? t(`employment.${rest.employment}` as "employment.FULL_TIME") : rest.employment}${rest.workLocation ? ` · ${rest.workLocation}` : ""}`,
+        rest.payRange ? `${t("push.linePay")}: ${rest.payRange}` : "",
+        `${t("push.lineMessage")}: “${rest.message}”`,
+        rest.wantsCv ? t("push.lineWantsCv") : "",
+        t("push.linePrivate"),
+      ],
+    }));
   }
   revalidatePath("/employer/inbox");
   revalidatePath("/employer/account");

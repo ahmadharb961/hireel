@@ -23,11 +23,11 @@ export async function moderateVideo(videoId: string, decision: "approve" | "reje
   const a = await admin();
   const v = await prisma.video.findFirst({ where: { id: videoId, archivedAt: null, processing: "READY" } });
   if (!v) return { ok: false, error: "not_found" };
+  const key = (REJECTION_REASONS as readonly string[]).includes(reasonKey ?? "") ? reasonKey! : "custom";
   if (decision === "approve") {
     await approveVideo(v.id);
     await audit(a.id, "video.approve", "Video", v.id);
   } else {
-    const key = (REJECTION_REASONS as readonly string[]).includes(reasonKey ?? "") ? reasonKey! : "custom";
     const text = (note ?? "").trim().slice(0, 400);
     if (key === "custom" && text.length < 5) return { ok: false, error: "reason_required" };
     // Stored as "key::note" so the candidate sees the reason in their own language plus the admin's note.
@@ -38,7 +38,15 @@ export async function moderateVideo(videoId: string, decision: "approve" | "reje
   const owner = await prisma.candidateProfile.findUnique({ where: { id: v.candidateId }, select: { userId: true } });
   if (owner) {
     const ok = decision === "approve";
-    void notifyUsers([owner.userId], (t) => ({ title: t(ok ? "videoLiveTitle" : "videoRejectedTitle"), body: t(ok ? "videoLiveBody" : "videoRejectedBody"), url: "/candidate/video", tag: `video-${v.id}` }));
+    const [rk, rn] = ok ? ["", ""] : (key === "custom" ? ["custom", (note ?? "").trim()] : [key, (note ?? "").trim()]);
+    void notifyUsers([owner.userId], (t) => ({
+      title: t(ok ? "push.videoLiveTitle" : "push.videoRejectedTitle"),
+      body: t(ok ? "push.videoLiveBody" : "push.videoRejectedBody"),
+      url: "/candidate/video",
+      tag: `video-${v.id}`,
+      cta: t("push.ctaVideo"),
+      lines: ok ? [] : [`${t("push.lineReason")}: ${[rk !== "custom" && t.has(`rejection.${rk}` as "rejection.custom") ? t(`rejection.${rk}` as "rejection.custom") : "", rn].filter(Boolean).join(" — ")}`],
+    }));
   }
   revalidatePath("/admin", "layout");
   return { ok: true };

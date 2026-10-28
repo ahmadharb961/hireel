@@ -155,10 +155,12 @@ export async function respondToRequest(id: string, decision: "accept" | "decline
   const name = profile.fullName.split(" ")[0] || profile.fullName;
   const accepted = decision === "accept";
   void notifyUsers(members.map((m) => m.userId), (t) => ({
-    title: t(accepted ? "acceptedTitle" : "declinedTitle"),
-    body: t(accepted ? "acceptedBody" : "declinedBody", { name, role: req.roleTitle }),
+    title: t(accepted ? "push.acceptedTitle" : "push.declinedTitle"),
+    body: t(accepted ? "push.acceptedBody" : "push.declinedBody", { name, role: req.roleTitle }),
     url: "/employer/inbox",
     tag: `req-${req.id}`,
+    cta: t("push.ctaInbox"),
+    lines: accepted ? [t("push.lineShared", { what: [share?.email && t("push.shareEmail"), share?.phone && t("push.sharePhone"), share?.cv && t("push.shareCv")].filter(Boolean).join(", ") || "—" })] : [],
   }));
   revalidatePath("/candidate", "layout");
   return { ok: true };

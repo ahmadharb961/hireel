@@ -40,7 +40,7 @@ export async function applyStreamInfo(video: Video, info: ReturnType<typeof pars
     if (flipped.count) {
       const c = await prisma.candidateProfile.findUnique({ where: { id: video.candidateId }, select: { fullName: true } });
       const name = c?.fullName || "A candidate";
-      void adminIds().then((ids) => notifyUsers(ids, (t) => ({ title: t("reviewTitle"), body: t("reviewBody", { name }), url: "/admin/videos", tag: "review" })));
+      void adminIds().then((ids) => notifyUsers(ids, (t) => ({ title: t("push.reviewTitle"), body: t("push.reviewBody", { name }), url: "/admin/videos", tag: "review", cta: t("push.ctaReview") })));
     }
     return (await prisma.video.findUnique({ where: { id: video.id } }))!;
   }

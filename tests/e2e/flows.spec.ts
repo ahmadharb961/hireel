@@ -176,6 +176,8 @@ test.describe.serial("Hireel core loop", () => {
     await page.check('input[name="wantsCv"]');
     await page.getByRole("button", { name: "Send request" }).click();
     await expect(page.getByRole("button", { name: "Request sent" })).toBeVisible();
+    // The candidate is told by email (and on their phone, if they turned notifications on).
+    expect(await linkFromEmail(candEmail, /New intro request/)).toContain("/candidate/requests");
 
     await page.goto("/employer/account");
     await expect(page.getByText("Free during our launch")).toBeVisible();
@@ -218,6 +220,7 @@ test.describe.serial("Hireel core loop", () => {
     expect(covered).toBe(false);
     await dialog.getByRole("button", { name: "Accept and share" }).click();
     await expect(page.getByText("You shared: Email.")).toBeVisible();
+    expect(await linkFromEmail(empEmail, /Request accepted/)).toContain("/employer/inbox");
 
     await signIn(page, empEmail);
     await page.goto("/employer/inbox");
