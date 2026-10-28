@@ -1,12 +1,12 @@
 import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
-import nodemailer from "nodemailer";
+import nodemailer, { type Transporter } from "nodemailer";
 import { env, smtpConfigured } from "./env";
 
 export type Mail = { to: string; subject: string; text: string; html: string };
 
-let transport: nodemailer.Transporter | null = null;
+let transport: Transporter | null = null;
 function getTransport() {
   if (!transport) {
     transport = nodemailer.createTransport({
