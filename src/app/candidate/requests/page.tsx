@@ -1,5 +1,5 @@
 import { getFormatter, getTranslations } from "next-intl/server";
-import { logoUrl } from "@/lib/logo";
+import { bannerUrl, logoUrl } from "@/lib/logo";
 import { CandidateNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
 import { requireOnboardedCandidate } from "@/server/candidate-data";
@@ -38,6 +38,8 @@ export default async function RequestsPage() {
                 size: r.company.size,
                 website: r.company.website,
                 logo: logoUrl(r.company),
+                banner: bannerUrl(r.company),
+                social: { linkedin: r.company.linkedinUrl, instagram: r.company.instagramUrl, facebook: r.company.facebookUrl },
                 country: r.company.country,
                 since: fmt.dateTime(r.company.createdAt, { month: "long", year: "numeric" }),
                 roleTitle: r.roleTitle,

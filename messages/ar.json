@@ -118,7 +118,8 @@
     "cv_type": "يرجى رفع ملف PDF أو Word (‎.pdf أو ‎.doc أو ‎.docx).",
     "cv_missing": "اختر ملفاً لرفعه.",
     "photo_type": "يرجى اختيار صورة (JPG أو PNG).",
-    "photo_too_big": "حجم الصورة أكبر من 12 ميغابايت. يرجى اختيار صورة أصغر."
+    "photo_too_big": "حجم الصورة أكبر من 12 ميغابايت. يرجى اختيار صورة أصغر.",
+    "social_url": "يرجى التحقّق من رابط صفحة التواصل."
   },
   "home": {
     "login": "تسجيل الدخول",
@@ -1200,6 +1201,24 @@
     "website": "الموقع الإلكتروني",
     "save": "حفظ ملف الشركة",
     "saved": "تمّ حفظ ملف الشركة",
-    "editButton": "تعديل ملف الشركة"
+    "editButton": "تعديل ملف الشركة",
+    "socialTitle": "صفحات التواصل الاجتماعي (اختيارية)",
+    "socialNote": "الصق الرابط أو اسم المستخدم فقط. غالباً ما يتحقّق المرشّحون منها للتأكّد من أن الشركة حقيقية.",
+    "linkedin": "LinkedIn",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "linkedinPh": "linkedin.com/company/your-company",
+    "instagramPh": "@yourcompany",
+    "facebookPh": "facebook.com/yourcompany",
+    "socialInvalid": "يبدو أن هذا ليس رابط صفحة على {site}. الصق رابط صفحة شركتك أو اتركه فارغاً."
+  },
+  "banner": {
+    "title": "صورة الغلاف",
+    "help": "صورة عريضة (3:1، مثلاً 1500 × 500) تظهر أعلى تفاصيل شركتك. اختيارية.",
+    "add": "إضافة غلاف",
+    "change": "تغيير الغلاف",
+    "remove": "إزالة",
+    "saved": "تمّ حفظ الغلاف",
+    "removed": "تمّت إزالة الغلاف"
   }
 }

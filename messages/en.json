@@ -118,7 +118,8 @@
     "cv_type": "Please upload a PDF or Word file (.pdf, .doc or .docx).",
     "cv_missing": "Choose a file to upload.",
     "photo_type": "Please choose a photo (JPG or PNG).",
-    "photo_too_big": "This photo is larger than 12 MB. Please choose a smaller one."
+    "photo_too_big": "This photo is larger than 12 MB. Please choose a smaller one.",
+    "social_url": "Please check the social page link."
   },
   "home": {
     "login": "Log in",
@@ -1200,6 +1201,24 @@
     "website": "Website",
     "save": "Save company profile",
     "saved": "Company profile saved",
-    "editButton": "Edit company profile"
+    "editButton": "Edit company profile",
+    "socialTitle": "Social pages (optional)",
+    "socialNote": "Paste a link or just the username. Candidates often check these to see the company is real.",
+    "linkedin": "LinkedIn",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "linkedinPh": "linkedin.com/company/your-company",
+    "instagramPh": "@yourcompany",
+    "facebookPh": "facebook.com/yourcompany",
+    "socialInvalid": "That doesn’t look like a {site} page. Paste the link to your company’s page, or leave it empty."
+  },
+  "banner": {
+    "title": "Cover banner",
+    "help": "A wide image (3:1, for example 1500 × 500) shown at the top of your company details. Optional.",
+    "add": "Add cover",
+    "change": "Change cover",
+    "remove": "Remove",
+    "saved": "Cover saved",
+    "removed": "Cover removed"
   }
 }

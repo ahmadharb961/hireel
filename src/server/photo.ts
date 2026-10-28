@@ -32,3 +32,16 @@ export async function processLogo(input: Uint8Array): Promise<Uint8Array<ArrayBu
     return null;
   }
 }
+
+/** Company cover banners: 1500×500 (3:1) centre crop, WebP, metadata removed. */
+export async function processBanner(input: Uint8Array): Promise<Uint8Array<ArrayBuffer> | null> {
+  try {
+    const img = sharp(input, { limitInputPixels: 80_000_000, failOn: "error" });
+    const meta = await img.metadata();
+    if (!meta.width || !meta.height || !["jpeg", "png", "webp", "heif", "avif", "tiff"].includes(meta.format ?? "")) return null;
+    const out = await img.rotate().resize(1500, 500, { fit: "cover", position: "attention" }).webp({ quality: 82 }).toBuffer();
+    return new Uint8Array(out);
+  } catch {
+    return null;
+  }
+}

@@ -2,13 +2,15 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { LIcon } from "@/components/landing/icons";
 import { Sheet } from "@/components/Sheet";
 import { useToast } from "@/components/Toast";
 import { blockCompany, reportCompany, respondToRequest } from "../safe-actions";
 
 export type RequestView = {
   id: string; company: string; verified: boolean; rep: string; description: string; industry: string; size: string;
-  website: string; country: string; since: string; logo: string | null;
+  website: string; country: string; since: string; logo: string | null; banner: string | null;
+  social: { linkedin: string; instagram: string; facebook: string };
   roleTitle: string; employment: string; workLocation: string; payRange: string; message: string; wantsCv: boolean;
   status: "PENDING" | "ACCEPTED" | "DECLINED" | "WITHDRAWN" | "BLOCKED"; date: string;
   shared: { email: boolean; phone: boolean; cv: boolean }; isDemo: boolean;
@@ -67,12 +69,25 @@ export function RequestCard({ r }: { r: RequestView }) {
       <details className="cinfo" open={r.status === "PENDING"}>
         <summary>{t("aboutCompany", { company: r.company })}</summary>
         <div className="cinfo-body">
+          {r.banner ? (
+            <div className="chead">
+              <div className="chead-banner" style={{ backgroundImage: `url(${r.banner})` }} />
+              <span className="chead-logo">{r.logo ? <img src={r.logo} alt="" /> : r.company.slice(0, 1)}</span>
+            </div>
+          ) : null}
           {r.description ? <p className="p" style={{ color: "var(--tx)", whiteSpace: "pre-wrap" }}>{r.description}</p> : <p className="note">{t("noDescription")}</p>}
           <div className="kv"><span>{t("website")}</span><b>{site ? <a href={site.href} target="_blank" rel="noopener noreferrer nofollow">{site.label} ↗</a> : "—"}</b></div>
           <div className="kv"><span>{t("industry")}</span><b>{r.industry ? (ti.has(r.industry) ? ti(r.industry) : r.industry) : "—"}</b></div>
           <div className="kv"><span>{t("size")}</span><b>{r.size ? t("employees", { size: r.size }) : "—"}</b></div>
           <div className="kv"><span>{t("country")}</span><b>{r.country || "—"}</b></div>
           <div className="kv"><span>{t("since")}</span><b>{r.since}</b></div>
+          {Object.values(r.social).some(Boolean) ? (
+            <div className="csocial">
+              {(["linkedin", "instagram", "facebook"] as const).filter((k) => r.social[k]).map((k) => (
+                <a key={k} href={r.social[k]} target="_blank" rel="noopener noreferrer nofollow" aria-label={`${r.company} · ${k}`}><LIcon name={k} size={18} /><span>{k === "linkedin" ? "LinkedIn" : k === "instagram" ? "Instagram" : "Facebook"}</span></a>
+              ))}
+            </div>
+          ) : null}
           <p className="note" style={{ marginTop: 8 }}>{r.verified ? t("verifiedExplain") : t("notVerifiedExplain")}</p>
           <p className="note">{t("safetyTip")}</p>
         </div>

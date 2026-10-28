@@ -2,6 +2,7 @@
 import { notifyUsers } from "@/server/push";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { SOCIALS, normalizeSocial } from "@/lib/social";
 import { companyProfileSchema, introRequestSchema, firstError } from "@/lib/validation";
 import { employerOrNull } from "@/server/session";
 import { rateLimit } from "@/server/ratelimit";
@@ -76,7 +77,14 @@ export async function updateCompanyProfile(input: unknown): Promise<R> {
   if (!(await rateLimit(`company-edit:${emp.viewer.id}`, 30, 3600))) return { ok: false, error: "rate_limited" };
   const p = companyProfileSchema.safeParse(input);
   if (!p.success) { const e = firstError(p.error); return { ok: false, error: e.code, field: e.field }; }
-  await prisma.company.update({ where: { id: emp.company.id }, data: p.data });
+  const social: Record<string, string> = {};
+  for (const k of SOCIALS) {
+    const field = `${k}Url` as "linkedinUrl" | "instagramUrl" | "facebookUrl";
+    const v = normalizeSocial(k, p.data[field]);
+    if (v === null) return { ok: false, error: "social_url", field };
+    social[field] = v;
+  }
+  await prisma.company.update({ where: { id: emp.company.id }, data: { ...p.data, ...social } });
   revalidatePath("/employer", "layout");
   return { ok: true };
 }

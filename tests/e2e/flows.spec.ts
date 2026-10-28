@@ -189,10 +189,17 @@ test.describe.serial("Hireel core loop", () => {
     await page.getByRole("link", { name: "Edit company profile" }).click();
     await page.fill("#description", "We build retail software in Beirut and care about our people.");
     await page.fill("#website", "cedar.example.com");
+    await page.fill("#instagram", "@cedar.test");
+    await page.fill("#facebook", "https://evil.example.com/page");
+    await page.getByRole("button", { name: "Save company profile" }).click();
+    await expect(page.getByText("doesn’t look like a Facebook page")).toBeVisible();
+    await page.fill("#facebook", "");
     await page.getByRole("button", { name: "Save company profile" }).click();
     await expect(page.getByText("Company profile saved")).toBeVisible();
     await page.locator('.phup input[type="file"]').setInputFiles({ name: "logo.png", mimeType: "image/png", buffer: await sharpPng() });
     await expect(page.locator(".phup-av img")).toBeVisible();
+    await page.locator('.bnup input[type="file"]').setInputFiles({ name: "cover.png", mimeType: "image/png", buffer: await sharpPng() });
+    await expect(page.locator(".bnup-box")).toHaveAttribute("style", /company-banner/);
     await noSideScroll(page);
   });
 
@@ -222,6 +229,8 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.getByText("We build retail software in Beirut")).toBeVisible();
     await expect(page.getByRole("link", { name: /cedar\.example\.com/ })).toHaveAttribute("href", "https://cedar.example.com/");
     await expect(page.locator("img.clogo").first()).toBeVisible();
+    await expect(page.locator(".chead-banner").first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /instagram/i })).toHaveAttribute("href", "https://www.instagram.com/cedar.test");
     await page.locator(".card").filter({ hasText: `Cedar Test ${id}` }).screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/req-company.png" }).catch(() => {});
     await page.getByRole("button", { name: "Accept", exact: true }).click();
     const dialog = page.getByRole("dialog");

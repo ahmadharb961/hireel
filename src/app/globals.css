@@ -614,3 +614,34 @@ nav.bn a:active, nav.fn a:active, nav.fn button:active { opacity: .6; }
 .phup.logo .phup-av img { object-fit: contain; }
 .clogo { width: 40px; height: 40px; border-radius: 12px; object-fit: contain; background: #fff; border: 1px solid var(--bd); flex: none; }
 .clogo.ini { display: inline-flex; align-items: center; justify-content: center; font-weight: 800; color: var(--brand); background: var(--soft); border-color: transparent; }
+
+/* Company header: cover banner with the logo overlapping it (requests, edit page, admin) */
+.chead { position: relative; margin: 0 -14px 34px; }
+.chead-banner { display: block; width: 100%; aspect-ratio: 3 / 1; background: linear-gradient(135deg, var(--soft), color-mix(in srgb, var(--g) 25%, var(--soft))) center / cover no-repeat; border: 0; padding: 0; }
+.chead .chead-banner { border-radius: 0; }
+.chead-logo { position: absolute; bottom: -26px; inset-inline-start: 14px; width: 60px; height: 60px; border-radius: 16px; background: #fff; border: 3px solid var(--card); box-shadow: 0 6px 16px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; overflow: hidden; font-weight: 800; font-size: 22px; color: var(--brand); }
+.chead-logo img { width: 100%; height: 100%; object-fit: contain; }
+.csocial { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.csocial a { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--bd); background: var(--card); color: var(--tx); font-size: 13px; font-weight: 600; text-decoration: none; }
+.csocial a:hover { border-color: var(--g); color: var(--brand); }
+
+/* Banner picker on the company profile page */
+.chead-card { padding: 0; overflow: hidden; }
+.bnup { position: relative; }
+.bnup-box { cursor: pointer; position: relative; border-radius: 20px 20px 0 0; }
+.bnup-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--brand); font-weight: 700; font-size: 14px; }
+.bnup-busy { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.35); color: #fff; font-size: 22px; }
+/* the logo overlaps the bottom edge of the banner */
+.bnup > .chead-logo { position: relative; bottom: auto; inset-inline-start: auto; margin-top: -32px; margin-inline-start: 16px; }
+.bnup-tx { padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 2px; }
+.bnup-tx b { font-size: 15px; }
+
+/* Input with a leading icon (social links) */
+.iwrap { position: relative; }
+.iwrap > svg { position: absolute; top: 50%; inset-inline-start: 14px; transform: translateY(-50%); color: var(--tx2); pointer-events: none; }
+.iwrap > .i { padding-inline-start: 44px; }
+
+@media (min-width: 720px) {
+  .chead-logo { width: 76px; height: 76px; bottom: -32px; border-radius: 20px; }
+  .chead { margin-bottom: 42px; }
+}

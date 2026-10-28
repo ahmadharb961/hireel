@@ -37,6 +37,9 @@ export const companyProfileSchema = z.object({
   industry: z.enum(INDUSTRIES, { message: "required" }),
   size: z.enum(COMPANY_SIZES, { message: "required" }),
   country: required(60),
+  linkedinUrl: text(200),
+  instagramUrl: text(200),
+  facebookUrl: text(200),
 });
 
 export const profileBasicsSchema = z.object({

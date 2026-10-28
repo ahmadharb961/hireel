@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { logoUrl } from "@/lib/logo";
+import { bannerUrl, logoUrl } from "@/lib/logo";
 import { notFound } from "next/navigation";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
@@ -46,6 +46,7 @@ export default async function CompanyDetail({ params }: { params: Promise<{ id: 
   return (
     <AdminFrame tab="employers">
       <Link href="/admin/employers" className="aback">← {ta("backCompanies")}</Link>
+      {bannerUrl(c) ? <div className="chead-banner" style={{ backgroundImage: `url(${bannerUrl(c)})`, borderRadius: 20 }} /> : null}
       <div className="card ahead">
         <span className="arow-av lg">{logoUrl(c) ? <img src={logoUrl(c)!} alt="" style={{ objectFit: "contain", background: "#fff" }} /> : c.name.slice(0, 1)}</span>
         <div style={{ minWidth: 0, flex: 1 }}>
@@ -67,6 +68,7 @@ export default async function CompanyDetail({ params }: { params: Promise<{ id: 
           <h2 className="h3">{ta("companyInfo")}</h2>
           <dl className="afacts">
             {fact(ta("website"), c.website ? <a href={c.website} target="_blank" rel="noreferrer noopener">{c.website}</a> : null)}
+            {[["LinkedIn", c.linkedinUrl], ["Instagram", c.instagramUrl], ["Facebook", c.facebookUrl]].map(([k, u]) => <div key={k}><dt>{k}</dt><dd>{u ? <a href={u} target="_blank" rel="noreferrer noopener nofollow">{u.replace(/^https:\/\/(www\.)?/, "")}</a> : "—"}</dd></div>)}
             {fact(ta("signedUp"), date(c.createdAt))}
             {fact(ta("updated"), date(c.updatedAt))}
             {fact(ta("limitsGroup"), locale === "ar" ? c.plan.nameAr : c.plan.nameEn)}

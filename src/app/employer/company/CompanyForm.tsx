@@ -2,11 +2,12 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { LIcon } from "@/components/landing/icons";
 import { useToast } from "@/components/Toast";
 import { COMPANY_SIZES, COUNTRIES, INDUSTRIES } from "@/lib/constants";
 import { updateCompanyProfile } from "../safe-actions";
 
-type V = { description: string; website: string; industry: string; size: string; country: string };
+type V = { description: string; website: string; industry: string; size: string; country: string; linkedinUrl: string; instagramUrl: string; facebookUrl: string };
 
 export function CompanyForm({ name, initial }: { name: string; initial: V }) {
   const t = useTranslations("companyEdit");
@@ -24,7 +25,11 @@ export function CompanyForm({ name, initial }: { name: string; initial: V }) {
     setBusy(true); setErr(null);
     const r = await updateCompanyProfile({ ...v, website: v.website.trim() && !/^https?:\/\//i.test(v.website.trim()) ? `https://${v.website.trim()}` : v.website.trim() });
     setBusy(false);
-    if (!r.ok) return setErr("field" in r && r.field ? te(r.error, { field: r.field }) : te(r.error));
+    if (!r.ok) {
+      const f = "field" in r ? r.field : undefined;
+      if (r.error === "social_url" && f) return setErr(t("socialInvalid", { site: t(f.replace("Url", "") as "linkedin") }));
+      return setErr(f ? te(r.error, { field: f }) : te(r.error));
+    }
     toast(t("saved"));
     router.refresh();
   }
@@ -48,6 +53,14 @@ export function CompanyForm({ name, initial }: { name: string; initial: V }) {
         {COUNTRIES.map((c) => <option key={c} value={c}>{ts(`countries.${c.replace(/ /g, "_")}` as "countries.Lebanon")}</option>)}
         {!COUNTRIES.includes(v.country as (typeof COUNTRIES)[number]) ? <option value={v.country}>{v.country}</option> : null}
       </select>
+      <h3 className="h3" style={{ marginTop: 20 }}>{t("socialTitle")}</h3>
+      <p className="note">{t("socialNote")}</p>
+      {(["linkedin", "instagram", "facebook"] as const).map((k) => (
+        <div key={k}>
+          <label className="lbl" htmlFor={k}>{t(k)}</label>
+          <div className="iwrap"><LIcon name={k} size={20} /><input className="i" id={k} dir="ltr" inputMode="url" autoCapitalize="none" value={v[`${k}Url`]} onChange={set(`${k}Url`)} placeholder={t(`${k}Ph`)} /></div>
+        </div>
+      ))}
       {err ? <p className="err" role="alert">{err}</p> : null}
       <button type="button" className="btn w" style={{ marginTop: 18 }} disabled={busy} onClick={save}>{busy ? "…" : t("save")}</button>
     </div>

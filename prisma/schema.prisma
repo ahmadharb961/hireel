@@ -336,6 +336,11 @@ model Company {
   description String        @default("")
   // set when a logo exists; also used to refresh cached copies
   logoUpdatedAt DateTime?
+  bannerUpdatedAt DateTime?
+  // optional social pages (full https links, checked to be on the right site)
+  linkedinUrl  String        @default("")
+  instagramUrl String        @default("")
+  facebookUrl  String        @default("")
   status      CompanyStatus @default(UNVERIFIED)
   planId      String
   plan        Plan          @relation(fields: [planId], references: [id])
@@ -349,6 +354,7 @@ model Company {
   usage        UsageLedger[]
   profileViews ProfileView[]
   logo         CompanyLogo?
+  banner       CompanyBanner?
 }
 
 model CompanyMember {
@@ -503,6 +509,14 @@ model PushSubscription {
 
 /// Company logo (resized WebP, metadata removed). Public, like a company's own branding.
 model CompanyLogo {
+  companyId String   @id
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  data      Bytes
+  updatedAt DateTime @updatedAt
+}
+
+/// Company cover banner (resized 1500×500 WebP, metadata removed). Public, like the logo.
+model CompanyBanner {
   companyId String   @id
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   data      Bytes
