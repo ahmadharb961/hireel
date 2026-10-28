@@ -44,10 +44,13 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
   // Sound on by default. If the browser refuses (nothing tapped yet), the player falls back to muted.
   const [muted, setMuted] = useState(false);
   const [flash, setFlash] = useState<null | "sound" | "mute">(null);
+  // True when the browser refused sound before the first tap; a single unmute button is shown then.
+  const [forcedMute, setForcedMute] = useState(false);
   const flashTimer = useRef(0);
   const toggleSound = () => {
     const next = !muted;
     setMuted(next);
+    setForcedMute(false);
     setFlash(next ? "mute" : "sound");
     window.clearTimeout(flashTimer.current);
     flashTimer.current = window.setTimeout(() => setFlash(null), 700);
@@ -170,7 +173,7 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
                 {v.hls ? (
                   <Player src={v.hls} poster={v.poster} landscape={v.landscape} active={i === active} load={near} muted={muted} paused={isPaused}
                     onWatched3s={() => reportView(v.id)} onProgress={i === active ? (p) => setProgress({ i, p }) : undefined}
-                    onAutoplayBlocked={i === active ? () => setMuted(true) : undefined} />
+                    onAutoplayBlocked={i === active ? () => { setMuted(true); setForcedMute(true); } : undefined} />
                 ) : (
                   <div className="face" aria-hidden="true">{initials(c.name)}</div>
                 )}
@@ -180,12 +183,13 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
                     {v.hls ? <button type="button" className="pz-snd" onClick={toggleSound} aria-label={t("toggleSound")} aria-pressed={!muted}><LIcon name={muted ? "mute" : "sound"} size={20} /></button> : null}
                     <button type="button" className="pz-play" onClick={() => setPaused((p) => ({ ...p, [c.id]: false }))} aria-label={t("play")}><LIcon name="play" fill size={30} /></button>
                   </div>
+                ) : i === active && forcedMute && muted && v.hls ? (
+                  <div className="pz2"><button type="button" className="pz-snd big" onClick={toggleSound} aria-label={t("toggleSound")}><LIcon name="mute" size={24} /></button></div>
                 ) : i === active && flash ? <div className="pz2 flash" aria-hidden="true"><span className="pz-snd"><LIcon name={flash} size={22} /></span></div> : null}
                 <div className="top">
                   {v.views !== null ? <span className="pill">{t("views", { n: v.views })}</span> : <span />}
                   <span style={{ display: "flex", gap: 6 }}>
                     {c.isDemo ? <span className="pill">{t("demo")}</span> : null}
-                    {v.hls ? <button type="button" className="snd-ic" onClick={toggleSound} aria-label={t("toggleSound")} aria-pressed={!muted}><LIcon name={muted ? "mute" : "sound"} size={18} /></button> : null}
                   </span>
                 </div>
                 <div className="info">
