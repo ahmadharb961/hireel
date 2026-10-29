@@ -41,7 +41,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ id: st
     <div className="site2">
       <SiteNav account={viewer ? homeFor(viewer.role) : null} />
       <main className="wrapx cpage">
-        <Link className="cpage-back" href="/#top-employers"><LIcon name="arrow" size={16} className="cpage-backic" /> {t("back")}</Link>
+        <Link className="cpage-back" href="/companies"><LIcon name="arrow" size={16} className="cpage-backic" /> {t("back")}</Link>
         <article className="cpage-card">
           <div className="cpage-banner" style={bannerUrl(c) ? { backgroundImage: `url(${bannerUrl(c)})` } : undefined} />
           <div className="cpage-body">

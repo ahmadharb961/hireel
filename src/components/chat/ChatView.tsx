@@ -50,6 +50,7 @@ export function ChatView(p: ChatProps) {
   const [reason, setReason] = useState<(typeof REASONS)[number]>("fake");
   const [details, setDetails] = useState("");
   const [busy, setBusy] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLDivElement>(null);
   const box = useRef<HTMLTextAreaElement>(null);
   const stick = useRef(true);
@@ -80,6 +81,39 @@ export function ChatView(p: ChatProps) {
     void poll();
     return () => { clearInterval(timer); document.removeEventListener("visibilitychange", onVis); window.removeEventListener("focus", onVis); };
   }, [poll]);
+
+  // Like WhatsApp: when the keyboard opens, the chat shrinks to the space above it, so the header stays
+  // at the top and the newest messages stay just above the typing box. iPhone Safari doesn't shrink
+  // the page by itself (it slides everything up), so the chat follows the visible area instead.
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const el = root.current;
+    if (!vv || !el) return;
+    const html = document.documentElement;
+    const prev = [html.style.overflow, document.body.style.overflow];
+    html.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    let raf = 0;
+    const fit = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        el.style.height = `${vv.height}px`;
+        el.style.transform = vv.offsetTop ? `translateY(${vv.offsetTop}px)` : "";
+        el.classList.toggle("kb", window.innerHeight - vv.height > 120);
+        const l = list.current;
+        if (l && stick.current) l.scrollTop = l.scrollHeight;
+      });
+    };
+    fit();
+    vv.addEventListener("resize", fit);
+    vv.addEventListener("scroll", fit);
+    return () => {
+      cancelAnimationFrame(raf);
+      vv.removeEventListener("resize", fit);
+      vv.removeEventListener("scroll", fit);
+      [html.style.overflow, document.body.style.overflow] = prev;
+    };
+  }, []);
 
   // Stay at the newest message unless the person scrolled up to read older ones.
   useLayoutEffect(() => {
@@ -164,7 +198,7 @@ export function ChatView(p: ChatProps) {
   const over = text.length > MAX;
 
   return (
-    <div className="chat">
+    <div className="chat" ref={root}>
       <header className="chat-hd">
         <Link className="ib flip" href={p.back} aria-label={t("back")}><Icon name="back" /></Link>
         {p.other.href ? (
@@ -208,6 +242,7 @@ export function ChatView(p: ChatProps) {
             <textarea
               ref={box}
               rows={1}
+              onFocus={() => { stick.current = true; }}
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => {

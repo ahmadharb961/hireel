@@ -1006,8 +1006,17 @@
       "example": "Example"
     },
     "topEmployers": {
-      "title": "Top employers",
-      "sub": "Companies hiring on Hireel right now.",
+      "pill": "Top employers",
+      "title1": "Leading companies",
+      "title2": "are hiring",
+      "title3": "on Hireel",
+      "sub": "Real opportunities from trusted companies looking for real talent.",
+      "hand1": "Join top employers",
+      "hand2": "finding their next",
+      "hand3": "team members",
+      "seeAll": "See all employers",
+      "prev": "Previous employers",
+      "next": "More employers",
       "verified": "Verified by Hireel"
     }
   },
@@ -1378,5 +1387,12 @@
     "fill": "Fill the frame",
     "cancel": "Cancel",
     "save": "Save cover"
+  },
+  "companiesList": {
+    "metaTitle": "Employers hiring on Hireel",
+    "pill": "Employers",
+    "title": "Companies hiring on Hireel",
+    "sub": "Verified companies in Lebanon and the Gulf looking for talent. Tap one to see its page.",
+    "empty": "No companies to show yet."
   }
 }

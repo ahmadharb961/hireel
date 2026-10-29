@@ -33,6 +33,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Android: the keyboard shrinks the page instead of covering it (iPhone is handled in the chat).
+  interactiveWidget: "resizes-content",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#FAF9F6" },
     { media: "(prefers-color-scheme: dark)", color: "#0f1a16" },

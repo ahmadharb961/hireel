@@ -6,7 +6,8 @@ import { LIcon } from "@/components/landing/icons";
 import { SeeItInAction } from "@/components/landing/SeeItInAction";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { SiteNav } from "@/components/landing/SiteNav";
-import { logoUrl } from "@/lib/logo";
+import { bannerUrl, logoUrl } from "@/lib/logo";
+import { TopEmployers } from "@/components/landing/TopEmployers";
 import { categoryNamer, categoryOptions } from "@/server/categories";
 import { featuredCandidates, featuredCompanies } from "@/server/landing-data";
 import { initialsOf } from "@/server/profile-data";
@@ -97,23 +98,7 @@ export default async function Home() {
 
           {/* ---------- Top employers (chosen by the Hireel team, one row) ---------- */}
           {companies.length ? (
-            <section className="lsec" id="top-employers">
-              <div className="lsec-head">
-                <div><h2 className="lsec-title">{t("topEmployers.title")}</h2><p className="lsec-sub">{t("topEmployers.sub")}</p></div>
-              </div>
-              <div className="temps">
-                {companies.map((c) => (
-                  <Link key={c.id} href={`/companies/${c.id}`} className="temp">
-                    <span className="temp-logo">{logoUrl(c) ? <img src={logoUrl(c)!} alt="" loading="lazy" /> : c.name.slice(0, 1)}</span>
-                    <span className="temp-txt">
-                      <b><span className="temp-nm">{c.name}</span>{c.status === "VERIFIED" ? <span className="temp-ok" aria-label={t("topEmployers.verified")}><LIcon name="check" size={12} /></span> : null}</b>
-                      <span>{catName(c.industry) || "—"}</span>
-                    </span>
-                    {c.isDemo ? <span className="tcard-demo">{t("featured.demo")}</span> : null}
-                  </Link>
-                ))}
-              </div>
-            </section>
+            <TopEmployers companies={companies.map((c) => ({ id: c.id, name: c.name, category: catName(c.industry), logo: logoUrl(c), banner: bannerUrl(c), verified: c.status === "VERIFIED", isDemo: c.isDemo }))} />
           ) : null}
 
           {/* ---------- How it works ---------- */}

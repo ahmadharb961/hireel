@@ -417,9 +417,14 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.getByRole("heading", { name: /On the homepage \(1 of 6\)/ })).toBeVisible();
     await page.goto("/");
     const top = page.locator("#top-employers");
-    await expect(top.getByRole("heading", { name: "Top employers" })).toBeVisible();
+    await expect(top.getByRole("heading", { name: /Leading companies/ })).toBeVisible();
+    await expect(top.getByText("open positions")).toHaveCount(0);
     await top.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/top-employers.png" }).catch(() => {});
-    await top.getByRole("link", { name: new RegExp(`Cedar Test ${id}`) }).click();
+    // "See all employers" lists it too.
+    await top.getByRole("link", { name: "See all employers" }).first().click();
+    await page.waitForURL(/\/companies$/);
+    await expect(page.getByRole("heading", { name: "Companies hiring on Hireel" })).toBeVisible();
+    await page.locator(".egrid").getByRole("link", { name: new RegExp(`Cedar Test ${id}`) }).click();
     await page.waitForURL(/\/companies\//);
     await expect(page.getByRole("heading", { name: new RegExp(`Cedar Test ${id}`) })).toBeVisible();
     await expect(page.getByText("We build retail software in Beirut")).toBeVisible();

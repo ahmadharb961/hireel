@@ -32,6 +32,6 @@ export async function featuredCompanies() {
     where: { featuredRank: { not: null }, status: { not: "SUSPENDED" } },
     orderBy: { featuredRank: "asc" },
     take: FEATURED_MAX,
-    select: { id: true, name: true, industry: true, country: true, status: true, logoUpdatedAt: true, isDemo: true },
+    select: { id: true, name: true, industry: true, country: true, status: true, logoUpdatedAt: true, bannerUpdatedAt: true, isDemo: true },
   });
 }
