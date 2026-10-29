@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { unreadChatsForCandidate, unreadChatsForMember } from "@/server/chat";
+import { latestUnread, unreadChatsForCandidate, unreadChatsForMember } from "@/server/chat";
 import { getViewer } from "@/server/session";
 
-/** How many chats have unread messages, for the badge on the menu. */
+/** How many chats have unread messages (menu badge) and the newest one (the "new message" alert). */
 export async function GET() {
   const v = await getViewer();
   let n = 0;
@@ -14,5 +14,6 @@ export async function GET() {
     const c = await prisma.candidateProfile.findUnique({ where: { userId: v.id }, select: { id: true } });
     if (c) n = await unreadChatsForCandidate(c.id);
   }
-  return NextResponse.json({ n }, { headers: { "Cache-Control": "no-store" } });
+  const latest = v && n ? await latestUnread(v.id) : null;
+  return NextResponse.json({ n, latest }, { headers: { "Cache-Control": "no-store" } });
 }

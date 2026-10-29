@@ -6,6 +6,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Icon } from "@/components/Icons";
 import { Sheet } from "@/components/Sheet";
 import { useToast } from "@/components/Toast";
+import { refreshUnread } from "@/lib/unread-client";
 
 export type ChatMsg = { id: string; mine: boolean; body: string; at: string };
 type Pending = { tmp: string; body: string; failed?: boolean };
@@ -72,6 +73,9 @@ export function ChatView(p: ChatProps) {
       // Offline for a moment: the next round tries again.
     }
   }, [p.id]);
+
+  // Leaving the chat updates the unread badges straight away.
+  useEffect(() => () => refreshUnread(), []);
 
   useEffect(() => {
     const timer = setInterval(() => { if (document.visibilityState === "visible") void poll(); }, POLL_MS);

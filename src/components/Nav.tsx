@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { MessageAlerts } from "./chat/MessageAlerts";
+import { useUnread } from "@/lib/unread-client";
 import { Icon, type IconName } from "./Icons";
 
 type Item = { href: string; icon: IconName; label: string; gate?: boolean; exact?: boolean; badge?: number };
@@ -33,15 +34,18 @@ function NavBar({ items, floating, onGate }: { items: Item[]; floating?: boolean
 export function CandidateNav() {
   const t = useTranslations("nav");
   return (
-    <NavBar
-      items={[
-        { href: "/candidate", icon: "home", label: t("home"), exact: true },
-        { href: "/candidate/video", icon: "video", label: t("myVideo") },
-        { href: "/candidate/profile", icon: "account", label: t("profile") },
-        { href: "/candidate/share", icon: "share", label: t("share") },
-        { href: "/feed", icon: "discover", label: t("reels") },
-      ]}
-    />
+    <>
+      <NavBar
+        items={[
+          { href: "/candidate", icon: "home", label: t("home"), exact: true },
+          { href: "/candidate/video", icon: "video", label: t("myVideo") },
+          { href: "/candidate/profile", icon: "account", label: t("profile") },
+          { href: "/candidate/share", icon: "share", label: t("share") },
+          { href: "/feed", icon: "discover", label: t("reels") },
+        ]}
+      />
+      <MessageAlerts />
+    </>
   );
 }
 
@@ -49,47 +53,39 @@ export function CandidateNav() {
 export function CandidateBrowseNav({ floating }: { floating?: boolean }) {
   const t = useTranslations("nav");
   return (
-    <NavBar
-      floating={floating}
-      items={[
-        { href: "/feed", icon: "discover", label: t("discover") },
-        { href: "/search", icon: "search", label: t("search") },
-        { href: "/candidate", icon: "account", label: t("myArea") },
-      ]}
-    />
+    <>
+      <NavBar
+        floating={floating}
+        items={[
+          { href: "/feed", icon: "discover", label: t("discover") },
+          { href: "/search", icon: "search", label: t("search") },
+          { href: "/candidate", icon: "account", label: t("myArea") },
+        ]}
+      />
+      <MessageAlerts />
+    </>
   );
 }
 
 /** Employer nav. Visitors (not signed in) get a sign-up prompt for Saved, Inbox and Account. */
-/** Chats with unread messages. Checked when the page opens and when the app comes back to the screen. */
-function useUnreadChats(on: boolean) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    if (!on) return;
-    const load = () => fetch("/api/chat/unread", { cache: "no-store" }).then((r) => r.json()).then((d: { n: number }) => setN(d.n)).catch(() => {});
-    load();
-    const onVis = () => { if (document.visibilityState === "visible") load(); };
-    document.addEventListener("visibilitychange", onVis);
-    return () => document.removeEventListener("visibilitychange", onVis);
-  }, [on]);
-  return n;
-}
-
 export function EmployerNav({ floating, savedCount, visitor, onGate }: { floating?: boolean; savedCount?: number; visitor?: boolean; onGate?: () => void }) {
   const t = useTranslations("nav");
-  const unread = useUnreadChats(!visitor);
+  const unread = useUnread(!visitor).n;
   const gate = visitor ? onGate ?? (() => { window.location.href = "/signup?role=employer"; }) : undefined;
   return (
-    <NavBar
-      floating={floating}
-      onGate={gate}
-      items={[
-        { href: "/feed", icon: "discover", label: t("discover") },
-        { href: "/search", icon: "search", label: t("search") },
-        { href: "/employer/saved", icon: "saved", label: visitor ? t("saved") : t("savedCount", { n: savedCount ?? 0 }), gate: visitor },
-        { href: "/employer/inbox", icon: "chat", label: t("inbox"), gate: visitor, badge: unread },
-        { href: "/employer/account", icon: "account", label: t("account"), gate: visitor },
-      ]}
-    />
+    <>
+      <NavBar
+        floating={floating}
+        onGate={gate}
+        items={[
+          { href: "/feed", icon: "discover", label: t("discover") },
+          { href: "/search", icon: "search", label: t("search") },
+          { href: "/employer/saved", icon: "saved", label: visitor ? t("saved") : t("savedCount", { n: savedCount ?? 0 }), gate: visitor },
+          { href: "/employer/inbox", icon: "chat", label: t("inbox"), gate: visitor, badge: unread },
+          { href: "/employer/account", icon: "account", label: t("account"), gate: visitor },
+        ]}
+      />
+      {visitor ? null : <MessageAlerts />}
+    </>
   );
 }

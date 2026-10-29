@@ -132,3 +132,28 @@ export async function unreadChatsForMember(memberId: string) {
       AND r."lastMessageAt" IS NOT NULL AND (r."employerReadAt" IS NULL OR r."lastMessageAt" > r."employerReadAt")`;
   return Number(rows[0]?.n ?? 0);
 }
+
+/** The newest unread message for this person (for the "new message" alert), or null. */
+export async function latestUnread(userId: string) {
+  const rows = await prisma.$queryRaw<{ requestId: string; body: string; at: Date; candidateName: string; companyName: string; side: string }[]>`
+    SELECT m."requestId", m."body", m."createdAt" AS at, cp."fullName" AS "candidateName", c."name" AS "companyName",
+           CASE WHEN cp."userId" = ${userId} THEN 'candidate' ELSE 'company' END AS side
+    FROM "Message" m
+    JOIN "IntroRequest" r ON r."id" = m."requestId"
+    JOIN "CandidateProfile" cp ON cp."id" = r."candidateId"
+    JOIN "CompanyMember" s ON s."id" = r."senderId"
+    JOIN "Company" c ON c."id" = r."companyId"
+    WHERE r."status" = 'ACCEPTED' AND m."senderId" <> ${userId}
+      AND ((cp."userId" = ${userId} AND c."status" <> 'SUSPENDED' AND (r."candidateReadAt" IS NULL OR m."createdAt" > r."candidateReadAt"))
+        OR (s."userId" = ${userId} AND (r."employerReadAt" IS NULL OR m."createdAt" > r."employerReadAt")))
+    ORDER BY m."createdAt" DESC LIMIT 1`;
+  const m = rows[0];
+  if (!m) return null;
+  const toCandidate = m.side === "candidate";
+  return {
+    id: `${m.requestId}:${m.at.toISOString()}`,
+    from: toCandidate ? m.companyName : m.candidateName,
+    snippet: m.body.length > 120 ? `${m.body.slice(0, 120)}…` : m.body,
+    url: toCandidate ? `/candidate/chat/${m.requestId}` : `/employer/chat/${m.requestId}`,
+  };
+}

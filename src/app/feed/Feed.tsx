@@ -14,6 +14,7 @@ import { useToast } from "@/components/Toast";
 import { GateSheet, RequestSheet, UpgradeBody, type Quota } from "@/components/employer/Sheets";
 import { AVAILABILITY, VIDEO_LANGUAGES } from "@/lib/constants";
 import type { CategoryOption } from "@/lib/categories";
+import { useUnread } from "@/lib/unread-client";
 import { EXP_BANDS, FEED_PLACES, filtersToQuery, type FeedFilters } from "@/lib/feed-filters";
 import type { FeedCard } from "@/server/feed";
 import { toggleSave } from "@/app/employer/safe-actions";
@@ -361,12 +362,13 @@ function DeskTop({ employer, candidate, savedN, onGate }: { employer: Employer; 
   const t = useTranslations("feed");
   const tn = useTranslations("nav");
   const path = usePathname();
-  const links: { href: string; label: string; gate?: string }[] = [
+  const unread = useUnread(Boolean(employer)).n;
+  const links: { href: string; label: string; gate?: string; badge?: number }[] = [
     { href: "/feed", label: tn("discover") },
     { href: "/search", label: tn("search") },
     ...(candidate ? [] : [
       { href: "/employer/saved", label: employer ? tn("savedCount", { n: savedN }) : tn("saved"), gate: "saved" },
-      { href: "/employer/inbox", label: tn("inbox"), gate: "inbox" },
+      { href: "/employer/inbox", label: tn("inbox"), gate: "inbox", badge: unread },
     ]),
   ];
   return (
@@ -376,7 +378,7 @@ function DeskTop({ employer, candidate, savedN, onGate }: { employer: Employer; 
         {links.map((l) => (!employer && l.gate ? (
           <button key={l.href} type="button" onClick={() => onGate(l.gate!)}>{l.label}</button>
         ) : (
-          <Link key={l.href} href={l.href} className={path === l.href ? "on" : ""} aria-current={path === l.href ? "page" : undefined}>{l.label}</Link>
+          <Link key={l.href} href={l.href} className={path === l.href ? "on" : ""} aria-current={path === l.href ? "page" : undefined}>{l.label}{l.badge ? <b className="ftop-nb" aria-label={tn("unreadN", { n: l.badge })}>{l.badge > 9 ? "9+" : l.badge}</b> : null}</Link>
         )))}
       </nav>
       <form className="ftop-search" action="/search" role="search">

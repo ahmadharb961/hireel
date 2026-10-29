@@ -318,6 +318,21 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.locator(".bub:not(.me)").last()).toContainText("Monday works", { timeout: 15000 });
     await page.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/chat-company.png" }).catch(() => {});
 
+    // Elsewhere in Hireel, a new message pops up in the corner, counts in the tab title and on the menu.
+    await page.goto("/employer/account");
+    await cp.getByLabel("Write a message").fill("One more thing: Tuesday works too.");
+    await cp.getByRole("button", { name: "Send", exact: true }).click();
+    await expect(cp.locator(".bub.me").last()).toContainText("Tuesday");
+    const alert = page.locator(".malert");
+    await expect(alert).toContainText(`New message from Test ${lastName}`, { timeout: 30000 });
+    await expect(alert).toContainText("Tuesday works too");
+    await expect(page).toHaveTitle(/^\(1\) /);
+    await expect(page.locator("nav .nb")).toHaveText("1");
+    await page.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/msg-alert.png" }).catch(() => {});
+    await alert.getByRole("link", { name: "Open chat" }).click();
+    await page.waitForURL(/\/employer\/chat\//);
+    await expect(page.locator(".bub:not(.me)").last()).toContainText("Tuesday");
+
     // Nobody else can read it.
     await cp.context().clearCookies();
     expect((await cp.request.get(`/api/chat/${chatUrl.split("/").pop()}`)).status()).toBe(404);

@@ -27,7 +27,8 @@
     "account": "Account",
     "reels": "Reels",
     "myArea": "My area",
-    "homepage": "Homepage"
+    "homepage": "Homepage",
+    "unreadN": "{n} unread"
   },
   "languages": {
     "EN": "English",
@@ -1394,5 +1395,12 @@
     "title": "Companies hiring on Hireel",
     "sub": "Verified companies in Lebanon and the Gulf looking for talent. Tap one to see its page.",
     "empty": "No companies to show yet."
+  },
+  "msgAlert": {
+    "title": "New message from {name}",
+    "open": "Open chat",
+    "turnOn": "Turn on notifications",
+    "turnOnWhy": "Get alerts on this device even when Hireel is closed.",
+    "close": "Close"
   }
 }
