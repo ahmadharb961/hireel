@@ -868,29 +868,41 @@ html[lang="ar"] .cd-sec h3 { letter-spacing: 0; }
 
 /* ---------- in-app recorder (full screen) ---------- */
 .recx { position: fixed; inset: 0; z-index: 990; background: #000; color: #fff; display: flex; flex-direction: column; }
-.recx-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; display: grid; place-items: center; }
-.recx-video { width: 100%; height: 100%; object-fit: cover; background: #000; }
-.recx-video.mirror { transform: scaleX(-1); }
-@media (min-width: 720px) { .recx-video { object-fit: contain; } }
-.recx-guide { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
-.recx-guide span { width: min(58vw, 300px); aspect-ratio: 3 / 4; border-radius: 50%; border: 2px dashed rgba(255,255,255,.55); box-shadow: 0 0 0 100vmax rgba(0,0,0,.18); }
-.recx-top { position: absolute; top: 0; inset-inline: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px; padding-top: max(12px, env(safe-area-inset-top)); background: linear-gradient(rgba(0,0,0,.55), transparent); }
-.recx-x { width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(0,0,0,.45); color: #fff; font-size: 18px; cursor: pointer; }
+/* Top bar in its own row under the status bar (iPhone notch / Dynamic Island). */
+.recx-top { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; padding-top: calc(env(safe-area-inset-top) + 8px); background: #000; }
+.recx-ib { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.14); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.recx-ib-space { width: 44px; }
 .recx-title { font-size: 16px; }
-.recx-time { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; background: rgba(0,0,0,.45); padding: 6px 12px; border-radius: 99px; }
+.recx-time { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; }
 .recx-time small { opacity: .7; font-weight: 600; }
 .recx-time.over { color: #ffd27a; }
 .recx-dot { width: 10px; height: 10px; border-radius: 50%; background: #ff3b30; animation: recx-blink 1s infinite; }
 @keyframes recx-blink { 50% { opacity: .2; } }
-.recx-bar { position: absolute; top: calc(max(12px, env(safe-area-inset-top)) + 52px); inset-inline: 16px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.25); overflow: hidden; }
+.recx-bar { flex: none; height: 4px; background: rgba(255,255,255,.2); }
 .recx-bar i { display: block; height: 100%; background: var(--mint); transition: width .25s linear; }
-.recx-prompt { position: absolute; top: calc(max(12px, env(safe-area-inset-top)) + 66px); inset-inline: 16px; max-width: 560px; margin: 0 auto; border: 0; text-align: start; cursor: pointer; display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; border-radius: 16px; background: rgba(0,0,0,.55); color: #fff; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); font: inherit; }
-.recx-prompt small { font-size: 12px; opacity: .75; text-transform: uppercase; letter-spacing: .06em; }
-.recx-prompt span { font-size: 18px; font-weight: 700; line-height: 1.35; }
-.recx-prompt em { font-style: normal; font-size: 12px; opacity: .7; }
+.recx-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; display: grid; place-items: center; }
+.recx-video { width: 100%; height: 100%; object-fit: cover; background: #000; }
+.recx-video.mirror { transform: scaleX(-1); }
+@media (min-width: 720px) { .recx-video { object-fit: contain; } }
+.recx-guide { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; padding-top: 18%; }
+.recx-guide span { width: min(52vw, 280px); aspect-ratio: 3 / 4; border-radius: 50%; border: 2px dashed rgba(255,255,255,.55); }
+/* Teleprompter: near the top so the eyes stay close to the camera. */
+.recx-prompt { position: absolute; top: 10px; inset-inline: 12px; max-width: 640px; margin: 0 auto; border-radius: 16px; background: rgba(0,0,0,.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; flex-direction: column; overflow: hidden; }
+.recx-scroll { height: min(30vh, 220px); overflow-y: auto; padding: 14px 16px 0; scrollbar-width: none; -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 80%, transparent); mask-image: linear-gradient(transparent, #000 14%, #000 80%, transparent); }
+.recx-scroll::-webkit-scrollbar { display: none; }
+.recx-scroll p { margin: 0; white-space: pre-wrap; font-size: 22px; font-weight: 700; line-height: 1.45; }
+.recx-pctl { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-top: 1px solid rgba(255,255,255,.12); }
+.recx-chip { border: 0; background: rgba(255,255,255,.16); color: #fff; border-radius: 99px; padding: 8px 14px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.recx-hint { font-size: 12px; opacity: .75; }
+.recx-speed { display: flex; align-items: center; gap: 6px; }
+.recx-speed button { width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: #fff; font-size: 20px; font-weight: 700; cursor: pointer; }
+.recx-speed span { min-width: 40px; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; }
 .recx-count { position: absolute; font-size: 120px; font-weight: 800; text-shadow: 0 4px 30px rgba(0,0,0,.5); }
 .recx-msg { position: absolute; inset: 0; display: grid; place-content: center; gap: 14px; text-align: center; padding: 24px; font-size: 16px; background: rgba(0,0,0,.6); }
-.recx-controls { flex: none; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); background: #000; }
+.recx-edit { position: absolute; inset: 0; z-index: 2; background: rgba(0,0,0,.92); display: flex; flex-direction: column; gap: 10px; padding: 16px; }
+.recx-edit-l { font-weight: 800; }
+.recx-edit textarea { flex: 1; min-height: 0; width: 100%; border-radius: 14px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: #fff; font: inherit; font-size: 17px; line-height: 1.5; padding: 12px; resize: none; }
+.recx-controls { flex: none; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); background: #000; }
 .recx-tips { margin: 0; font-size: 13px; opacity: .8; text-align: center; max-width: 420px; }
 .recx-rec { width: 74px; height: 74px; border-radius: 50%; border: 4px solid #fff; background: transparent; display: grid; place-items: center; cursor: pointer; }
 .recx-rec span { width: 56px; height: 56px; border-radius: 50%; background: #ff3b30; transition: all .2s; }
