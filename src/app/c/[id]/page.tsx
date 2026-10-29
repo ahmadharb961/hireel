@@ -85,6 +85,7 @@ export default async function CandidateProfilePage({ params }: { params: Promise
             </>
           ) : <p className="p">🔒 {t("locked", { name: first })}</p>}
         </div>
+        <p className="note">{t("visibleNote", { name: first })}</p>
         <ProfileActions candidate={{ id: c.id, name: c.fullName }} saved={Boolean(saved)} requested={Boolean(req)} quota={{ introLeft: quota.introLeft, cvLeft: quota.cvLeft, planName: quota.planName, isPremium: quota.isPremium }} />
         </div>
       </div></main>

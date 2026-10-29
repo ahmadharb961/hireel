@@ -85,7 +85,7 @@ export function EmployerNav({ floating, savedCount, visitor, onGate }: { floatin
           { href: "/search", icon: "search", label: t("search") },
           { href: "/employer/saved", icon: "saved", label: visitor ? t("saved") : t("savedCount", { n: savedCount ?? 0 }), gate: visitor },
           { href: "/employer/inbox", icon: "chat", label: t("inbox"), gate: visitor, badge: unread },
-          { href: "/employer/account", icon: "account", label: t("account"), gate: visitor },
+          { href: "/employer/account", icon: "home", label: visitor ? t("account") : t("dashboard"), gate: visitor },
         ]}
       />
       {visitor ? null : <MessageAlerts />}

@@ -17,5 +17,6 @@ export default async function setup() {
   await db.query(`DELETE FROM "Category" WHERE "key" = 'real-estate'`);
   await db.query(`UPDATE "Category" SET "nameEn" = 'Marketing' WHERE "key" = 'marketing'`);
   await db.query(`UPDATE "Company" SET "featuredRank" = NULL`);
+  await db.query(`DELETE FROM "PlatformSetting" WHERE "key" = 'home.topEmployers'`);
   await db.end();
 }

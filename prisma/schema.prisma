@@ -212,6 +212,9 @@ model CandidateProfile {
   publishConsentAt DateTime?
   // set when a profile photo exists; also used to refresh cached copies
   photoUpdatedAt   DateTime?
+  // "finish your profile" / "add your video" reminders: at most two, a few days apart
+  remindersSent    Int           @default(0)
+  lastReminderAt   DateTime?
   isDemo           Boolean       @default(false)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt

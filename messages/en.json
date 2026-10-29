@@ -28,7 +28,8 @@
     "reels": "Reels",
     "myArea": "My area",
     "homepage": "Homepage",
-    "unreadN": "{n} unread"
+    "unreadN": "{n} unread",
+    "dashboard": "Dashboard"
   },
   "languages": {
     "EN": "English",
@@ -671,7 +672,8 @@
     "workHistory": "Work history",
     "education": "Education",
     "sharedNothing": "The candidate accepted but chose not to share contact details yet.",
-    "locked": "Hidden until {name} accepts your request."
+    "locked": "Hidden until {name} accepts your request.",
+    "visibleNote": "{name} can see that your company viewed or saved this profile."
   },
   "search": {
     "label": "Search candidates",
@@ -697,8 +699,7 @@
   "saved": {
     "title": "Saved candidates",
     "count": "{n} of {max} saved",
-    "empty": "Tap Save on a reel to keep candidates here.",
-    "phase2": "Shortlists with private notes arrive in the next update."
+    "empty": "Tap Save on a reel to keep candidates here."
   },
   "inbox": {
     "title": "Messages",
@@ -735,7 +736,6 @@
     "introThisMonth": "Intro requests this month",
     "cvThisMonth": "CV & contact requests",
     "savedLimit": "Saved candidates",
-    "teamSoon": "Team members and roles arrive in the next update.",
     "freeTitle": "Free during our launch",
     "freeBody": "Your company has full access at no cost. No payment details needed.",
     "fairTitle": "Fair-use limits this month",
@@ -1034,7 +1034,8 @@
       "prev": "Previous employers",
       "next": "More employers",
       "verified": "Verified by Hireel"
-    }
+    },
+    "deleted": "Your account was deleted. Thank you for trying Hireel."
   },
   "authside": {
     "pill": "Video talent marketplace",
@@ -1190,7 +1191,7 @@
     "ctaOpen": "Open Hireel",
     "ctaRequest": "See the request",
     "ctaInbox": "See your requests",
-    "ctaVideo": "Open My Video",
+    "ctaVideo": "Record my video",
     "ctaReview": "Review the video",
     "lineRole": "Job",
     "linePay": "Pay range",
@@ -1207,7 +1208,14 @@
     "ctaReply": "Reply on Hireel",
     "lineMoreMessages": "We’ll email you once per batch of new messages. Open the chat to see them all.",
     "ctaMessage": "Message them",
-    "lineChatOpen": "Your chat is open: say hello on Hireel."
+    "lineChatOpen": "Your chat is open: say hello on Hireel.",
+    "remindFinishTitle": "Your Hireel profile is almost ready",
+    "remindFinishBody": "{name}, finish your profile so companies can find you. It takes about 3 minutes.",
+    "remindVideoTitle": "Add your intro video",
+    "remindVideoBody": "{name}, profiles with a short video get noticed first. Record yours in 60 seconds.",
+    "ctaFinish": "Finish my profile",
+    "remindWhy": "Companies in Lebanon and the Gulf are browsing Hireel now.",
+    "remindLast": "We send at most two reminders like this."
   },
   "pushCard": {
     "title": "Turn on notifications",
@@ -1408,7 +1416,12 @@
     "moved": "Order changed",
     "full": "The row is full. Remove a company first.",
     "cantSuspended": "Suspended companies can’t be shown.",
-    "failed": "Something went wrong. Try again."
+    "failed": "Something went wrong. Try again.",
+    "switchTitle": "Show Top employers on the homepage",
+    "switchOn": "On: visitors see the section (when at least one company is chosen).",
+    "switchOff": "Off: the section is hidden. Your chosen companies are kept for when you turn it back on.",
+    "shownDone": "Top employers is now shown on the homepage",
+    "hiddenDone": "Top employers is now hidden from the homepage"
   },
   "cropper": {
     "title": "Position your cover",
@@ -1433,5 +1446,52 @@
     "turnOn": "Turn on notifications",
     "turnOnWhy": "Get alerts on this device even when Hireel is closed.",
     "close": "Close"
+  },
+  "accountData": {
+    "title": "Your data",
+    "sub": "Download everything Hireel keeps about you, or delete your account for good.",
+    "download": "Download my data",
+    "delete": "Delete my account",
+    "confirmTitle": "Delete your account?",
+    "whatCandidate": "Your profile, videos, CV, photo, requests and chats will be removed. Companies will no longer see you.",
+    "whatCompany": "Your access, the requests you sent and your chats will be removed. Your company stays for your colleagues.",
+    "whatCompanyLast": "You’re the only person in this company, so the company page, its logo and cover, the requests sent and all chats will be removed too.",
+    "cantUndo": "This can’t be undone.",
+    "downloadFirst": "Download your data first if you want a copy.",
+    "typeLabel": "Type DELETE to confirm",
+    "typeWord": "Type DELETE (or حذف) to confirm.",
+    "cancel": "Cancel",
+    "deleteForever": "Delete forever"
+  },
+  "empHome": {
+    "welcome": "Welcome, {name}",
+    "summaryUnread": "{n, plural, one {# chat has} other {# chats have}} new messages.",
+    "summaryWaiting": "{n, plural, one {# candidate hasn’t} other {# candidates haven’t}} answered yet.",
+    "summaryNone": "Find your next hire by video.",
+    "discover": "Discover candidates",
+    "search": "Search",
+    "messages": "Messages",
+    "seeAll": "See all",
+    "noChatsTitle": "No chats yet",
+    "noChats": "When a candidate accepts your intro request, your chat appears here.",
+    "waiting": "{n, plural, one {# request} other {# requests}} waiting for an answer",
+    "waitingSub": "Candidates get notified and decide what to share.",
+    "statSaved": "Saved",
+    "statSent": "Requests sent",
+    "statAccepted": "Accepted",
+    "statAcceptedRate": "Accepted ({pct}%)",
+    "companyTitle": "Your company",
+    "viewPage": "See company page",
+    "accountTitle": "Settings"
+  },
+  "interest": {
+    "title": "Companies interested in you",
+    "sub": "Companies that opened or saved your profile. Tap one to see who they are.",
+    "saved": "Saved your profile",
+    "viewed": "{n, plural, one {Viewed your profile} other {Viewed your profile # times}}",
+    "savedAndViewed": "Saved and viewed your profile",
+    "emptyTitle": "No companies yet",
+    "empty": "When a company opens or saves your profile, it shows up here.",
+    "note": "Companies are told that candidates can see their visits."
   }
 }

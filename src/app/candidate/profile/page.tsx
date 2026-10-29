@@ -5,6 +5,7 @@ import { CvUpload } from "@/components/CvUpload";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { photoUrl } from "@/lib/photo";
 import { SignOut } from "@/components/SignOut";
+import { AccountData } from "@/components/AccountData";
 import { CandidateNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
 import { requireOnboardedCandidate, studioVideos } from "@/server/candidate-data";
@@ -45,6 +46,7 @@ export default async function ProfilePreview() {
             <Link className="btn g" href="/candidate/share">{t("shareProfile")}</Link>
           </div>
           <PushCard variant="settings" who="candidate" />
+          <AccountData who="candidate" />
           <SignOut />
         </div>
       </main>

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { resendVerification } from "@/app/actions/auth";
 import { authClient } from "@/lib/auth-client";
 
-export function LoginForm() {
+export function LoginForm({ next }: { next?: string | null }) {
   const t = useTranslations("login");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -15,6 +15,7 @@ export function LoginForm() {
   const te = useTranslations("errors");
   const [pending, setPending] = useState(false);
   const [resent, setResent] = useState(false);
+  const welcome = next ? `/welcome?next=${encodeURIComponent(next)}` : "/welcome";
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,7 +25,7 @@ export function LoginForm() {
     setError(null); setUnverified(null);
     if (!email || !password) return setError(t("missing"));
     setPending(true);
-    const res = await authClient.signIn.email({ email, password, callbackURL: "/welcome" }).catch(() => null);
+    const res = await authClient.signIn.email({ email, password, callbackURL: welcome }).catch(() => null);
     setPending(false);
     if (!res) return setError(te("network"));
     if (res.error) {
@@ -35,7 +36,7 @@ export function LoginForm() {
       return setError(t("wrong"));
     }
     if ((res.data as { twoFactorRedirect?: boolean } | null)?.twoFactorRedirect) return router.push("/login/two-factor");
-    router.push("/welcome");
+    router.push(welcome);
     router.refresh();
   }
 

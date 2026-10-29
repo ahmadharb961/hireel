@@ -7,6 +7,8 @@ import { categoryNamer } from "@/server/categories";
 import { requireAdmin } from "@/server/session";
 import { AdminFrame } from "../AdminFrame";
 import { FeaturedControls } from "./FeaturedControls";
+import { TopSwitch } from "./TopSwitch";
+import { topEmployersVisible } from "@/server/admin-content";
 
 /** Choose which companies appear under "Top employers" on the homepage, and in what order. */
 export default async function FeaturedAdmin({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -41,6 +43,7 @@ export default async function FeaturedAdmin({ searchParams }: { searchParams: Pr
   return (
     <AdminFrame tab="featured">
       <div><h1 className="h2">{t("title")}</h1><p className="p">{t("sub", { max: FEATURED_MAX })}</p></div>
+      <section className="card"><TopSwitch initial={await topEmployersVisible()} /></section>
       <section className="card">
         <div className="sw"><h2 className="h3">{t("onHomepage", { n: featured.length, max: FEATURED_MAX })}</h2><Link className="btn sm g" href="/#top-employers" target="_blank">{t("preview")}</Link></div>
         {featured.length === 0 ? <p className="note">{t("none")}</p> : <div className="stack" style={{ gap: 8, marginTop: 10 }}>{featured.map((c, i) => row(c, i))}</div>}

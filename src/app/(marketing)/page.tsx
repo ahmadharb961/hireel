@@ -10,6 +10,7 @@ import { bannerUrl, logoUrl } from "@/lib/logo";
 import { TopEmployers } from "@/components/landing/TopEmployers";
 import { categoryNamer, categoryOptions } from "@/server/categories";
 import { featuredCandidates, featuredCompanies } from "@/server/landing-data";
+import { topEmployersVisible } from "@/server/admin-content";
 import { initialsOf } from "@/server/profile-data";
 import { getViewer, homeFor } from "@/server/session";
 
@@ -19,18 +20,20 @@ function fmtDur(s: number | null) {
   return s ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : null;
 }
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ deleted?: string }> }) {
+  const deleted = (await searchParams).deleted === "1";
   const viewer = await getViewer();
   // Signed-in people can still open the homepage; the top bar links back to their area.
   const account = viewer ? homeFor(viewer.role) : null;
   const t = await getTranslations("landing");
   const th = await getTranslations("home");
-  const [featured, companies, categories, catName] = await Promise.all([featuredCandidates(6), featuredCompanies(), categoryOptions(), categoryNamer()]);
+  const [featured, companies, categories, catName, showTop] = await Promise.all([featuredCandidates(6), featuredCompanies(), categoryOptions(), categoryNamer(), topEmployersVisible()]);
 
   return (
     <div className="site2">
       <SiteNav account={account} />
       <main>
+        {deleted ? <p className="lg-note" role="status" style={{ margin: "12px auto 0", maxWidth: 640, textAlign: "center" }}>{t("deleted")}</p> : null}
         {/* ---------- Hero ---------- */}
         <section className="h2-hero">
           <div className="h2-blob" aria-hidden="true" />
@@ -97,7 +100,7 @@ export default async function Home() {
           </section>
 
           {/* ---------- Top employers (chosen by the Hireel team, one row) ---------- */}
-          {companies.length ? (
+          {showTop && companies.length ? (
             <TopEmployers companies={companies.map((c) => ({ id: c.id, name: c.name, category: catName(c.industry), logo: logoUrl(c), banner: bannerUrl(c), verified: c.status === "VERIFIED", isDemo: c.isDemo }))} />
           ) : null}
 

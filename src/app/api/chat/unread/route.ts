@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import { maybeRunJobs } from "@/server/jobs";
 import { prisma } from "@/lib/db";
 import { latestUnread, unreadChatsForCandidate, unreadChatsForMember } from "@/server/chat";
 import { getViewer } from "@/server/session";
@@ -6,6 +7,8 @@ import { pendingRequestCount } from "@/server/candidate-data";
 
 /** How many chats have unread messages (menu badge) and the newest one (the "new message" alert). */
 export async function GET() {
+  // Signed-in pages ask this every 20 seconds, so it's a reliable heartbeat for the hourly jobs.
+  after(() => maybeRunJobs());
   const v = await getViewer();
   let n = 0;
   if (v?.role === "EMPLOYER") {

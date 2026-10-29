@@ -67,3 +67,36 @@ export function completion(p: CandidateProfile, skills: number, hasLiveVideo: bo
   const next = steps.find((s) => !s.done)?.key ?? null;
   return { pct, next };
 }
+
+export type InterestedCompany = {
+  id: string; name: string; logoUpdatedAt: Date | null; industry: string; verified: boolean;
+  savedAt: Date | null; viewedAt: Date | null; views: number; lastAt: Date;
+};
+
+/**
+ * Companies that opened or saved this candidate's profile, most recent first.
+ * Suspended and blocked companies are left out.
+ */
+export async function interestedCompanies(candidateId: string, limit = 100): Promise<InterestedCompany[]> {
+  const hidden = { OR: [{ status: "SUSPENDED" as const }, { blocks: { some: { candidateId } } }] };
+  const [views, saves] = await Promise.all([
+    prisma.profileView.groupBy({ by: ["companyId"], where: { candidateId, company: { NOT: hidden } }, _max: { viewedAt: true }, _count: true }),
+    prisma.savedCandidate.findMany({ where: { candidateId, member: { company: { NOT: hidden } } }, select: { createdAt: true, member: { select: { companyId: true } } } }),
+  ]);
+  const map = new Map<string, { savedAt: Date | null; viewedAt: Date | null; views: number }>();
+  for (const v of views) map.set(v.companyId, { savedAt: null, viewedAt: v._max.viewedAt, views: v._count });
+  for (const s of saves) {
+    const e = map.get(s.member.companyId) ?? { savedAt: null, viewedAt: null, views: 0 };
+    if (!e.savedAt || s.createdAt > e.savedAt) e.savedAt = s.createdAt;
+    map.set(s.member.companyId, e);
+  }
+  const companies = await prisma.company.findMany({ where: { id: { in: [...map.keys()] } }, select: { id: true, name: true, logoUpdatedAt: true, industry: true, status: true } });
+  return companies
+    .map((c) => {
+      const e = map.get(c.id)!;
+      const lastAt = new Date(Math.max(e.savedAt?.getTime() ?? 0, e.viewedAt?.getTime() ?? 0));
+      return { id: c.id, name: c.name, logoUpdatedAt: c.logoUpdatedAt, industry: c.industry, verified: c.status === "VERIFIED", ...e, lastAt };
+    })
+    .sort((a, b) => b.lastAt.getTime() - a.lastAt.getTime())
+    .slice(0, limit);
+}

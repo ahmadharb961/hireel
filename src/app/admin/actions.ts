@@ -6,7 +6,7 @@ import { REJECTION_REASONS } from "@/lib/constants";
 import { adminOrNull } from "@/server/session";
 import { approveVideo } from "@/server/videos";
 import { notifyUsers } from "@/server/push";
-import { type ContentResult, createCategory, featureCompany, moveCategory, moveFeatured, renameCategory, setCategoryActive, unfeatureCompany } from "@/server/admin-content";
+import { type ContentResult, setTopEmployersVisible, createCategory, featureCompany, moveCategory, moveFeatured, renameCategory, setCategoryActive, unfeatureCompany } from "@/server/admin-content";
 
 type R = { ok: true } | { ok: false; error: string };
 
@@ -197,4 +197,12 @@ export async function reorderFeatured(companyId: string, dir: -1 | 1): Promise<C
   const r = await moveFeatured(companyId, dir === -1 ? -1 : 1);
   revalidatePath("/", "layout");
   return done(r);
+}
+
+export async function showTopEmployers(on: boolean): Promise<CR> {
+  const a = await admin();
+  await setTopEmployersVisible(Boolean(on));
+  await audit(a.id, on ? "home.top_employers.show" : "home.top_employers.hide", "PlatformSetting", "home.topEmployers");
+  revalidatePath("/", "layout");
+  return { ok: true };
 }

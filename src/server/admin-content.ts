@@ -117,3 +117,17 @@ export async function moveFeatured(companyId: string, dir: -1 | 1): Promise<Cont
     return { ok: true } as const;
   });
 }
+
+// ---------- homepage switches ----------
+
+const TOP_KEY = "home.topEmployers";
+
+/** Whether the homepage shows the Top employers section (on unless the Hireel team switched it off). */
+export async function topEmployersVisible() {
+  const row = await prisma.platformSetting.findUnique({ where: { key: TOP_KEY } });
+  return row?.value !== "off";
+}
+
+export async function setTopEmployersVisible(on: boolean) {
+  await prisma.platformSetting.upsert({ where: { key: TOP_KEY }, create: { key: TOP_KEY, value: on ? "on" : "off" }, update: { value: on ? "on" : "off" } });
+}

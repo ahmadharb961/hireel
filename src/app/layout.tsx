@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { dirOf, resolveLocale } from "@/i18n/locales";
 import { InstallBanner } from "@/components/InstallBanner";
 import { NavProgress } from "@/components/NavProgress";
+import { SwBridge } from "@/components/SwBridge";
 import { SwRegister } from "@/components/SwRegister";
 import "./globals.css";
 import "./landing.css";
@@ -48,6 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <NextIntlClientProvider>
           <NavProgress />
+          <SwBridge />
           {children}
           <InstallBanner />
           <SwRegister />

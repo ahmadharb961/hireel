@@ -6,7 +6,9 @@ import { ConversationRow } from "@/components/chat/ConversationRow";
 import { listTime } from "@/lib/chat-time";
 import { prisma } from "@/lib/db";
 import { logoUrl } from "@/lib/logo";
-import { completion, requireOnboardedCandidate, studioVideos } from "@/server/candidate-data";
+import { completion, interestedCompanies, requireOnboardedCandidate, studioVideos } from "@/server/candidate-data";
+import { categoryNamer } from "@/server/categories";
+import { InterestList } from "@/components/InterestList";
 import { hasUnread } from "@/server/chat";
 import { PUBLIC_VIEW_THRESHOLD } from "@/server/rules/views";
 import { CandidateHeader } from "./CandidateHeader";
@@ -14,8 +16,8 @@ import { CandidateHeader } from "./CandidateHeader";
 /** The candidate's dashboard: what needs attention first (requests and messages), then their numbers. */
 export default async function CandidateHome() {
   const { profile, viewer } = await requireOnboardedCandidate();
-  const [t, tc, tr, fmt] = await Promise.all([getTranslations("candidate"), getTranslations("chat"), getTranslations("requests"), getFormatter()]);
-  const [videos, skills, profileViews, saves, reqs] = await Promise.all([
+  const [t, tc, tr, ti, fmt, catName] = await Promise.all([getTranslations("candidate"), getTranslations("chat"), getTranslations("requests"), getTranslations("interest"), getFormatter(), categoryNamer()]);
+  const [videos, skills, profileViews, saves, reqs, interest] = await Promise.all([
     studioVideos(profile.id),
     prisma.candidateSkill.count({ where: { candidateId: profile.id } }),
     prisma.profileView.count({ where: { candidateId: profile.id } }),
@@ -26,6 +28,7 @@ export default async function CandidateHome() {
       orderBy: { createdAt: "desc" },
       take: 50,
     }),
+    interestedCompanies(profile.id, 3),
   ]);
   const { pct, next } = completion(profile, skills, videos.some((v) => v.status === "live"));
   const firstName = profile.fullName.split(" ")[0];
@@ -97,10 +100,18 @@ export default async function CandidateHome() {
           ) : null}
 
           <div className="grid3">
-            <div className="stat"><b>{profileViews}</b><span>{t("stats.profileViews")}</span></div>
-            <div className="stat"><b>{saves}</b><span>{t("stats.saves")}</span></div>
+            <Link className="stat link" href="/candidate/interest"><b>{profileViews}</b><span>{t("stats.profileViews")} →</span></Link>
+            <Link className="stat link" href="/candidate/interest"><b>{saves}</b><span>{t("stats.saves")} →</span></Link>
             <Link className="stat link" href="/candidate/video"><b>{videoViews}</b><span>{t("stats.videoViews")} →</span></Link>
           </div>
+          {interest.length ? (
+            <section className="msec" aria-labelledby="home-int">
+              <h2 className="msec-h" id="home-int">{ti("title")}<Link className="lsec-link" href="/candidate/interest">{t("seeAll")} →</Link></h2>
+              <InterestList rows={interest} category={catName} when={(d) => listTime(d, fmt)}
+                label={(c) => (c.savedAt ? (c.views ? ti("savedAndViewed", { n: c.views }) : ti("saved")) : ti("viewed", { n: c.views }))} />
+            </section>
+          ) : null}
+
           <p className="note">{t("viewRule")} {videoViews < PUBLIC_VIEW_THRESHOLD ? t("publicFrom", { n: PUBLIC_VIEW_THRESHOLD }) : ""}</p>
         </div>
       </main>

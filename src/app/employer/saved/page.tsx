@@ -28,7 +28,6 @@ export default async function SavedPage() {
           </Link>
         ))}
         </div>
-        <p className="note">{t("phase2")}</p>
       </div></main>
       <EmployerNav savedCount={rows.length} />
     </div>

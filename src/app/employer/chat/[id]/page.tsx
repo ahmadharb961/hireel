@@ -1,13 +1,15 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { loginTo } from "@/lib/safe-next";
 import { photoUrl } from "@/lib/photo";
 import { listMessages, markRead, openChat } from "@/server/chat";
 import { sharedContact } from "@/server/requests";
-import { requireEmployer } from "@/server/session";
+import { getViewer, requireEmployer } from "@/server/session";
 import { EmployerChat } from "./EmployerChat";
 
 export default async function EmployerChatPage({ params }: { params: Promise<{ id: string }> }) {
-  const { viewer, company } = await requireEmployer();
   const { id } = await params;
+  if (!(await getViewer())) redirect(loginTo(`/employer/chat/${id}`));
+  const { viewer, company } = await requireEmployer();
   const chat = await openChat(viewer.id, id);
   if (!chat || chat.side !== "company") notFound();
   const { r } = chat;

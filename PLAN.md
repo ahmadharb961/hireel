@@ -236,7 +236,7 @@ After **every** phase: run the app → run automated tests → fix problems → 
 - [ ] Online payment for Premium, **sandbox mode** until real payment details exist (plans and limits already exist from Phase 1)
 - [ ] Full admin dashboard + content editing
 - [ ] Optional modules: AI search and transcripts (no AI judging of faces, voice or personality)
-- [ ] Privacy tools: data export, account deletion
+- [x] Privacy tools: data export, account deletion
 
 ---
 
@@ -289,4 +289,7 @@ For **Phase 0 no accounts are needed**: I'll publish the clickable design as a p
 - [x] "Top employers" on the homepage: up to 6 companies in one row, chosen and ordered by the Super Admin (Admin → Top employers)
 - [x] Public company page (/companies/…) opened from Top employers
 - [x] Optional company contact phone (shown to logged-in people and on intro requests)
+- [x] Company dashboard (messages first, numbers, settings); "Companies interested in you" for candidates
+- [x] Reminders for unfinished profiles (max 2), run hourly by Hireel itself; on/off switch for Top employers
+- [x] Notification taps open the exact chat; log in returns to it
 

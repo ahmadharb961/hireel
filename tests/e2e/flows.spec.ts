@@ -234,7 +234,7 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.getByText("Please upload a PDF or Word file")).toBeVisible();
     await cvInput.setInputFiles({ name: "My CV.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n% test cv\n") });
     await expect(page.getByText("My CV.pdf")).toBeVisible();
-    const cvUrl = (await page.getByRole("link", { name: "Download" }).getAttribute("href"))!;
+    const cvUrl = (await page.getByRole("link", { name: "Download", exact: true }).getAttribute("href"))!;
     expect((await page.request.get(cvUrl)).status()).toBe(200);
 
     await page.goto("/candidate/requests");
@@ -276,8 +276,11 @@ test.describe.serial("Hireel core loop", () => {
 
     // Home shows the chat first; the menu has Messages.
     await page.goto("/candidate");
-    await expect(page.locator(".convs").getByText(`Cedar Test ${id}`)).toBeVisible();
+    await expect(page.locator(".msec:has(#home-msgs) .convs").getByText(`Cedar Test ${id}`)).toBeVisible();
     await expect(page.locator("nav").getByRole("link", { name: "Messages" })).toHaveAttribute("href", "/candidate/requests");
+    // The company opened the profile earlier: it's listed as interested.
+    await expect(page.getByRole("heading", { name: "Companies interested in you" })).toBeVisible();
+    await expect(page.locator(".msec:has(#home-int) .convs").getByText(`Cedar Test ${id}`)).toBeVisible();
     await page.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/cand-home.png", fullPage: true }).catch(() => {});
 
     await signIn(page, empEmail);
@@ -357,8 +360,14 @@ test.describe.serial("Hireel core loop", () => {
     expect((await cp.request.get(`/api/chat/${chatUrl.split("/").pop()}`)).status()).toBe(404);
 
     // The candidate reports the chat; the report lets the Hireel team read it.
-    await signIn(cp, candEmail);
-    await cp.goto(mailLink.replace(/^https?:\/\/[^/]+/, ""));
+    // Opening the email/notification link while signed out: log in, then straight into that chat.
+    const chatPath = mailLink.replace(/^https?:\/\/[^/]+/, "");
+    await cp.goto(chatPath);
+    await cp.waitForURL(/\/login\?next=/);
+    await cp.fill("#email", candEmail);
+    await cp.fill("#password", PASSWORD);
+    await cp.getByRole("button", { name: "Log in" }).last().click();
+    await cp.waitForURL((u) => u.pathname === chatPath);
     await cp.getByRole("button", { name: "Chat options" }).click();
     await cp.getByRole("button", { name: "Report this company" }).click();
     await cp.getByLabel("Asked for money or personal documents").check();
@@ -453,6 +462,16 @@ test.describe.serial("Hireel core loop", () => {
     const top = page.locator("#top-employers");
     await expect(top.getByRole("heading", { name: /Leading companies/ })).toBeVisible();
     await expect(top.getByText("open positions")).toHaveCount(0);
+    // The admin can switch the whole section off and on again.
+    await page.goto("/admin/featured");
+    await page.getByRole("button", { name: "Show Top employers on the homepage" }).click();
+    await expect(page.getByText("Top employers is now hidden from the homepage")).toBeVisible();
+    await page.goto("/");
+    await expect(page.locator("#top-employers")).toHaveCount(0);
+    await page.goto("/admin/featured");
+    await page.getByRole("button", { name: "Show Top employers on the homepage" }).click();
+    await expect(page.getByText("Top employers is now shown on the homepage")).toBeVisible();
+    await page.goto("/");
     await top.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/top-employers.png" }).catch(() => {});
     // "See all employers" lists it too.
     await top.getByRole("link", { name: "See all employers" }).first().click();
@@ -553,5 +572,49 @@ test.describe.serial("Hireel core loop", () => {
     expect(main!.width).toBeGreaterThan(1000);
     await noSideScroll(page);
     await ctx.close();
+  });
+
+  test("company dashboard; anyone can download their data and delete their account", async ({ page }) => {
+    // The dashboard: chats first, then numbers and settings.
+    await signIn(page, empEmail);
+    await page.goto("/employer/account");
+    await expect(page.getByRole("heading", { name: /^Welcome, Sara/ })).toBeVisible();
+    await expect(page.locator(".msec .convs").getByText(`Test ${lastName}`)).toBeVisible();
+    await expect(page.getByText("Requests sent")).toBeVisible();
+    await expect(page.getByText(/next update/)).toHaveCount(0);
+    await page.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/emp-dashboard.png", fullPage: true }).catch(() => {});
+
+    // A new company signs up, downloads its data, then deletes the account (and the company).
+    const email = `bye.${id}@example.com`;
+    await page.context().clearCookies();
+    await page.goto("/signup?role=employer");
+    await page.fill("#companyName", `Bye Co ${id}`);
+    await page.fill("#email", email);
+    await page.fill("#contactName", "Omar Test");
+    await page.selectOption("#industry", "retail");
+    await page.fill("#password", PASSWORD);
+    await page.check('input[name="agree"]');
+    await page.getByRole("button", { name: "Create account" }).click();
+    await verifyFromEmail(page, email);
+    await page.waitForURL(/\/feed/);
+    await page.goto("/employer/account");
+    const data = await page.request.get("/api/me/export");
+    expect(data.headers()["content-disposition"]).toContain("hireel-my-data");
+    expect((await data.json()).company.name).toBe(`Bye Co ${id}`);
+    await page.getByRole("button", { name: "Delete my account" }).click();
+    const sheet = page.getByRole("dialog");
+    await expect(sheet.getByText("You’re the only person in this company")).toBeVisible();
+    await sheet.getByLabel("Type DELETE to confirm").fill("delete please");
+    await sheet.getByRole("button", { name: "Delete forever" }).click();
+    await expect(sheet.getByText("Type DELETE (or حذف) to confirm.")).toBeVisible();
+    await sheet.getByLabel("Type DELETE to confirm").fill("DELETE");
+    await sheet.getByRole("button", { name: "Delete forever" }).click();
+    await page.waitForURL(/\/\?deleted=1/);
+    await expect(page.getByText("Your account was deleted")).toBeVisible();
+    // Gone: the login fails and the area is closed.
+    await page.goto("/employer/account");
+    await expect(page).toHaveURL(/\/login/);
+    await login(page, email);
+    await expect(page.getByRole("alert")).toBeVisible();
   });
 });
