@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma migrate deploy && tsx scripts/setup.ts && next build --webpack",
+    "build": "prisma generate && prisma migrate deploy && tsx scripts/setup.ts && RAYON_NUM_THREADS=2 UV_THREADPOOL_SIZE=2 next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

@@ -13,6 +13,11 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Hostinger caps processes and threads per account; a single, lighter build worker stays under it.
+  experimental: {
+    cpus: 1,
+    webpackMemoryOptimizations: true,
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
