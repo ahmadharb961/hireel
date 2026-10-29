@@ -32,7 +32,7 @@ export default async function EmployerChatPage({ params }: { params: Promise<{ i
   ]);
   await markRead(id, "company");
   const c = r.candidate;
-  const contacts = { email: shared?.email ?? null, phone: shared?.phone ?? null, cvUrl: shared?.cvFileName ? `/api/cv/${r.candidateId}` : null };
+  const contacts = { email: shared?.email ?? null, phone: shared?.phone ?? null, cvUrl: shared?.cvFileName ? `/api/cv/${r.candidateId}` : null, salary: shared?.salary ? td("salaryValue", { amount: fmt.number(shared.salary.min), currency: shared.salary.currency }) : null };
 
   const details = (
     <div>
@@ -53,7 +53,8 @@ export default async function EmployerChatPage({ params }: { params: Promise<{ i
         {contacts.email ? <div className="kv"><span>{tc("email")}</span><b dir="ltr"><a href={`mailto:${contacts.email}`}>{contacts.email}</a></b></div> : null}
         {contacts.phone ? <div className="kv"><span>{tc("phone")}</span><b dir="ltr"><a href={`tel:${contacts.phone.replace(/[^+0-9]/g, "")}`}>{contacts.phone}</a></b></div> : null}
         {contacts.cvUrl ? <div className="kv"><span>{tc("cv")}</span><b><a href={contacts.cvUrl}>{tc("downloadCv")}</a></b></div> : null}
-        {!contacts.email && !contacts.phone && !contacts.cvUrl ? <p className="note">{tc("sharedNothing")}</p> : null}
+        {contacts.salary ? <div className="kv"><span>{tc("salary")}</span><b dir="ltr">{contacts.salary}</b></div> : null}
+        {!contacts.email && !contacts.phone && !contacts.cvUrl && !contacts.salary ? <p className="note">{tc("sharedNothing")}</p> : null}
       </div>
     </div>
   );

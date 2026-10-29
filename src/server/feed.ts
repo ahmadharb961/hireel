@@ -26,6 +26,8 @@ export type FeedCard = {
   industry: string;
   availability: string;
   skills: string[];
+  /** What they're looking for (job preferences). Salary is never included. */
+  prefs: { roles: string[]; jobTypes: string[]; workModes: string[]; relocateTo: string[] };
   /** Only sent to signed-in employers. */
   about: string | null;
   photo: string | null;
@@ -46,6 +48,9 @@ export type FeedQuery = {
   /** A FEED_PLACES key, matched against the candidate's typed location. */
   place?: string | null;
   avail?: string | null;
+  /** Job preferences: on-site / hybrid / remote, and full-time / part-time / … */
+  mode?: string | null;
+  jtype?: string | null;
   viewer: { kind: "visitor" } | { kind: "employer"; companyId: string; memberId: string };
   limit?: number;
 };
@@ -73,7 +78,10 @@ export async function feedPage(q: FeedQuery): Promise<{ cards: FeedCard[]; nextC
   const band = q.exp ? EXP_BANDS[q.exp] : null;
   if (band) conds.push(Prisma.sql`cp."yearsExperience" BETWEEN ${band[0]} AND ${band[1]}`);
   const terms = q.place ? FEED_PLACES[q.place] : null;
-  if (terms) conds.push(Prisma.sql`(${Prisma.join(terms.map((w) => Prisma.sql`cp."location" ILIKE ${"%" + w + "%"}`), " OR ")})`);
+  // A place matches people who live there or said they'd move there.
+  if (terms && q.place) conds.push(Prisma.sql`(${Prisma.join([...terms.map((w) => Prisma.sql`cp."location" ILIKE ${"%" + w + "%"}`), Prisma.sql`${q.place} = ANY(cp."relocateTo")`], " OR ")})`);
+  if (q.mode) conds.push(Prisma.sql`${q.mode} = ANY(cp."workModes")`);
+  if (q.jtype) conds.push(Prisma.sql`${q.jtype} = ANY(cp."jobTypes")`);
   if (q.avail) conds.push(Prisma.sql`cp."availability" = ${q.avail}`);
   if (q.cursor) conds.push(Prisma.sql`md5(cp."id" || ${seed}) > ${q.cursor}`);
 
@@ -133,6 +141,7 @@ async function loadCards(ids: string[], q: Pick<FeedQuery, "lang" | "viewer">): 
       industry: p.industry,
       availability: p.availability,
       skills: p.skills.map((s) => s.skill.name).slice(0, 5),
+      prefs: { roles: p.desiredRoles, jobTypes: p.jobTypes, workModes: p.workModes, relocateTo: p.relocateTo },
       about: q.viewer.kind === "employer" ? p.about : null,
       photo: photoUrl(p),
       videos,

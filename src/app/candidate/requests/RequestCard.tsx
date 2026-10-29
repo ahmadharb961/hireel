@@ -11,7 +11,9 @@ export type RequestView = CompanyInfo & {
   id: string; companyId: string;
   roleTitle: string; employment: string; workLocation: string; payRange: string; message: string; wantsCv: boolean;
   status: "PENDING" | "ACCEPTED" | "DECLINED" | "WITHDRAWN" | "BLOCKED"; date: string;
-  shared: { email: boolean; phone: boolean; cv: boolean }; isDemo: boolean;
+  shared: { email: boolean; phone: boolean; cv: boolean; salary: boolean }; isDemo: boolean;
+  /** The candidate set an expected salary (they can choose to share it). */
+  salaryLabel: string | null;
 };
 
 const REPORT_REASONS = ["fake", "money", "harassment", "other"] as const;
@@ -24,7 +26,7 @@ export function RequestCard({ r }: { r: RequestView }) {
   const toast = useToast();
   const [sheet, setSheet] = useState<null | "accept" | "report" | "company">(null);
   const [confirmBlock, setConfirmBlock] = useState(false);
-  const [share, setShare] = useState({ email: true, phone: r.wantsCv, cv: r.wantsCv });
+  const [share, setShare] = useState({ email: true, phone: r.wantsCv, cv: r.wantsCv, salary: false });
   const [reason, setReason] = useState<(typeof REPORT_REASONS)[number]>("fake");
   const [details, setDetails] = useState("");
   const [busy, setBusy] = useState(false);
@@ -43,7 +45,7 @@ export function RequestCard({ r }: { r: RequestView }) {
     : r.status === "ACCEPTED" ? <span className="tag">{t("accepted")}</span>
     : r.status === "BLOCKED" ? <span className="tag bad">{t("blocked")}</span>
     : <span className="tag mute">{t("declined")}</span>;
-  const sharedList = [r.shared.email && t("shareEmail"), r.shared.phone && t("sharePhone"), r.shared.cv && t("shareCv")].filter(Boolean).join(", ");
+  const sharedList = [r.shared.email && t("shareEmail"), r.shared.phone && t("sharePhone"), r.shared.cv && t("shareCv"), r.shared.salary && t("salary")].filter(Boolean).join(", ");
 
   return (
     <div className="card">
@@ -99,6 +101,9 @@ export function RequestCard({ r }: { r: RequestView }) {
         {(["email", "phone", "cv"] as const).map((k) => (
           <label key={k} className="chk"><input type="checkbox" checked={share[k]} onChange={(e) => setShare({ ...share, [k]: e.target.checked })} /><span>{t(k === "email" ? "shareEmail" : k === "phone" ? "sharePhone" : "shareCv")}</span></label>
         ))}
+        {r.salaryLabel ? (
+          <label className="chk"><input type="checkbox" checked={share.salary} onChange={(e) => setShare({ ...share, salary: e.target.checked })} /><span>{t("shareSalary", { salary: r.salaryLabel })}</span></label>
+        ) : null}
         <div className="row" style={{ marginTop: 16 }}>
           <button type="button" className="btn g" onClick={() => setSheet(null)}>{t("cancel")}</button>
           <button type="button" className="btn" disabled={busy} onClick={() => run(respondToRequest(r.id, "accept", share), t("acceptedDone", { company: r.company }), `/candidate/chat/${r.id}`)}>{t("acceptShare")}</button>

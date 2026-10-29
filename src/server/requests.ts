@@ -94,5 +94,6 @@ export async function sharedContact(companyId: string, candidateId: string) {
     workHistory: req.shareCv ? c.workHistory : null,
     education: req.shareCv ? c.education : null,
     cvFileName: req.shareCv && c.cvFile ? c.cvFile.fileName : null,
+    salary: req.shareSalary && c.salaryMin ? { min: c.salaryMin, currency: c.salaryCurrency } : null,
   };
 }

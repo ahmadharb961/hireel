@@ -89,6 +89,13 @@ export default async function CandidateHome() {
           </section>
 
 
+          {!profile.desiredRoles.length && !profile.workModes.length && !profile.jobTypes.length ? (
+            <Link className="list-row" href="/candidate/edit#prefs">
+              <div className="thumb" style={{ height: 54 }}>🎯</div>
+              <div className="t"><b>{t("prefsNudge")}</b><span>{t("prefsNudgeSub")}</span></div>
+            </Link>
+          ) : null}
+
           {pct < 100 ? (
             <div className="card">
               <h2 className="h3">{t("complete", { pct })}</h2>

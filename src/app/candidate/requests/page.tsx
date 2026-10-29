@@ -34,7 +34,8 @@ export default async function MessagesPage() {
     country: r.company.country, since: fmt.dateTime(r.company.createdAt, { month: "long", year: "numeric" }),
     roleTitle: r.roleTitle, employment: r.employment, workLocation: r.workLocation, payRange: r.payRange, message: r.message, wantsCv: r.wantsCv,
     status: blocked.has(r.companyId) ? "BLOCKED" : r.status, date: fmt.relativeTime(r.createdAt, new Date()),
-    shared: { email: r.shareEmail, phone: r.sharePhone, cv: r.shareCv }, isDemo: r.isDemo,
+    shared: { email: r.shareEmail, phone: r.sharePhone, cv: r.shareCv, salary: r.shareSalary }, isDemo: r.isDemo,
+    salaryLabel: profile.salaryMin ? `${fmt.number(profile.salaryMin)} ${profile.salaryCurrency}` : null,
   });
 
   const pending = reqs.filter((r) => r.status === "PENDING" && !blocked.has(r.companyId));

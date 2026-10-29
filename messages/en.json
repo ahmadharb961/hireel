@@ -329,7 +329,11 @@
     "attentionBoth": "You have {r, plural, one {# new request} other {# new requests}} and {m, plural, one {# unread chat} other {# unread chats}}.",
     "unreadMessages": "{n, plural, one {# chat has} other {# chats have}} new messages.",
     "seeAll": "See all",
-    "shareProfile": "Share my profile"
+    "shareProfile": "Share my profile",
+    "downloadPdf": "Download my profile (PDF)",
+    "hideFrom": "Hide my profile from companies",
+    "prefsNudge": "Add your job preferences",
+    "prefsNudgeSub": "The jobs you want, remote or on-site, where you’d move. You’ll get more relevant requests."
   },
   "studio": {
     "title": "My video",
@@ -472,7 +476,9 @@
     "emptyTitle": "No messages yet",
     "newTitle": "New requests",
     "chatsTitle": "Chats",
-    "earlierTitle": "Earlier requests ({n})"
+    "earlierTitle": "Earlier requests ({n})",
+    "shareSalary": "Expected salary ({salary} / month)",
+    "salary": "expected salary"
   },
   "onboarding": {
     "stepOf": "Step {step} of {total}",
@@ -1339,7 +1345,8 @@
     "downloadCv": "Download CV",
     "sharedNothing": "They haven’t shared contact details. You can keep talking here.",
     "youShared": "You shared: {list}",
-    "close": "Close"
+    "close": "Close",
+    "salary": "Expected salary"
   },
   "adminChat": {
     "back": "Back to reports",
@@ -1514,7 +1521,8 @@
     "from": "Sent by",
     "youShared": "You shared",
     "contact": "Contact",
-    "years": "{n, plural, one {# year} other {# years}}"
+    "years": "{n, plural, one {# year} other {# years}}",
+    "salaryValue": "From {amount} {currency} / month"
   },
   "notifyGuard": {
     "title": "Notifications are off on this device",
@@ -1527,5 +1535,100 @@
     "blockedTitle": "Notifications are blocked on this device",
     "blockedBody": "On a computer: click the lock icon next to the web address → Notifications → Allow. On iPhone: Settings → Notifications → Hireel. On Android: your browser’s site settings. Then tap Done.",
     "done": "Done"
+  },
+  "hide": {
+    "title": "Hide my profile from companies",
+    "sub": "For example your current employer. Hidden companies can’t find you in reels or search, open your profile or send you requests. They’re never told.",
+    "searchLabel": "Company name",
+    "searchPh": "Type a company name",
+    "hide": "Hide",
+    "hidden": "Hidden",
+    "anyNamed": "Any company named “{name}”",
+    "anyNamedSub": "Also hides companies with this name that join Hireel later.",
+    "hiddenDone": "Hidden from {name}",
+    "nameDone": "Hidden from any company named “{name}”",
+    "listTitle": "Hidden ({n})",
+    "ruleSub": "Now and if they join later",
+    "remove": "Remove",
+    "show": "Show again",
+    "shownDone": "{name} can see your profile again",
+    "ruleRemoved": "Removed",
+    "source": {
+      "hide": "Hidden by you",
+      "block": "Blocked by you",
+      "name": "Matches a name you hid"
+    },
+    "note": "Your share link still works for anyone you send it to.",
+    "err": {
+      "too_short": "Type at least 3 letters.",
+      "too_long": "That’s too long.",
+      "duplicate": "You already hid this name.",
+      "too_many": "You can hide up to 30 names."
+    }
+  },
+  "prefs": {
+    "title": "Job preferences",
+    "sub": "What you’re looking for. Companies see this on your profile and can filter by it, so you get more relevant requests.",
+    "roles": "Jobs you want (up to {n})",
+    "rolesPh": "e.g. Marketing Manager",
+    "add": "Add",
+    "removeRole": "Remove {role}",
+    "jobTypes": "Job type",
+    "workModes": "Work style",
+    "mode": {
+      "ONSITE": "On-site",
+      "HYBRID": "Hybrid",
+      "REMOTE": "Remote"
+    },
+    "relocate": "Countries you’d work in or move to",
+    "relocateShort": "Open to work in",
+    "openTo": "open to {places}",
+    "salary": "Expected salary per month (private)",
+    "currency": "Currency",
+    "salaryNote": "Never shown on your profile. When you accept a request, you can choose to share it with that company.",
+    "save": "Save preferences",
+    "saved": "Preferences saved",
+    "lookingFor": "Looking for",
+    "salaryShared": "Expected salary",
+    "salaryValue": "From {amount} {currency} / month"
+  },
+  "recorder": {
+    "title": "Record your intro",
+    "close": "Close",
+    "flip": "Switch camera",
+    "starting": "Starting the camera…",
+    "noPermission": "Hireel needs your camera and microphone. Allow them in your browser or phone settings, or record with your camera app instead.",
+    "noCamera": "We couldn’t start the camera here. You can record with your camera app instead.",
+    "useCameraApp": "Close and use my camera app",
+    "tips": "Face in the circle, good light in front of you, quiet room. Look at the camera, not the screen.",
+    "start": "Start recording",
+    "stop": "Stop",
+    "keepGoing": "Take your time. Tap the card above for your next point.",
+    "goodLength": "Great length. Finish your last point.",
+    "wrapUp": "Perfect: wrap up whenever you’re ready (2:00 max).",
+    "retake": "Record again",
+    "use": "Use this video",
+    "pointOf": "Point {n} of {total}",
+    "tapNext": "Tap for the next point",
+    "nextPoint": "Next talking point",
+    "point1": "Hi, I’m {name}. I’m {headline}.",
+    "point2": "What I’m great at: {skills}. Share one example you’re proud of.",
+    "point2plain": "What you’re great at, and one result you’re proud of.",
+    "point3": "What I’m looking for next: {roles}, and why I’d be a great fit.",
+    "point3plain": "The job you want next, and why you’d be a great fit."
+  },
+  "printProfile": {
+    "back": "Back",
+    "save": "Save as PDF / Print",
+    "howTo": "Tap “Save as PDF / Print”, then choose “Save as PDF” (on iPhone: Share → Save to Files). Your phone and email are included: it’s your own document.",
+    "noLink": "Turn on your share link to add a QR code that opens your video.",
+    "turnOnLink": "Turn on share link",
+    "years": "{n, plural, one {# year} other {# years}} experience",
+    "scan": "Scan to watch my video intro",
+    "about": "About me",
+    "skills": "Skills",
+    "work": "Work history",
+    "education": "Education",
+    "madeWith": "Video profile on Hireel"
   }
 }

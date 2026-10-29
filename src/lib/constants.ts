@@ -9,6 +9,10 @@ export const VIDEO_LANGUAGES = ["EN", "AR", "FR"] as const;
 export type VideoLang = (typeof VIDEO_LANGUAGES)[number];
 
 export const EMPLOYMENT_TYPES = ["FULL_TIME", "PART_TIME", "CONTRACT", "FREELANCE"] as const;
+/** Job preferences: where they want to work and the currency of their expected salary. */
+export const WORK_MODES = ["ONSITE", "HYBRID", "REMOTE"] as const;
+export const SALARY_CURRENCIES = ["USD", "EUR", "AED", "SAR", "QAR", "KWD"] as const;
+export const MAX_DESIRED_ROLES = 5;
 
 export const COMPANY_SIZES = ["1-10", "11-50", "51-200", "201-1000", "1000+"] as const;
 

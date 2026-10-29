@@ -3,11 +3,11 @@ import { filtersToQuery, parseFeedFilters } from "@/lib/feed-filters";
 
 describe("feed filters", () => {
   it("keeps only allowed, job-related values", () => {
-    const q = new URLSearchParams("industry=finance&exp=3-5&place=Qatar&avail=AVAILABLE_NOW&lang=AR&age=30&exp2=x");
-    expect(parseFeedFilters((k) => q.get(k))).toEqual({ industry: "finance", lang: "AR", exp: "3-5", place: "Qatar", avail: "AVAILABLE_NOW" });
+    const q = new URLSearchParams("industry=finance&exp=3-5&place=Qatar&avail=AVAILABLE_NOW&lang=AR&mode=REMOTE&jtype=FREELANCE&age=30&exp2=x");
+    expect(parseFeedFilters((k) => q.get(k))).toEqual({ industry: "finance", lang: "AR", exp: "3-5", place: "Qatar", avail: "AVAILABLE_NOW", mode: "REMOTE", jtype: "FREELANCE" });
   });
   it("ignores unknown values", () => {
-    const q = new URLSearchParams("industry=DROP%20TABLE&exp=99&place=Mars&avail=x&lang=DE");
+    const q = new URLSearchParams("industry=DROP%20TABLE&exp=99&place=Mars&avail=x&lang=DE&mode=SPACE&jtype=x");
     expect(Object.values(parseFeedFilters((k) => q.get(k))).every((v) => v === null)).toBe(true);
   });
   it("round-trips through the address bar", () => {

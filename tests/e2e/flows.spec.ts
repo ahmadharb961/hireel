@@ -641,4 +641,50 @@ test.describe.serial("Hireel core loop", () => {
     await login(page, email);
     await expect(page.getByRole("alert")).toBeVisible();
   });
+
+  test("candidate: job preferences, one-page PDF profile, and hiding from a company", async ({ page }) => {
+    await signIn(page, candEmail);
+    // Job preferences: companies see them; the salary stays private.
+    await page.goto("/candidate/edit");
+    await page.fill("#pref-role", "QA Lead");
+    const prefs = page.locator("#prefs");
+    await prefs.getByRole("button", { name: "Add", exact: true }).click();
+    await prefs.getByRole("button", { name: "Remote", exact: true }).click();
+    await prefs.getByRole("button", { name: "Freelance", exact: true }).click();
+    await page.locator("#prefs").getByRole("button", { name: "United Arab Emirates" }).click();
+    await page.fill("#pref-salary", "2500");
+    await page.getByRole("button", { name: "Save preferences" }).click();
+    await expect(page.getByText("Preferences saved")).toBeVisible();
+
+    // One-page profile with a QR code to the video.
+    await page.goto("/candidate/profile");
+    await page.getByRole("link", { name: /Download my profile/ }).click();
+    await page.waitForURL(/\/candidate\/profile\/print/);
+    const turnOn = page.getByRole("button", { name: "Turn on share link" });
+    if (await turnOn.isVisible()) await turnOn.click();
+    await expect(page.locator(".cvp-qr svg")).toBeVisible();
+    await expect(page.locator(".cvp-page")).toContainText("QA Lead");
+    await expect(page.locator(".cvp-page")).not.toContainText("2500");
+    await page.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/print-profile.png", fullPage: true }).catch(() => {});
+
+    // Hide from a company: it can no longer find the candidate.
+    await page.goto("/candidate/share");
+    await page.fill("#hide-q", `Cedar Test ${id}`);
+    await page.locator(".hide-row:not(.any)", { hasText: `Cedar Test ${id}` }).getByRole("button", { name: "Hide" }).click();
+    await expect(page.getByText(`Hidden from Cedar Test ${id}`)).toBeVisible();
+    await expect(page.locator(".hide-row", { hasText: "Blocked by you" }).or(page.locator(".hide-row", { hasText: "Hidden by you" })).first()).toBeVisible();
+    await page.fill("#hide-q", "Future Rival");
+    await page.locator(".hide-row.any").getByRole("button", { name: "Hide" }).click();
+    await expect(page.getByText("Any company named “Future Rival”").first()).toBeVisible();
+
+    await signIn(page, empEmail);
+    await page.goto(`/search?q=${lastName}`);
+    await expect(page.getByRole("link", { name: new RegExp(lastName) })).toHaveCount(0);
+
+    // Show again.
+    await signIn(page, candEmail);
+    await page.goto("/candidate/share");
+    await page.locator(".hide-row:not(.any)", { hasText: `Cedar Test ${id}` }).getByRole("button", { name: "Show again" }).click();
+    await expect(page.getByText(`Cedar Test ${id} can see your profile again`)).toBeVisible();
+  });
 });

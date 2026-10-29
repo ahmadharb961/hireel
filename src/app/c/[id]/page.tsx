@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { categoryNamer } from "@/server/categories";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Header } from "@/components/Header";
 import { EmployerNav } from "@/components/Nav";
 import { ToastProvider } from "@/components/Toast";
@@ -21,6 +21,10 @@ export const metadata = { robots: { index: false, follow: false } };
 export default async function CandidateProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const t = await getTranslations("profilePage");
+  const tp = await getTranslations("prefs");
+  const tm = await getTranslations("employment");
+  const tco = await getTranslations("signup.countries");
+  const fmtN = await getFormatter();
   const ta = await getTranslations("availability");
   const catName = await categoryNamer();
   const emp = await employerOrNull();
@@ -67,6 +71,15 @@ export default async function CandidateProfilePage({ params }: { params: Promise
           <p className="p">{c.headline} · {t("years", { n: c.yearsExperience })} · {c.location}</p>
           <div className="wrap" style={{ marginTop: 10 }}>{c.skills.map((s) => <span key={s.skillId} className="sk">{s.skill.name}</span>)}</div>
         </div>
+        {c.desiredRoles.length || c.jobTypes.length || c.workModes.length || c.relocateTo.length ? (
+          <div className="card">
+            <h2 className="h3">{tp("lookingFor")}</h2>
+            {c.desiredRoles.length ? <div className="wrap" style={{ marginTop: 6 }}>{c.desiredRoles.map((r) => <span key={r} className="sk">{r}</span>)}</div> : null}
+            {c.jobTypes.length ? <div className="kv"><span>{tp("jobTypes")}</span><b>{c.jobTypes.map((k) => tm(k)).join(" · ")}</b></div> : null}
+            {c.workModes.length ? <div className="kv"><span>{tp("workModes")}</span><b>{c.workModes.map((k) => tp(`mode.${k}` as "mode.ONSITE")).join(" · ")}</b></div> : null}
+            {c.relocateTo.length ? <div className="kv"><span>{tp("relocateShort")}</span><b>{c.relocateTo.map((k) => tco(k as "Lebanon")).join(" · ")}</b></div> : null}
+          </div>
+        ) : null}
         {c.about ? <div className="card"><h2 className="h3">{t("about")}</h2><p className="p" style={{ whiteSpace: "pre-wrap" }}>{c.about}</p></div> : null}
         <div className="card">
           <div className="kv"><span>{t("current")}</span><b>{c.currentTitle}</b></div>
@@ -78,6 +91,7 @@ export default async function CandidateProfilePage({ params }: { params: Promise
             <>
               {contact.email ? <div className="kv"><span>{t("email")}</span><b dir="ltr">{contact.email}</b></div> : null}
               {contact.phone ? <div className="kv"><span>{t("phone")}</span><b dir="ltr">{contact.phone}</b></div> : null}
+              {contact.salary ? <div className="kv"><span>{tp("salaryShared")}</span><b dir="ltr">{tp("salaryValue", { amount: fmtN.number(contact.salary.min), currency: contact.salary.currency })}</b></div> : null}
               {contact.workHistory ? <><h3 className="h3" style={{ marginTop: 10 }}>{t("workHistory")}</h3><p className="p" style={{ whiteSpace: "pre-wrap" }}>{contact.workHistory}</p></> : null}
               {contact.education ? <><h3 className="h3" style={{ marginTop: 10 }}>{t("education")}</h3><p className="p" style={{ whiteSpace: "pre-wrap" }}>{contact.education}</p></> : null}
               {contact.cvFileName ? <a className="btn sm" style={{ marginTop: 10 }} href={`/api/cv/${c.id}`}>⬇ {tcv("downloadCv")}</a> : null}

@@ -5,11 +5,14 @@ import { env } from "@/lib/env";
 import { requireOnboardedCandidate } from "@/server/candidate-data";
 import { CandidateHeader } from "../CandidateHeader";
 import { ShareSettings } from "./ShareSettings";
+import { HiddenCompanies } from "./HiddenCompanies";
+import { hiddenList } from "@/server/hiding";
+import { logoUrl } from "@/lib/logo";
 import { SignOut } from "@/components/SignOut";
 
 export default async function SharePage() {
   const { profile } = await requireOnboardedCandidate();
-  const link = await prisma.shareLink.findUnique({ where: { candidateId: profile.id } });
+  const [link, hidden] = await Promise.all([prisma.shareLink.findUnique({ where: { candidateId: profile.id } }), hiddenList(profile.id)]);
   return (
     <div className="scr">
       <CandidateHeader candidateId={profile.id} back="/candidate/profile" />
@@ -22,6 +25,10 @@ export default async function SharePage() {
           paused={profile.searchPaused}
         />
         <div className="stack" style={{ marginTop: 12 }}>
+          <HiddenCompanies
+            hidden={hidden.blocks.map((b) => ({ companyId: b.companyId, name: b.company.name, logo: logoUrl(b.company), source: b.source }))}
+            rules={hidden.names.map((n) => ({ id: n.id, term: n.term }))}
+          />
           <LangSwitch variant="button" />
           <SignOut />
         </div>

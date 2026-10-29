@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { MAX_VIDEOS, slugify } from "@/lib/constants";
 import { streamConfigured } from "@/lib/env";
-import { firstError, profileAboutSchema, profileBasicsSchema, profileExperienceSchema, videoLanguageSchema } from "@/lib/validation";
+import { firstError, profilePrefsSchema, profileAboutSchema, profileBasicsSchema, profileExperienceSchema, videoLanguageSchema } from "@/lib/validation";
 import { candidateOrNull } from "@/server/session";
 import { newShareToken } from "@/server/rules/share";
 import { rateLimit } from "@/server/ratelimit";
 import { activeVideoWhere, archiveData, ensurePrimary } from "@/server/videos";
 import { isCategory } from "@/server/categories";
+import { FEED_PLACES } from "@/lib/feed-filters";
+import { hideFromCompany, hideFromName, unhideCompany, unhideName } from "@/server/hiding";
 
 type Result = { ok: true } | { ok: false; error: string; field?: string };
 const fail = (error: string, field?: string): Result => ({ ok: false, error, field });
@@ -143,14 +145,14 @@ export async function setShareLink(op: "on" | "off" | "regenerate"): Promise<Res
 
 // ---------- intro requests ----------
 
-export async function respondToRequest(id: string, decision: "accept" | "decline", share?: { email: boolean; phone: boolean; cv: boolean }): Promise<Result> {
+export async function respondToRequest(id: string, decision: "accept" | "decline", share?: { email: boolean; phone: boolean; cv: boolean; salary?: boolean }): Promise<Result> {
   const { profile } = await me();
   const req = await prisma.introRequest.findFirst({ where: { id, candidateId: profile.id, status: "PENDING" } });
   if (!req) return fail("not_found");
   await prisma.introRequest.update({
     where: { id },
     data: decision === "accept"
-      ? { status: "ACCEPTED", respondedAt: new Date(), shareEmail: Boolean(share?.email), sharePhone: Boolean(share?.phone), shareCv: Boolean(share?.cv) }
+      ? { status: "ACCEPTED", respondedAt: new Date(), shareEmail: Boolean(share?.email), sharePhone: Boolean(share?.phone), shareCv: Boolean(share?.cv), shareSalary: Boolean(share?.salary && profile.salaryMin) }
       : { status: "DECLINED", respondedAt: new Date() },
   });
   const members = await prisma.companyMember.findMany({ where: { companyId: req.companyId }, select: { id: true, userId: true } });
@@ -263,6 +265,53 @@ export async function removeVideo(videoId: string): Promise<Result> {
     await tx.video.update({ where: { id: v.id }, data: archiveData() });
     await tx.video.updateMany({ where: { replacesVideoId: v.id, archivedAt: null }, data: archiveData() });
     await ensurePrimary(tx, profile.id);
+  });
+  revalidatePath("/candidate", "layout");
+  return { ok: true };
+}
+
+// ---------- hide my profile from companies ----------
+
+export async function hideCompany(companyId: string): Promise<Result> {
+  const { profile, viewer } = await me();
+  if (!(await rateLimit(`hide:${viewer.id}`, 60, 3600))) return fail("rate_limited");
+  const r = await hideFromCompany(profile.id, String(companyId));
+  revalidatePath("/candidate", "layout");
+  return r.ok ? { ok: true } : fail(r.error);
+}
+
+export async function hideName(term: string): Promise<Result> {
+  const { profile, viewer } = await me();
+  if (!(await rateLimit(`hide:${viewer.id}`, 60, 3600))) return fail("rate_limited");
+  const r = await hideFromName(profile.id, String(term));
+  revalidatePath("/candidate", "layout");
+  return r.ok ? { ok: true } : fail(r.error);
+}
+
+export async function showToCompany(companyId: string): Promise<Result> {
+  const { profile } = await me();
+  await unhideCompany(profile.id, String(companyId));
+  revalidatePath("/candidate", "layout");
+  return { ok: true };
+}
+
+export async function removeHiddenName(id: string): Promise<Result> {
+  const { profile } = await me();
+  await unhideName(profile.id, String(id));
+  revalidatePath("/candidate", "layout");
+  return { ok: true };
+}
+
+// ---------- job preferences ----------
+
+export async function savePreferences(input: unknown): Promise<Result> {
+  const { profile } = await me();
+  const p = profilePrefsSchema.safeParse(input);
+  if (!p.success) { const e = firstError(p.error); return fail(e.code, e.field); }
+  const roles = Array.from(new Map(p.data.desiredRoles.map((r) => [r.toLowerCase(), r])).values());
+  await prisma.candidateProfile.update({
+    where: { id: profile.id },
+    data: { ...p.data, desiredRoles: roles, relocateTo: p.data.relocateTo.filter((k) => k in FEED_PLACES) },
   });
   revalidatePath("/candidate", "layout");
   return { ok: true };

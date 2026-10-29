@@ -22,7 +22,7 @@ export type ChatProps = {
   /** Candidate side: the company's details, opened by tapping its name. */
   company?: CompanyInfo & { shared: string };
   /** Company side: what the candidate chose to share. */
-  contacts?: { email: string | null; phone: string | null; cvUrl: string | null };
+  contacts?: { email: string | null; phone: string | null; cvUrl: string | null; salary?: string | null };
   otherReadAt: string | null;
   /** Report and block run as server actions owned by each side. */
   onReport: (reason: string, details: string) => Promise<{ ok: boolean; error?: string }>;
@@ -320,6 +320,7 @@ export function ChatView(p: ChatProps) {
           {p.contacts.email ? <div className="kv"><span>{t("email")}</span><b dir="ltr"><a href={`mailto:${p.contacts.email}`}>{p.contacts.email}</a></b></div> : null}
           {p.contacts.phone ? <div className="kv"><span>{t("phone")}</span><b dir="ltr"><a href={`tel:${p.contacts.phone.replace(/[^+0-9]/g, "")}`}>{p.contacts.phone}</a></b></div> : null}
           {p.contacts.cvUrl ? <div className="kv"><span>{t("cv")}</span><b><a href={p.contacts.cvUrl}>{t("downloadCv")}</a></b></div> : null}
+          {p.contacts.salary ? <div className="kv"><span>{t("salary")}</span><b dir="ltr">{p.contacts.salary}</b></div> : null}
           {!p.contacts.email && !p.contacts.phone && !p.contacts.cvUrl ? <p className="note">{t("sharedNothing")}</p> : null}
           <button type="button" className="btn g w" style={{ marginTop: 14 }} onClick={() => setSheet(null)}>{t("close")}</button>
         </Sheet>

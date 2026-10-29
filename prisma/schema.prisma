@@ -213,6 +213,13 @@ model CandidateProfile {
   // set when a profile photo exists; also used to refresh cached copies
   photoUpdatedAt   DateTime?
   // "finish your profile" / "add your video" reminders: at most two, a few days apart
+  // job preferences (shown to companies), salary kept private until shared on accept
+  desiredRoles     String[]      @default([])
+  jobTypes         String[]      @default([])
+  workModes        String[]      @default([])
+  relocateTo       String[]      @default([])
+  salaryMin        Int?
+  salaryCurrency   String        @default("USD")
   remindersSent    Int           @default(0)
   lastReminderAt   DateTime?
   isDemo           Boolean       @default(false)
@@ -228,6 +235,7 @@ model CandidateProfile {
   requests     IntroRequest[]
   blocks       Block[]
   profileViews ProfileView[]
+  hiddenNames  HiddenCompanyName[]
 
   @@index([status, visibility])
   @@index([industry])
@@ -409,6 +417,7 @@ model IntroRequest {
   shareEmail   Boolean          @default(false)
   sharePhone   Boolean          @default(false)
   shareCv      Boolean          @default(false)
+  shareSalary  Boolean          @default(false)
   respondedAt  DateTime?
   isDemo       Boolean          @default(false)
   createdAt    DateTime         @default(now())
@@ -438,6 +447,8 @@ model Block {
   candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
   companyId   String
   company     Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  // "block": blocked after a request; "hide": hidden in privacy settings; "name": matched a hidden name
+  source      String           @default("block")
   createdAt   DateTime         @default(now())
 
   @@id([candidateId, companyId])
@@ -571,4 +582,17 @@ model Category {
   // false = only companies pick it (their industry); true = also candidates, the homepage strip and reel filters
   forCandidates Boolean @default(true)
   createdAt DateTime @default(now())
+}
+
+/** "Hide me from any company called…": also applies to companies that join Hireel later. */
+model HiddenCompanyName {
+  id          String           @id @default(cuid())
+  candidateId String
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  term        String // as typed (shown back to the candidate)
+  match       String // simplified for matching
+  createdAt   DateTime         @default(now())
+
+  @@unique([candidateId, match])
+  @@index([match])
 }

@@ -49,6 +49,8 @@ export default async function ProfilePreview() {
               <Link className="btn g" href="/candidate/edit">{t("editProfile")}</Link>
               <Link className="btn g" href="/candidate/share">{t("shareProfile")}</Link>
             </div>
+            <Link className="btn o w" href="/candidate/profile/print">📄 {t("downloadPdf")}</Link>
+            <Link className="btn o w" href="/candidate/share#hide-title">🙈 {t("hideFrom")}</Link>
             <PushCard variant="settings" who="candidate" />
             <AccountData who="candidate" />
             <SignOut />

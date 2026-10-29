@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AVAILABILITY, COMPANY_SIZES, EMPLOYMENT_TYPES, MAX_SKILLS, VIDEO_LANGUAGES } from "./constants";
+import { AVAILABILITY, COMPANY_SIZES, EMPLOYMENT_TYPES, MAX_DESIRED_ROLES, MAX_SKILLS, SALARY_CURRENCIES, VIDEO_LANGUAGES, WORK_MODES } from "./constants";
 import { CATEGORY_KEY } from "./categories";
 
 /** A category key. The server also checks it is one of the categories in use (isCategory). */
@@ -60,6 +60,16 @@ export const profileExperienceSchema = z.object({
   yearsExperience: z.coerce.number({ message: "years" }).int("years").min(0, "years").max(50, "years"),
   availability: z.enum(AVAILABILITY),
   skills: z.array(z.string().trim().min(1).max(40)).min(1, "skills_min").max(MAX_SKILLS, "skills_max"),
+});
+
+/** Job preferences. The salary is private: shared only with a company the candidate accepts, if they choose. */
+export const profilePrefsSchema = z.object({
+  desiredRoles: z.array(z.string().trim().min(1).max(60, "too_long")).max(MAX_DESIRED_ROLES, "too_long"),
+  jobTypes: z.array(z.enum(EMPLOYMENT_TYPES)).max(EMPLOYMENT_TYPES.length),
+  workModes: z.array(z.enum(WORK_MODES)).max(WORK_MODES.length),
+  relocateTo: z.array(z.string().max(40)).max(10),
+  salaryMin: z.union([z.null(), z.coerce.number({ message: "invalid" }).int("invalid").min(0, "invalid").max(10_000_000, "invalid")]),
+  salaryCurrency: z.enum(SALARY_CURRENCIES),
 });
 
 export const profileAboutSchema = z.object({

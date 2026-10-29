@@ -32,7 +32,7 @@ export default async function CandidateChatPage({ params }: { params: Promise<{ 
   ]);
   await markRead(id, "candidate");
   const c = r.company;
-  const shared = [r.shareEmail && t("shareEmail"), r.sharePhone && t("sharePhone"), r.shareCv && t("shareCv")].filter(Boolean).join(", ") || t("nothing");
+  const shared = [r.shareEmail && t("shareEmail"), r.sharePhone && t("sharePhone"), r.shareCv && t("shareCv"), r.shareSalary && t("salary")].filter(Boolean).join(", ") || t("nothing");
   const site = siteLink(c.website);
   const details = (
     <div>

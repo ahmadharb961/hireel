@@ -1,5 +1,6 @@
 "use server";
 import { isCategory } from "@/server/categories";
+import { applyHiddenNamesToCompany } from "@/server/hiding";
 import { cookies } from "next/headers";
 import { APIError } from "better-auth/api";
 import { auth } from "@/lib/auth";
@@ -43,7 +44,7 @@ export async function signUpAction(_prev: SignUpState, form: FormData): Promise<
   try {
     if ("companyName" in data) {
       const plan = await defaultPlan();
-      await prisma.$transaction([
+      const [, company] = await prisma.$transaction([
         prisma.user.update({ where: { id: userId }, data: { role: "EMPLOYER", locale } }),
         prisma.company.create({
           data: {
@@ -52,6 +53,8 @@ export async function signUpAction(_prev: SignUpState, form: FormData): Promise<
           },
         }),
       ]);
+      // Candidates who chose to hide from any company with this name never appear to it.
+      await applyHiddenNamesToCompany(company.id).catch((e) => console.error("hidden names", e));
     } else {
       await prisma.$transaction([
         prisma.user.update({ where: { id: userId }, data: { role: "CANDIDATE", locale } }),

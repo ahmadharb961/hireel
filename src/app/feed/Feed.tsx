@@ -12,7 +12,7 @@ import { startNavProgress } from "@/components/NavProgress";
 import { LIcon } from "@/components/landing/icons";
 import { useToast } from "@/components/Toast";
 import { GateSheet, RequestSheet, UpgradeBody, type Quota } from "@/components/employer/Sheets";
-import { AVAILABILITY, VIDEO_LANGUAGES } from "@/lib/constants";
+import { AVAILABILITY, EMPLOYMENT_TYPES, VIDEO_LANGUAGES, WORK_MODES } from "@/lib/constants";
 import type { CategoryOption } from "@/lib/categories";
 import { useUnread } from "@/lib/unread-client";
 import { EXP_BANDS, FEED_PLACES, filtersToQuery, type FeedFilters } from "@/lib/feed-filters";
@@ -33,6 +33,9 @@ function posterOf(c: FeedCard) {
 export function Feed({ initial, nextCursor, seed, filters, employer, candidateViewer, limited, categories, catNames }: { initial: FeedCard[]; nextCursor: string | null; seed: string; filters: FeedFilters; employer: Employer; candidateViewer: boolean; limited: boolean; categories: CategoryOption[]; catNames: Record<string, string> }) {
   const t = useTranslations("feed");
   const catName = (k: string) => catNames[k] ?? k;
+  const tp = useTranslations("prefs");
+  const tm = useTranslations("employment");
+  const tco = useTranslations("signup.countries");
   const tl = useTranslations("languages");
   const ta = useTranslations("availability");
   const te = useTranslations("errors");
@@ -285,6 +288,13 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
               <section className="pp-sec"><h3>{t("keySkills")}</h3><div className="pp-skills">{current.skills.map((s) => <span key={s}>{s}</span>)}</div></section>
             ) : null}
 
+            {current.prefs.roles.length || current.prefs.workModes.length || current.prefs.relocateTo.length ? (
+              <section className="pp-sec"><h3>{tp("lookingFor")}</h3>
+                {current.prefs.roles.length ? <div className="pp-skills">{current.prefs.roles.map((s) => <span key={s}>{s}</span>)}</div> : null}
+                <p className="note" style={{ marginTop: 6 }}>{[...current.prefs.jobTypes.map((k) => tm(k)), ...current.prefs.workModes.map((k) => tp(`mode.${k}` as "mode.ONSITE")), current.prefs.relocateTo.length ? tp("openTo", { places: current.prefs.relocateTo.map((k) => tco(k as "Lebanon")).join(", ") }) : ""].filter(Boolean).join(" · ")}</p>
+              </section>
+            ) : null}
+
             <div className="pp-facts">
               <div><LIcon name="briefcase" size={20} /><b>{t("yearsShort", { n: current.years })}</b><span>{t("expLbl")}</span></div>
               {current.location ? <div><LIcon name="pin" size={20} /><b>{current.location}</b><span>{t("locLbl")}</span></div> : null}
@@ -318,6 +328,9 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
             <p className="p">{profileOf.headline} · {profileOf.location}</p>
             {profileOf.about ? <><label className="lbl">{t("about")}</label><p className="p">{profileOf.about}</p></> : null}
             <label className="lbl">{t("industry")}</label><p className="p">{catName(profileOf.industry)}</p>
+            {profileOf.prefs.roles.length || profileOf.prefs.workModes.length || profileOf.prefs.jobTypes.length ? (
+              <><label className="lbl">{tp("lookingFor")}</label><p className="p">{[...profileOf.prefs.roles, ...profileOf.prefs.jobTypes.map((k) => tm(k)), ...profileOf.prefs.workModes.map((k) => tp(`mode.${k}` as "mode.ONSITE"))].join(" · ")}</p></>
+            ) : null}
             <p className="p" style={{ marginTop: 10 }}>{t("contactPrivate")}</p>
             <div className="row" style={{ marginTop: 14 }}>
               <button type="button" className="btn g" onClick={() => setProfileOf(null)}>{t("close")}</button>
@@ -410,12 +423,16 @@ function FilterGroups({ filters, setFilter, categories }: { filters: FeedFilters
   const tl = useTranslations("languages");
   const ta = useTranslations("availability");
   const tc = useTranslations("signup.countries");
+  const tp = useTranslations("prefs");
+  const tm = useTranslations("employment");
   const groups: { k: FilterKey; title: string; icon: string; anyLabel: string; options: [string, string][] }[] = [
     { k: "industry", title: t("industry"), icon: "all", anyLabel: t("all"), options: categories.map((c) => [c.key, c.name]) },
     { k: "exp", title: t("experience"), icon: "briefcase", anyLabel: t("any"), options: Object.entries(EXP_BANDS).map(([k, [a, b]]) => [k, k.endsWith("+") ? t("expPlus", { n: a }) : t("expBand", { a, b })]) },
     { k: "place", title: t("location"), icon: "pin", anyLabel: t("any"), options: Object.keys(FEED_PLACES).map((k) => [k, tc(k)]) },
     { k: "lang", title: t("videoLanguage"), icon: "connect", anyLabel: t("any"), options: VIDEO_LANGUAGES.map((k) => [k, tl(k)]) },
     { k: "avail", title: t("availability"), icon: "clock", anyLabel: t("any"), options: AVAILABILITY.map((k) => [k, ta(k)]) },
+    { k: "mode", title: tp("workModes"), icon: "pin", anyLabel: t("any"), options: WORK_MODES.map((k) => [k, tp(`mode.${k}`)]) },
+    { k: "jtype", title: tp("jobTypes"), icon: "briefcase", anyLabel: t("any"), options: EMPLOYMENT_TYPES.map((k) => [k, tm(k)]) },
   ];
   return (
     <>

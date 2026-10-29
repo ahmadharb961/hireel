@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
+import { Recorder, recorderSupported } from "./Recorder";
 import { Player } from "@/components/Player";
 import { Toggle } from "@/components/Toggle";
 import { useToast } from "@/components/Toast";
@@ -26,7 +27,7 @@ function readDuration(file: File): Promise<{ duration: number; landscape: boolea
   });
 }
 
-export function Studio({ videos, uploadsEnabled, textOnly, aboutOk }: { videos: StudioVideo[]; uploadsEnabled: boolean; textOnly: boolean; aboutOk: boolean }) {
+export function Studio({ videos, uploadsEnabled, textOnly, aboutOk, points }: { videos: StudioVideo[]; uploadsEnabled: boolean; textOnly: boolean; aboutOk: boolean; points: string[] }) {
   const t = useTranslations("studio");
   const tl = useTranslations("languages");
   const ts = useTranslations("videoStatus");
@@ -41,6 +42,7 @@ export function Studio({ videos, uploadsEnabled, textOnly, aboutOk }: { videos: 
   const [error, setError] = useState<string | null>(null);
   const [tip, setTip] = useState<string | null>(null);
   const [upload, setUpload] = useState<Upload | null>(null);
+  const [recording, setRecording] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
   const recordRef = useRef<HTMLInputElement>(null);
   const pickRef = useRef<HTMLInputElement>(null);
@@ -182,10 +184,15 @@ export function Studio({ videos, uploadsEnabled, textOnly, aboutOk }: { videos: 
         <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
         <span>{t("consent")}</span>
       </label>
+      <Recorder open={recording} points={points} onClose={() => setRecording(false)} onFallback={() => recordRef.current?.click()} onDone={(f) => { setRecording(false); void onFile(f); }} />
       <input ref={recordRef} type="file" accept="video/*" capture="user" hidden onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
       <input ref={pickRef} type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
       <div className="row">
-        <button type="button" className="btn" disabled={!canUpload} onClick={() => (consent ? recordRef.current?.click() : setError(t("consentFirst")))}>{slot ? t("recordNew") : t("record")}</button>
+        <button type="button" className="btn" disabled={!canUpload} onClick={() => {
+          if (!consent) return setError(t("consentFirst"));
+          // Record inside Hireel with the coach; phones without it use their camera app.
+          if (recorderSupported()) setRecording(true); else recordRef.current?.click();
+        }}>{slot ? t("recordNew") : t("record")}</button>
         <button type="button" className="btn g" disabled={!canUpload} onClick={() => (consent ? pickRef.current?.click() : setError(t("consentFirst")))}>{t("upload")}</button>
       </div>
       {slot && !slot.primary && slot.status === "live" ? <button type="button" className="btn g w" onClick={() => run(makePrimary(slot.id), t("primaryDone"))}>{t("makePrimary")}</button> : null}

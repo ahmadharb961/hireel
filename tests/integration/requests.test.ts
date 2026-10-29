@@ -77,7 +77,7 @@ describe("intro requests and plan limits", () => {
     if (!r.ok) throw new Error("setup");
     expect(await sharedContact(e.companyId, c.profileId)).toBeNull();
     await prisma.introRequest.update({ where: { id: r.id }, data: { status: "ACCEPTED", respondedAt: new Date(), shareEmail: true, sharePhone: false, shareCv: false } });
-    expect(await sharedContact(e.companyId, c.profileId)).toEqual({ email: "me@x.test", phone: null, workHistory: null, education: null, cvFileName: null });
+    expect(await sharedContact(e.companyId, c.profileId)).toEqual({ email: "me@x.test", phone: null, workHistory: null, education: null, cvFileName: null, salary: null });
     const other = await makeCompany();
     expect(await sharedContact(other.companyId, c.profileId)).toBeNull();
   });
