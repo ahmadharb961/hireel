@@ -12,7 +12,7 @@ export default async function SharePage() {
   const link = await prisma.shareLink.findUnique({ where: { candidateId: profile.id } });
   return (
     <div className="scr">
-      <CandidateHeader candidateId={profile.id} />
+      <CandidateHeader candidateId={profile.id} back="/candidate/profile" />
       <main className="main">
         <ShareSettings
           shareOn={Boolean(link?.enabled)}

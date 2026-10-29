@@ -7,6 +7,7 @@ import { Icon } from "@/components/Icons";
 import { Sheet } from "@/components/Sheet";
 import { useToast } from "@/components/Toast";
 import { refreshUnread } from "@/lib/unread-client";
+import { CompanySheet, type CompanyInfo } from "@/components/CompanySheet";
 
 export type ChatMsg = { id: string; mine: boolean; body: string; at: string };
 type Pending = { tmp: string; body: string; failed?: boolean };
@@ -18,6 +19,11 @@ export type ChatProps = {
   initial: ChatMsg[];
   back: string;
   other: { name: string; sub: string; avatar: string | null; href?: string };
+  /** Candidate side: the company's details, opened by tapping its name. */
+  company?: CompanyInfo & { shared: string };
+  /** Company side: what the candidate chose to share. */
+  contacts?: { email: string | null; phone: string | null; cvUrl: string | null };
+  otherReadAt: string | null;
   /** Report and block run as server actions owned by each side. */
   onReport: (reason: string, details: string) => Promise<{ ok: boolean; error?: string }>;
   onBlock?: () => Promise<{ ok: boolean; error?: string }>;
@@ -47,7 +53,8 @@ export function ChatView(p: ChatProps) {
   const [pending, setPending] = useState<Pending[]>([]);
   const [state, setState] = useState(p.state);
   const [text, setText] = useState("");
-  const [sheet, setSheet] = useState<null | "menu" | "report" | "block" | "end">(null);
+  const [sheet, setSheet] = useState<null | "menu" | "report" | "block" | "end" | "company" | "contacts">(null);
+  const [otherRead, setOtherRead] = useState(p.otherReadAt);
   const [reason, setReason] = useState<(typeof REASONS)[number]>("fake");
   const [details, setDetails] = useState("");
   const [busy, setBusy] = useState(false);
@@ -63,8 +70,9 @@ export function ChatView(p: ChatProps) {
       if (last.current) q.set("after", last.current);
       const res = await fetch(`/api/chat/${p.id}?${q}`, { cache: "no-store" });
       if (!res.ok) return;
-      const data = (await res.json()) as { state: ChatProps["state"]; messages: ChatMsg[] };
+      const data = (await res.json()) as { state: ChatProps["state"]; messages: ChatMsg[]; otherReadAt: string | null };
       setState(data.state);
+      setOtherRead(data.otherReadAt);
       if (data.messages.length) {
         last.current = data.messages.at(-1)!.at;
         setMsgs((m) => merge(m, data.messages));
@@ -74,8 +82,22 @@ export function ChatView(p: ChatProps) {
     }
   }, [p.id]);
 
-  // Leaving the chat updates the unread badges straight away.
-  useEffect(() => () => refreshUnread(), []);
+  // Leaving the chat (or switching to another app or tab) tells the server, so new messages notify
+  // straight away, and updates the unread badges.
+  useEffect(() => {
+    const leave = () => {
+      fetch(`/api/chat/${p.id}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ leave: true }), keepalive: true }).catch(() => {});
+    };
+    const onVis = () => { if (document.visibilityState === "hidden") leave(); };
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("pagehide", leave);
+    return () => {
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("pagehide", leave);
+      leave();
+      refreshUnread();
+    };
+  }, [p.id]);
 
   useEffect(() => {
     const timer = setInterval(() => { if (document.visibilityState === "visible") void poll(); }, POLL_MS);
@@ -200,12 +222,18 @@ export function ChatView(p: ChatProps) {
     : state === "blocked" ? (p.side === "candidate" ? t("blockedByYou") : t("unavailable"))
     : state === "unavailable" ? t("unavailable") : null;
   const over = text.length > MAX;
+  const lastMine = [...msgs].reverse().find((m) => m.mine);
 
   return (
     <div className="chat" ref={root}>
       <header className="chat-hd">
         <Link className="ib flip" href={p.back} aria-label={t("back")}><Icon name="back" /></Link>
-        {p.other.href ? (
+        {p.company ? (
+          <button type="button" className="chat-who" onClick={() => setSheet("company")} aria-label={t("viewCompany")}>
+            <span className="chat-av">{p.other.avatar ? <img src={p.other.avatar} alt="" /> : p.other.name.slice(0, 1)}</span>
+            <span className="chat-nm"><b>{p.other.name}</b><small>{p.other.sub}</small></span>
+          </button>
+        ) : p.other.href ? (
           <Link className="chat-who" href={p.other.href}>
             <span className="chat-av">{p.other.avatar ? <img src={p.other.avatar} alt="" /> : p.other.name.slice(0, 1)}</span>
             <span className="chat-nm"><b>{p.other.name}</b><small>{p.other.sub}</small></span>
@@ -229,6 +257,7 @@ export function ChatView(p: ChatProps) {
               <p dir="auto">{m.body}</p>
               <time dateTime={m.at}>{fmt.dateTime(new Date(m.at), { timeStyle: "short" })}</time>
             </div>
+            {m.id === lastMine?.id ? <span className="bub-seen">{otherRead && otherRead >= m.at ? `✓✓ ${t("seen")}` : `✓ ${t("delivered")}`}</span> : null}
           </div>
         ))}
         {pending.map((x) => (
@@ -266,13 +295,32 @@ export function ChatView(p: ChatProps) {
 
       <Sheet open={sheet === "menu"} onClose={() => setSheet(null)} label={t("options")}>
         <div className="chat-menu">
-          {p.other.href ? <Link className="btn g w" href={p.other.href}>{p.side === "candidate" ? t("viewCompany") : t("viewProfile")}</Link> : null}
+          {p.company ? <button type="button" className="btn g w" onClick={() => setSheet("company")}>{t("viewCompany")}</button> : null}
+          {p.other.href ? <Link className="btn g w" href={p.other.href}>{t("viewProfile")}</Link> : null}
+          {p.contacts ? <button type="button" className="btn g w" onClick={() => setSheet("contacts")}>{t("contactDetails")}</button> : null}
           <button type="button" className="btn g w" onClick={() => setSheet("report")}>{p.side === "candidate" ? t("reportCompany") : t("reportCandidate")}</button>
           {p.onBlock && state !== "blocked" ? <button type="button" className="btn g w bad-t" onClick={() => setSheet("block")}>{t("blockCompany")}</button> : null}
           {state === "open" ? <button type="button" className="btn g w bad-t" onClick={() => setSheet("end")}>{t("endChat")}</button> : null}
           <button type="button" className="btn o w" onClick={() => setSheet(null)}>{t("cancel")}</button>
         </div>
       </Sheet>
+
+      {p.company ? (
+        <CompanySheet open={sheet === "company"} onClose={() => setSheet(null)} c={p.company}
+          extra={<p className="note" style={{ marginBottom: 8 }}>{t("youShared", { list: p.company.shared })}</p>} />
+      ) : null}
+
+      {p.contacts ? (
+        <Sheet open={sheet === "contacts"} onClose={() => setSheet(null)} label={t("contactDetails")}>
+          <h3 className="h3" style={{ fontSize: 18 }}>{t("contactDetails")}</h3>
+          <p className="p">{t("contactNote", { name: p.other.name })}</p>
+          {p.contacts.email ? <div className="kv"><span>{t("email")}</span><b dir="ltr"><a href={`mailto:${p.contacts.email}`}>{p.contacts.email}</a></b></div> : null}
+          {p.contacts.phone ? <div className="kv"><span>{t("phone")}</span><b dir="ltr"><a href={`tel:${p.contacts.phone.replace(/[^+0-9]/g, "")}`}>{p.contacts.phone}</a></b></div> : null}
+          {p.contacts.cvUrl ? <div className="kv"><span>{t("cv")}</span><b><a href={p.contacts.cvUrl}>{t("downloadCv")}</a></b></div> : null}
+          {!p.contacts.email && !p.contacts.phone && !p.contacts.cvUrl ? <p className="note">{t("sharedNothing")}</p> : null}
+          <button type="button" className="btn g w" style={{ marginTop: 14 }} onClick={() => setSheet(null)}>{t("close")}</button>
+        </Sheet>
+      ) : null}
 
       <Sheet open={sheet === "end"} onClose={() => setSheet(null)} label={t("endChat")}>
         <h3 className="h3" style={{ fontSize: 18 }}>{t("endTitle")}</h3>

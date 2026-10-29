@@ -8,8 +8,8 @@ import { rateLimit } from "./ratelimit";
  * company member who sent the request. Either side may write first.
  */
 export const MESSAGE_MAX = 2000;
-/** Someone who read the chat this recently is looking at it: no phone or email ping. */
-const ACTIVE_MS = 20_000;
+/** Someone who read the chat this recently is looking at it (the open chat checks every 4 seconds): no phone or email ping. */
+export const ACTIVE_MS = 10_000;
 
 export type ChatSide = "candidate" | "company";
 /** open: both can write. closed: someone ended it. blocked: the candidate blocked the company. unavailable: an account is suspended. */
@@ -56,8 +56,17 @@ export async function listMessages(requestId: string, viewerId: string, after?: 
   return rows.map((m) => ({ id: m.id, mine: m.senderId === viewerId, body: m.body, at: m.createdAt.toISOString() }));
 }
 
+/** The chat is on this person's screen: everything in it is read, and they're watching it live. */
 export async function markRead(requestId: string, side: ChatSide, now = new Date()) {
-  await prisma.introRequest.update({ where: { id: requestId }, data: side === "candidate" ? { candidateReadAt: now } : { employerReadAt: now } });
+  await prisma.introRequest.update({ where: { id: requestId }, data: side === "candidate" ? { candidateReadAt: now, candidateActiveAt: now } : { employerReadAt: now, employerActiveAt: now } });
+}
+
+/**
+ * The person closed the chat or switched away: from now on, new messages notify them right away
+ * (otherwise they'd count as "looking at it" for a few more seconds).
+ */
+export async function markLeft(requestId: string, side: ChatSide) {
+  await prisma.introRequest.update({ where: { id: requestId }, data: side === "candidate" ? { candidateActiveAt: null } : { employerActiveAt: null } });
 }
 
 export type SendResult = { ok: true; message: ChatMessage } | { ok: false; error: "not_found" | "chat_closed" | "message_empty" | "too_long" | "rate_limited" };
@@ -72,7 +81,7 @@ export async function sendMessage(userId: string, requestId: string, text: strin
   if (!(await rateLimit(`chat:${userId}`, 30, 60))) return { ok: false, error: "rate_limited" };
 
   const { r, side } = chat;
-  const mine = side === "candidate" ? { candidateReadAt: now } : { employerReadAt: now };
+  const mine = side === "candidate" ? { candidateReadAt: now, candidateActiveAt: now } : { employerReadAt: now, employerActiveAt: now };
   const [m] = await prisma.$transaction([
     prisma.message.create({ data: { requestId, senderId: userId, body, createdAt: now } }),
     prisma.introRequest.update({ where: { id: requestId }, data: { lastMessageAt: now, ...mine } }),
@@ -83,7 +92,8 @@ export async function sendMessage(userId: string, requestId: string, text: strin
   const toCandidate = side === "company";
   const readAt = toCandidate ? r.candidateReadAt : r.employerReadAt;
   const emailedAt = toCandidate ? r.candidateEmailedAt : r.employerEmailedAt;
-  const active = readAt && now.getTime() - readAt.getTime() < ACTIVE_MS;
+  const activeAt = toCandidate ? r.candidateActiveAt : r.employerActiveAt;
+  const active = activeAt && now.getTime() - activeAt.getTime() < ACTIVE_MS;
   if (!active) {
     const email = !emailedAt || Boolean(readAt && readAt > emailedAt);
     if (email) await prisma.introRequest.update({ where: { id: requestId }, data: toCandidate ? { candidateEmailedAt: now } : { employerEmailedAt: now } });

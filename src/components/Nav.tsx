@@ -33,14 +33,15 @@ function NavBar({ items, floating, onGate }: { items: Item[]; floating?: boolean
 
 export function CandidateNav() {
   const t = useTranslations("nav");
+  const unread = useUnread().n;
   return (
     <>
       <NavBar
         items={[
           { href: "/candidate", icon: "home", label: t("home"), exact: true },
+          { href: "/candidate/requests", icon: "chat", label: t("inbox"), badge: unread },
           { href: "/candidate/video", icon: "video", label: t("myVideo") },
           { href: "/candidate/profile", icon: "account", label: t("profile") },
-          { href: "/candidate/share", icon: "share", label: t("share") },
           { href: "/feed", icon: "discover", label: t("reels") },
         ]}
       />
@@ -52,6 +53,7 @@ export function CandidateNav() {
 /** Menu for a signed-in candidate who is browsing reels or search: a way back to their own area. */
 export function CandidateBrowseNav({ floating }: { floating?: boolean }) {
   const t = useTranslations("nav");
+  const unread = useUnread().n;
   return (
     <>
       <NavBar
@@ -59,6 +61,7 @@ export function CandidateBrowseNav({ floating }: { floating?: boolean }) {
         items={[
           { href: "/feed", icon: "discover", label: t("discover") },
           { href: "/search", icon: "search", label: t("search") },
+          { href: "/candidate/requests", icon: "chat", label: t("inbox"), badge: unread },
           { href: "/candidate", icon: "account", label: t("myArea") },
         ]}
       />

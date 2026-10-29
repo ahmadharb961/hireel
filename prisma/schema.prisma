@@ -414,6 +414,9 @@ model IntroRequest {
   lastMessageAt      DateTime?
   candidateReadAt    DateTime?
   employerReadAt     DateTime?
+  // while the chat is on someone's screen (cleared when they leave): no pings for messages they see live
+  candidateActiveAt  DateTime?
+  employerActiveAt   DateTime?
   // when each side was last emailed about new messages (one email per unread batch)
   candidateEmailedAt DateTime?
   employerEmailedAt  DateTime?

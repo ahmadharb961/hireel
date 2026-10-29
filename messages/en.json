@@ -304,7 +304,8 @@
     "stats": {
       "profileViews": "Profile views",
       "saves": "Saves",
-      "requests": "Requests"
+      "requests": "Requests",
+      "videoViews": "Video views"
     },
     "videoViews": "Video views",
     "noVideoViews": "Add a video to start counting views.",
@@ -323,7 +324,11 @@
     "privateNote": "Your phone, email and CV stay hidden until you accept a request.",
     "editProfile": "Edit profile",
     "videoHere": "Your video appears here",
-    "demoVideo": "Demo profile: no real video"
+    "demoVideo": "Demo profile: no real video",
+    "attentionBoth": "You have {r, plural, one {# new request} other {# new requests}} and {m, plural, one {# unread chat} other {# unread chats}}.",
+    "unreadMessages": "{n, plural, one {# chat has} other {# chats have}} new messages.",
+    "seeAll": "See all",
+    "shareProfile": "Share my profile"
   },
   "studio": {
     "title": "My video",
@@ -406,9 +411,9 @@
     "pauseOff": "Job search active again"
   },
   "requests": {
-    "title": "Requests & messages",
-    "subtitle": "Your contact details stay private until you accept.",
-    "empty": "No requests yet. When an employer asks to meet you, it shows up here.",
+    "title": "Messages",
+    "subtitle": "Companies that want to meet you, and your chats with them. Your contact details stay private until you accept.",
+    "empty": "When a company wants to meet you, it shows up here and you get a notification.",
     "new": "New",
     "accepted": "Accepted",
     "declined": "Declined",
@@ -462,7 +467,11 @@
     "viewCompany": "View company profile",
     "sentBy": "Request sent by {name}",
     "close": "Close",
-    "phone": "Phone"
+    "phone": "Phone",
+    "emptyTitle": "No messages yet",
+    "newTitle": "New requests",
+    "chatsTitle": "Chats",
+    "earlierTitle": "Earlier requests ({n})"
   },
   "onboarding": {
     "stepOf": "Step {step} of {total}",
@@ -692,9 +701,9 @@
     "phase2": "Shortlists with private notes arrive in the next update."
   },
   "inbox": {
-    "title": "Requests & messages",
-    "subtitle": "One request per candidate. Once they accept, you can message them here.",
-    "empty": "No requests yet.",
+    "title": "Messages",
+    "subtitle": "Chat with candidates who accepted your request. Contact details they shared are inside each chat.",
+    "empty": "Send an intro request from Discover. When the candidate accepts, your chat starts here.",
     "sent": "sent {date}",
     "status": {
       "PENDING": "Pending",
@@ -708,7 +717,13 @@
     "viewCv": "View on profile",
     "sharedNothing": "They accepted but haven’t shared contact details.",
     "askedCv": "You also asked for their CV and contact details.",
-    "appearIfAccepted": "Contact details appear here if they accept."
+    "appearIfAccepted": "Contact details appear here if they accept.",
+    "emptyTitle": "No messages yet",
+    "chatsTitle": "Chats",
+    "waitingTitle": "Waiting for an answer",
+    "waitingHint": "Request sent · waiting for {name}",
+    "waitingHintCv": "Request sent (with CV) · waiting for {name}",
+    "closedTitle": "Not accepted ({n})"
   },
   "account": {
     "verified": "Verified",
@@ -1190,7 +1205,9 @@
     "emailFooter": "You’re getting this email because you have a Hireel account. Hireel · hireel.app",
     "messageTitle": "New message from {name}",
     "ctaReply": "Reply on Hireel",
-    "lineMoreMessages": "We’ll email you once per batch of new messages. Open the chat to see them all."
+    "lineMoreMessages": "We’ll email you once per batch of new messages. Open the chat to see them all.",
+    "ctaMessage": "Message them",
+    "lineChatOpen": "Your chat is open: say hello on Hireel."
   },
   "pushCard": {
     "title": "Turn on notifications",
@@ -1300,7 +1317,21 @@
     "openChat": "Open chat",
     "messageX": "Message {name}",
     "new": "New",
-    "onlySender": "Only {name}, who sent this request, can chat with the candidate."
+    "onlySender": "Only {name}, who sent this request, can chat with the candidate.",
+    "wantsToMeet": "Wants to meet you · tap to answer",
+    "startChat": "Accepted · say hello",
+    "ended": "Chat ended",
+    "seen": "Seen",
+    "delivered": "Sent",
+    "contactDetails": "Contact details",
+    "contactNote": "What {name} chose to share with you.",
+    "email": "Email",
+    "phone": "Phone",
+    "cv": "CV",
+    "downloadCv": "Download CV",
+    "sharedNothing": "They haven’t shared contact details. You can keep talking here.",
+    "youShared": "You shared: {list}",
+    "close": "Close"
   },
   "adminChat": {
     "back": "Back to reports",

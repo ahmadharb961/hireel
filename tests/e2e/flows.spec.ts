@@ -266,13 +266,28 @@ test.describe.serial("Hireel core loop", () => {
     });
     expect(covered).toBe(false);
     await dialog.getByRole("button", { name: "Accept and share" }).click();
-    await expect(page.getByText("You shared: Email.")).toBeVisible();
-    expect(await linkFromEmail(empEmail, /Request accepted/)).toContain("/employer/inbox");
+    // Accepting opens the chat straight away; the company's details are one tap away.
+    await page.waitForURL(/\/candidate\/chat\//);
+    await page.getByRole("button", { name: "View company" }).first().click();
+    await expect(page.getByRole("dialog").getByText("You shared: Email")).toBeVisible();
+    await page.getByRole("dialog").getByRole("button", { name: "Close" }).last().click();
+    // The person who sent the request is taken straight into the chat.
+    expect(await linkFromEmail(empEmail, /Request accepted/)).toContain("/employer/chat/");
+
+    // Home shows the chat first; the menu has Messages.
+    await page.goto("/candidate");
+    await expect(page.locator(".convs").getByText(`Cedar Test ${id}`)).toBeVisible();
+    await expect(page.locator("nav").getByRole("link", { name: "Messages" })).toHaveAttribute("href", "/candidate/requests");
+    await page.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/cand-home.png", fullPage: true }).catch(() => {});
 
     await signIn(page, empEmail);
     await page.goto("/employer/inbox");
-    await expect(page.getByText("Accepted")).toBeVisible();
-    await expect(page.getByText(candEmail)).toBeVisible();
+    await expect(page.locator(".convs").getByText(`Test ${lastName}`)).toBeVisible();
+    // Contact details the candidate shared are inside the chat.
+    await page.locator(".convs").getByRole("link", { name: new RegExp(`Test ${lastName}`) }).click();
+    await page.getByRole("button", { name: "Chat options" }).click();
+    await page.getByRole("button", { name: "Contact details" }).click();
+    await expect(page.getByRole("dialog").getByText(candEmail)).toBeVisible();
     // The candidate didn't share the CV, so this company can't download it.
     expect((await page.request.get(cvUrl)).status()).toBe(404);
     await page.context().clearCookies();
@@ -283,7 +298,7 @@ test.describe.serial("Hireel core loop", () => {
     // The company writes first.
     await signIn(page, empEmail);
     await page.goto("/employer/inbox");
-    await page.getByRole("link", { name: /^Message / }).click();
+    await page.locator(".convs").getByRole("link", { name: new RegExp(`Test ${lastName}`) }).click();
     await page.waitForURL(/\/employer\/chat\//);
     const chatUrl = page.url();
     await expect(page.getByText("Keep it professional")).toBeVisible();
@@ -300,15 +315,19 @@ test.describe.serial("Hireel core loop", () => {
     const cp = await cand.newPage();
     await cp.addInitScript(() => localStorage.setItem("hireel_install_dismissed", String(Date.now())));
     await signIn(cp, candEmail);
-    await cp.goto("/candidate/requests");
-    await expect(cp.getByText("free for a call")).toBeVisible();
-    await cp.getByRole("link", { name: /Open chat/ }).click();
+    await cp.goto("/candidate");
+    // The menu shows a new message, and home lists the chat with the message.
+    await expect(cp.locator("nav .nb")).toHaveText("1");
+    await expect(cp.locator(".conv.new")).toContainText("free for a call");
+    await cp.locator(".conv.new").click();
     await cp.waitForURL(/\/candidate\/chat\//);
     await expect(cp.getByText("Hireel never asks you to pay")).toBeVisible();
     await expect(cp.locator(".bub:not(.me)")).toContainText("free for a call");
     await cp.getByLabel("Write a message").fill("Yes, Monday works. مرحبا!");
     await cp.getByRole("button", { name: "Send", exact: true }).click();
     await expect(cp.locator(".bub.me").last()).toContainText("Monday works");
+    // The company sees that the candidate read its message.
+    await expect(page.locator(".bub-seen")).toContainText("Seen", { timeout: 15000 });
     await cp.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/chat-candidate.png" }).catch(() => {});
     // The send button and the box are not hidden behind anything.
     const box = await cp.locator(".chat-bar").boundingBox();

@@ -153,17 +153,22 @@ export async function respondToRequest(id: string, decision: "accept" | "decline
       ? { status: "ACCEPTED", respondedAt: new Date(), shareEmail: Boolean(share?.email), sharePhone: Boolean(share?.phone), shareCv: Boolean(share?.cv) }
       : { status: "DECLINED", respondedAt: new Date() },
   });
-  const members = await prisma.companyMember.findMany({ where: { companyId: req.companyId }, select: { userId: true } });
+  const members = await prisma.companyMember.findMany({ where: { companyId: req.companyId }, select: { id: true, userId: true } });
   const name = profile.fullName.split(" ")[0] || profile.fullName;
   const accepted = decision === "accept";
-  void notifyUsers(members.map((m) => m.userId), (t) => ({
-    title: t(accepted ? "push.acceptedTitle" : "push.declinedTitle"),
-    body: t(accepted ? "push.acceptedBody" : "push.declinedBody", { name, role: req.roleTitle }),
-    url: "/employer/inbox",
-    tag: `req-${req.id}`,
-    cta: t("push.ctaInbox"),
-    lines: accepted ? [t("push.lineShared", { what: [share?.email && t("push.shareEmail"), share?.phone && t("push.sharePhone"), share?.cv && t("push.shareCv")].filter(Boolean).join(", ") || "—" })] : [],
-  }));
+  // The person who sent the request goes straight into the new chat; teammates see Messages.
+  const sender = members.filter((m) => m.id === req.senderId).map((m) => m.userId);
+  const others = members.filter((m) => m.id !== req.senderId).map((m) => m.userId);
+  for (const [to, url] of [[sender, accepted ? `/employer/chat/${req.id}` : "/employer/inbox"], [others, "/employer/inbox"]] as const) {
+    void notifyUsers([...to], (t) => ({
+      title: t(accepted ? "push.acceptedTitle" : "push.declinedTitle"),
+      body: t(accepted ? "push.acceptedBody" : "push.declinedBody", { name, role: req.roleTitle }),
+      url,
+      tag: `req-${req.id}`,
+      cta: t(url.includes("/chat/") ? "push.ctaMessage" : "push.ctaInbox"),
+      lines: accepted ? [t("push.lineShared", { what: [share?.email && t("push.shareEmail"), share?.phone && t("push.sharePhone"), share?.cv && t("push.shareCv")].filter(Boolean).join(", ") || "—" }), t("push.lineChatOpen")] : [],
+    }));
+  }
   revalidatePath("/candidate", "layout");
   return { ok: true };
 }

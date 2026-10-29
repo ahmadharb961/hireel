@@ -1,73 +1,102 @@
-import Link from "next/link";
-import { PushCard } from "@/components/PushCard";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Header } from "@/components/Header";
 import { EmployerNav } from "@/components/Nav";
+import { PushCard } from "@/components/PushCard";
+import { ConversationRow } from "@/components/chat/ConversationRow";
+import { listTime } from "@/lib/chat-time";
 import { prisma } from "@/lib/db";
 import { photoUrl } from "@/lib/photo";
-import { savedCount } from "@/server/employer-data";
 import { hasUnread } from "@/server/chat";
+import { savedCount } from "@/server/employer-data";
 import { requireEmployer } from "@/server/session";
 
-/** Requests this company sent. Contact details appear only for accepted requests, as shared. */
+/**
+ * Messages: conversations with candidates who accepted (newest first), requests still waiting
+ * for an answer, and declined ones folded away. Contact details they shared are inside each chat.
+ */
 export default async function InboxPage() {
   const { member, company } = await requireEmployer();
-  const t = await getTranslations("inbox");
-  const tc = await getTranslations("chat");
-  const tcv = await getTranslations("cvFile");
-  const fmt = await getFormatter();
+  const [t, tc, fmt] = await Promise.all([getTranslations("inbox"), getTranslations("chat"), getFormatter()]);
   const reqs = await prisma.introRequest.findMany({
     where: { companyId: company.id },
     orderBy: { createdAt: "desc" },
-    include: {
-      candidate: { include: { user: { select: { email: true } }, cvFile: { select: { id: true } } } },
-      sender: { include: { user: { select: { name: true } } } },
-      messages: { orderBy: { createdAt: "desc" }, take: 1 },
-    },
-    take: 100,
+    include: { candidate: true, sender: { include: { user: { select: { name: true } } } }, messages: { orderBy: { createdAt: "desc" }, take: 1 } },
+    take: 200,
   });
   const n = await savedCount(member.id);
+  const first = (name: string) => name.split(" ")[0] || name;
+  const chats = reqs.filter((r) => r.status === "ACCEPTED")
+    .sort((a, b) => (b.lastMessageAt ?? b.respondedAt ?? b.createdAt).getTime() - (a.lastMessageAt ?? a.respondedAt ?? a.createdAt).getTime());
+  const waiting = reqs.filter((r) => r.status === "PENDING");
+  const closed = reqs.filter((r) => r.status === "DECLINED" || r.status === "WITHDRAWN");
+  const labels = { you: tc("you"), start: tc("startChat"), ended: tc("ended"), unread: tc("new") };
+
   return (
     <div className="scr">
       <Header home="/feed" />
       <main className="main"><div className="stack">
         <div><h1 className="h2">{t("title")}</h1><p className="p">{t("subtitle")}</p></div>
         {reqs.length ? <PushCard variant="prompt" who="employer" /> : null}
-        <div className="stack cards2">
-        {reqs.length === 0 ? <div className="empty">{t("empty")}</div> : reqs.map((r) => {
-          const c = r.candidate;
-          const accepted = r.status === "ACCEPTED";
-          // Only the person who sent the request chats with the candidate.
-          const mine = r.senderId === member.id;
-          const last = r.messages[0];
-          const unread = mine && hasUnread(r, "company");
-          return (
-            <div key={r.id} className="card">
-              <div className="sw">
-                <div><h2 className="h3 pv-name">{photoUrl(c) ? <img className="pv-av" src={photoUrl(c)!} alt="" style={{ width: 36, height: 36 }} /> : null}<Link href={`/c/${c.id}`} style={{ color: "inherit" }}>{c.fullName}</Link></h2><p className="p">{r.roleTitle} · {t("sent", { date: fmt.dateTime(r.createdAt, { dateStyle: "medium" }) })}</p></div>
-                <span className={`tag ${accepted ? "" : r.status === "PENDING" ? "warn" : "mute"}`}>{t(`status.${r.status}`)}</span>
-              </div>
-              {accepted ? (
-                <div style={{ marginTop: 10 }}>
-                  {r.shareEmail ? <div className="kv"><span>{t("email")}</span><b dir="ltr">{c.contactEmail || c.user.email}</b></div> : null}
-                  {r.sharePhone && c.phone ? <div className="kv"><span>{t("phone")}</span><b dir="ltr">{c.phone}</b></div> : null}
-                  {r.shareCv ? <div className="kv"><span>{t("cv")}</span><b><Link href={`/c/${c.id}`}>{t("viewCv")}</Link>{c.cvFile ? <> · <a href={`/api/cv/${c.id}`}>{tcv("downloadCv")}</a></> : null}</b></div> : null}
-                  {!r.shareEmail && !r.sharePhone && !r.shareCv ? <p className="note">{t("sharedNothing")}</p> : null}
-                  {mine ? (
-                    <>
-                      {last ? <p className={`chatlast${unread ? " new" : ""}`} dir="auto">{last.senderId === member.userId ? `${tc("you")}: ` : ""}{last.body}</p> : null}
-                      <Link className={`btn sm w chatbtn${last || r.chatClosedAt ? " g" : ""}`} href={`/employer/chat/${r.id}`}>
-                        {last || r.chatClosedAt ? tc("openChat") : tc("messageX", { name: c.fullName.split(" ")[0] || c.fullName })}
-                        {unread ? <span className="nb2">{tc("new")}</span> : null}
-                      </Link>
-                    </>
-                  ) : <p className="note" style={{ marginTop: 6 }}>{tc("onlySender", { name: r.sender.user.name })}</p>}
-                </div>
-              ) : <p className="note" style={{ marginTop: 8 }}>{r.wantsCv ? `${t("askedCv")} ` : ""}{t("appearIfAccepted")}</p>}
+        {reqs.length === 0 ? <div className="mempty"><b>{t("emptyTitle")}</b>{t("empty")}</div> : null}
+
+        {chats.length ? (
+          <section className="msec" aria-labelledby="e-chats">
+            <h2 className="msec-h" id="e-chats">{t("chatsTitle")}</h2>
+            <div className="convs">
+              {chats.map((r) => {
+                // Only the person who sent the request chats with the candidate.
+                const mine = r.senderId === member.id;
+                return (
+                  <ConversationRow
+                    key={r.id}
+                    labels={labels}
+                    c={{
+                      href: mine ? `/employer/chat/${r.id}` : `/c/${r.candidateId}`, name: r.candidate.fullName, avatar: photoUrl(r.candidate),
+                      sub: r.roleTitle, time: listTime(r.lastMessageAt ?? r.respondedAt, fmt),
+                      last: mine && r.messages[0] ? { body: r.messages[0].body, mine: r.messages[0].senderId === member.userId } : null,
+                      unread: mine && hasUnread(r, "company"), ended: Boolean(r.chatClosedAt),
+                      hint: mine ? undefined : tc("onlySender", { name: r.sender.user.name }),
+                    }}
+                  />
+                );
+              })}
             </div>
-          );
-        })}
-        </div>
+          </section>
+        ) : null}
+
+        {waiting.length ? (
+          <section className="msec" aria-labelledby="e-wait">
+            <h2 className="msec-h" id="e-wait">{t("waitingTitle")} <span className="tag warn">{waiting.length}</span></h2>
+            <div className="convs">
+              {waiting.map((r) => (
+                <ConversationRow
+                  key={r.id}
+                  labels={labels}
+                  c={{
+                    href: `/c/${r.candidateId}`, name: r.candidate.fullName, avatar: photoUrl(r.candidate), sub: r.roleTitle,
+                    time: listTime(r.createdAt, fmt), last: null, unread: false, ended: false,
+                    hint: r.wantsCv ? t("waitingHintCv", { name: first(r.candidate.fullName) }) : t("waitingHint", { name: first(r.candidate.fullName) }),
+                  }}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {closed.length ? (
+          <details className="msec msec-more">
+            <summary>{t("closedTitle", { n: closed.length })}</summary>
+            <div className="convs" style={{ marginTop: 8 }}>
+              {closed.map((r) => (
+                <ConversationRow
+                  key={r.id}
+                  labels={labels}
+                  c={{ href: `/c/${r.candidateId}`, name: r.candidate.fullName, avatar: photoUrl(r.candidate), sub: r.roleTitle, time: listTime(r.respondedAt ?? r.createdAt, fmt), last: null, unread: false, ended: false, hint: t(`status.${r.status}`) }}
+                />
+              ))}
+            </div>
+          </details>
+        ) : null}
       </div></main>
       <EmployerNav savedCount={n} />
     </div>

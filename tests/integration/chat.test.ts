@@ -10,7 +10,7 @@ vi.mock("@/server/push", () => ({
 
 import { prisma } from "@/lib/db";
 import { sendIntroRequest } from "@/server/requests";
-import { closeChat, hasUnread, listMessages, markRead, openChat, sendMessage, unreadChatsForCandidate, unreadChatsForMember } from "@/server/chat";
+import { closeChat, hasUnread, listMessages, markLeft, markRead, openChat, sendMessage, unreadChatsForCandidate, unreadChatsForMember } from "@/server/chat";
 import { intro, makeCandidate, makeCompany, reset } from "./helpers";
 
 async function setup(accept = true) {
@@ -87,6 +87,14 @@ describe("chat after an accepted request", () => {
     await markRead(id, "candidate", at(100));
     await sendMessage(e.userId, id, "Four", at(105));
     expect(pings).toHaveLength(3);
+    // They leave the chat: the very next message notifies them, even seconds later.
+    await markLeft(id, "candidate");
+    await sendMessage(e.userId, id, "Five", at(107));
+    expect(pings).toHaveLength(4);
+    // Leaving doesn't make messages they already read count as unread.
+    expect(await unreadChatsForCandidate(c.profileId)).toBe(1);
+    await markRead(id, "candidate", at(108));
+    expect(await unreadChatsForCandidate(c.profileId)).toBe(0);
   });
 
   it("nobody can write after the chat is ended or the company is blocked", async () => {

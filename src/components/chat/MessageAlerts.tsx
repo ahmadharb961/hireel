@@ -9,6 +9,30 @@ import { useUnread } from "@/lib/unread-client";
 import { Icon } from "@/components/Icons";
 
 const SEEN_KEY = "hireel_msg_alert_seen";
+
+/** A short, soft two-note chime. Browsers only allow sound after the person has tapped or clicked the page. */
+function chime() {
+  try {
+    const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctx || !navigator.userActivation?.hasBeenActive) return;
+    const ctx = new Ctx();
+    [[880, 0], [1320, 0.12]].forEach(([f, at]) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.frequency.value = f;
+      o.type = "sine";
+      g.gain.setValueAtTime(0.0001, ctx.currentTime + at);
+      g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + at + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + at + 0.35);
+      o.connect(g).connect(ctx.destination);
+      o.start(ctx.currentTime + at);
+      o.stop(ctx.currentTime + at + 0.4);
+    });
+    setTimeout(() => ctx.close().catch(() => {}), 1000);
+  } catch {
+    // No sound available: the card is still shown.
+  }
+}
 const read = () => { try { return sessionStorage.getItem(SEEN_KEY); } catch { return null; } };
 const remember = (id: string) => { try { sessionStorage.setItem(SEEN_KEY, id); } catch { /* private mode */ } };
 
@@ -39,6 +63,7 @@ export function MessageAlerts() {
     remember(latest.id);
     // Stays until closed or opened, so a message that arrives while the person is away isn't missed.
     setShown(latest);
+    chime();
     pushState().then(setPush).catch(() => setPush(null));
   }, [latest, path]);
 
