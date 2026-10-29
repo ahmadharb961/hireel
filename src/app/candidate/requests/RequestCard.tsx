@@ -129,8 +129,9 @@ export function RequestCard({ r }: { r: RequestView }) {
 
       <Sheet open={sheet === "company"} onClose={() => setSheet(null)} label={r.company}>
         <div className="cprof">
-          <div className="cprof-banner" style={r.banner ? { backgroundImage: `url(${r.banner})` } : undefined} />
-          <button type="button" className="cprof-x" onClick={() => setSheet(null)} aria-label={t("close")}>✕</button>
+          <div className="cprof-banner" style={r.banner ? { backgroundImage: `url(${r.banner})` } : undefined}>
+            <button type="button" className="cprof-x" onClick={() => setSheet(null)} aria-label={t("close")}>✕</button>
+          </div>
           <span className="chead-logo cprof-logo">{r.logo ? <img src={r.logo} alt="" /> : r.company.slice(0, 1)}</span>
           <h2 className="h2" style={{ marginTop: 8 }}>{r.company} {r.verified ? <span className="tag">✓ {t("verified")}</span> : <span className="tag mute">{t("notVerified")}</span>}</h2>
           <p className="p">{[r.industry && ti.has(r.industry) ? ti(r.industry) : r.industry, r.country].filter(Boolean).join(" · ")}</p>
