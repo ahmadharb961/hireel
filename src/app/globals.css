@@ -891,6 +891,9 @@ html[lang="ar"] .cd-sec h3 { letter-spacing: 0; }
 .recx-scroll { height: min(30vh, 220px); overflow-y: auto; padding: 14px 16px 0; scrollbar-width: none; -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 80%, transparent); mask-image: linear-gradient(transparent, #000 14%, #000 80%, transparent); }
 .recx-scroll::-webkit-scrollbar { display: none; }
 .recx-scroll p { margin: 0; white-space: pre-wrap; font-size: 22px; font-weight: 700; line-height: 1.45; }
+/* While recording the text is moved by the teleprompter, not scrolled by hand. */
+.recx-scroll.moving { overflow: hidden; }
+.recx-text { will-change: transform; padding-bottom: 40%; }
 .recx-pctl { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-top: 1px solid rgba(255,255,255,.12); }
 .recx-chip { border: 0; background: rgba(255,255,255,.16); color: #fff; border-radius: 99px; padding: 8px 14px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
 .recx-hint { font-size: 12px; opacity: .75; }

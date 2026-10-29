@@ -49,6 +49,9 @@ export function Recorder({ open, onClose, onDone, onFallback, points }: { open: 
   const rec = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
   const scroller = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  // Teleprompter position in pixels (a decimal), kept outside React so it updates every frame.
+  const pos = useRef(0);
   const [phase, setPhase] = useState<Phase>("starting");
   const [count, setCount] = useState(3);
   const [sec, setSec] = useState(0);
@@ -128,20 +131,30 @@ export function Recorder({ open, onClose, onDone, onFallback, points }: { open: 
     return () => clearInterval(timer);
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Teleprompter: scrolls by itself while recording, at the chosen speed; tap to pause.
+  // Teleprompter: the text moves up by itself while recording, at the chosen speed; tap to pause.
+  // It's moved with a transform from the clock (not scrollTop in tiny steps: iPhone Safari ignores
+  // steps under one pixel, and a busy phone may skip frames).
+  const place = useCallback(() => {
+    const el = textRef.current;
+    if (el) el.style.transform = `translate3d(0, ${-pos.current.toFixed(2)}px, 0)`;
+  }, []);
   useEffect(() => {
     if (phase !== "recording" || paused) return;
     let raf = 0;
-    let last = performance.now();
+    const from = pos.current;
+    const start = performance.now();
+    const box = scroller.current;
+    const text = textRef.current;
+    // Stop when the last line has reached the top part of the box.
+    const max = box && text ? Math.max(0, text.scrollHeight - box.clientHeight * 0.35) : Infinity;
     const step = (now: number) => {
-      const el = scroller.current;
-      if (el) el.scrollTop += ((now - last) / 1000) * BASE_PX * speed;
-      last = now;
+      pos.current = Math.min(max, from + ((now - start) / 1000) * BASE_PX * speed);
+      place();
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [phase, paused, speed]);
+  }, [phase, paused, speed, place]);
 
   function begin() {
     const s = stream.current;
@@ -163,13 +176,16 @@ export function Recorder({ open, onClose, onDone, onFallback, points }: { open: 
     rec.current = r;
     r.start(1000);
     setSec(0); setPaused(false);
-    if (scroller.current) scroller.current.scrollTop = 0;
+    // Start from wherever they scrolled the script to before recording.
+    if (scroller.current) { pos.current = scroller.current.scrollTop; scroller.current.scrollTop = 0; }
+    place();
     setPhase("recording");
   }
   function stop() { if (rec.current?.state === "recording") rec.current.stop(); }
   function retake() {
     if (clip) URL.revokeObjectURL(clip.url);
     setClip(null); setSec(0);
+    pos.current = 0;
     void startCamera(facing);
   }
   function use() {
@@ -220,9 +236,10 @@ export function Recorder({ open, onClose, onDone, onFallback, points }: { open: 
         {/* Teleprompter near the top (close to the camera), scrolling while recording. */}
         {showPrompter ? (
           <div className="recx-prompt">
-            <div className="recx-scroll" ref={scroller} onClick={() => phase === "recording" && setPaused((p) => !p)} dir="auto">
-              <p>{script}</p>
-              <div style={{ height: "60%" }} aria-hidden="true" />
+            <div className={`recx-scroll${phase === "recording" ? " moving" : ""}`} ref={scroller} onClick={() => phase === "recording" && setPaused((p) => !p)} dir="auto">
+              <div ref={textRef} className="recx-text" style={phase === "recording" ? undefined : { transform: "none" }}>
+                <p>{script}</p>
+              </div>
             </div>
             <div className="recx-pctl">
               {phase === "ready" ? <button type="button" className="recx-chip" onClick={() => { setDraft(script); setEditing(true); }}>✎ {t("editScript")}</button> : <span className="recx-hint">{paused ? t("paused") : t("tapPause")}</span>}
