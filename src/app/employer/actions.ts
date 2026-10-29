@@ -81,7 +81,7 @@ export async function updateCompanyProfile(input: unknown): Promise<R> {
   const p = companyProfileSchema.safeParse(input);
   if (!p.success) { const e = firstError(p.error); return { ok: false, error: e.code, field: e.field }; }
   // A hidden category can stay on a company that already has it, but nobody can newly pick it.
-  if (p.data.industry !== emp.company.industry && !(await isCategory(p.data.industry))) return { ok: false, error: "required", field: "industry" };
+  if (p.data.industry !== emp.company.industry && !(await isCategory(p.data.industry, "company"))) return { ok: false, error: "required", field: "industry" };
   const social: Record<string, string> = {};
   for (const k of SOCIALS) {
     const field = `${k}Url` as "linkedinUrl" | "instagramUrl" | "facebookUrl";

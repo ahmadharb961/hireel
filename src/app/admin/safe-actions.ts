@@ -17,3 +17,4 @@ export const reorderCategory = safe(a.reorderCategory);
 export const setFeatured = safe(a.setFeatured);
 export const reorderFeatured = safe(a.reorderFeatured);
 export const showTopEmployers = safe(a.showTopEmployers);
+export const categoryForCandidates = safe(a.categoryForCandidates);

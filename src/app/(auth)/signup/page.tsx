@@ -18,7 +18,7 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
       <div className="scr">
         <Header back="/" />
         <main className="main">
-          <SignUpForm categories={await categoryOptions()} initialRole={role === "employer" ? "employer" : "candidate"} />
+          <SignUpForm categories={await categoryOptions("company")} initialRole={role === "employer" ? "employer" : "candidate"} />
         </main>
       </div>
     </div>

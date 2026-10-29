@@ -18,18 +18,26 @@ describe("categories managed by the Hireel team", () => {
     for (const c of saved) await prisma.category.update({ where: { key: c.key }, data: c });
   });
 
-  it("starts with the original categories in English and Arabic", async () => {
+  it("starts with the original categories for everyone, plus industries for companies only", async () => {
     const all = await prisma.category.findMany({ orderBy: { sortOrder: "asc" } });
-    expect(all.map((c) => c.key)).toEqual(STARTING);
+    expect(all.filter((c) => c.forCandidates).map((c) => c.key)).toEqual(STARTING);
+    expect(all.find((c) => c.key === "automotive")).toMatchObject({ nameEn: "Automotive", nameAr: "السيارات", forCandidates: false });
+    expect(all.filter((c) => !c.forCandidates).length).toBeGreaterThan(50);
+    expect(await isCategory("fintech", "company")).toBe(true);
+    expect(await isCategory("fintech")).toBe(false);
+    expect(await isCategory("marketing", "company")).toBe(true);
     expect(all.find((c) => c.key === "hr")).toMatchObject({ nameEn: "HR & People", nameAr: "الموارد البشرية" });
   });
 
   it("adds a category at the end with a key made from the English name", async () => {
-    const r = await createCategory("  Real Estate ", "العقارات");
-    expect(r).toEqual({ ok: true, key: "real-estate" });
+    const r = await createCategory("  Marine Biology ", "علم الأحياء البحرية");
+    expect(r).toEqual({ ok: true, key: "marine-biology" });
     const last = (await prisma.category.findMany({ orderBy: { sortOrder: "asc" } })).at(-1);
-    expect(last).toMatchObject({ key: "real-estate", nameEn: "Real Estate", nameAr: "العقارات", active: true });
-    expect(await isCategory("real-estate")).toBe(true);
+    expect(last).toMatchObject({ key: "marine-biology", nameEn: "Marine Biology", active: true, forCandidates: true });
+    expect(await isCategory("marine-biology")).toBe(true);
+    expect((await createCategory("Ports", "الموانئ", false)).ok).toBe(true);
+    expect(await isCategory("ports")).toBe(false);
+    expect(await isCategory("ports", "company")).toBe(true);
   });
 
   it("refuses empty, too long and duplicate names", async () => {

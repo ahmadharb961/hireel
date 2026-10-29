@@ -26,7 +26,7 @@ async function nameTaken(nameEn: string, nameAr: string, except?: string) {
 }
 
 /** Adds a category at the end of the list. Its key comes from the English name and never changes. */
-export async function createCategory(nameEnRaw: string, nameArRaw: string): Promise<ContentResult> {
+export async function createCategory(nameEnRaw: string, nameArRaw: string, forCandidates = true): Promise<ContentResult> {
   const nameEn = nameEnRaw.trim();
   const nameAr = nameArRaw.trim();
   const bad = checkNames(nameEn, nameAr);
@@ -36,7 +36,7 @@ export async function createCategory(nameEnRaw: string, nameArRaw: string): Prom
   let key = base;
   for (let i = 2; await prisma.category.findUnique({ where: { key } }); i++) key = `${base.slice(0, 36)}-${i}`;
   const last = await prisma.category.aggregate({ _max: { sortOrder: true } });
-  await prisma.category.create({ data: { key, nameEn, nameAr, sortOrder: (last._max.sortOrder ?? 0) + 10 } });
+  await prisma.category.create({ data: { key, nameEn, nameAr, forCandidates, sortOrder: (last._max.sortOrder ?? 0) + 10 } });
   return { ok: true, key };
 }
 
@@ -55,6 +55,12 @@ export async function renameCategory(key: string, nameEnRaw: string, nameArRaw: 
 /** Hidden categories can't be picked any more; people who already chose one keep it. */
 export async function setCategoryActive(key: string, active: boolean): Promise<ContentResult> {
   const res = await prisma.category.updateMany({ where: { key }, data: { active } });
+  return res.count ? { ok: true, key } : { ok: false, error: "not_found" };
+}
+
+/** Companies only, or also candidates, the homepage strip and reel filters. */
+export async function setCategoryForCandidates(key: string, on: boolean): Promise<ContentResult> {
+  const res = await prisma.category.updateMany({ where: { key }, data: { forCandidates: on } });
   return res.count ? { ok: true, key } : { ok: false, error: "not_found" };
 }
 

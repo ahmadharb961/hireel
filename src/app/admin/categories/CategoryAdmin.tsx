@@ -3,9 +3,9 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/components/Toast";
-import { addCategory, editCategory, reorderCategory, showCategory } from "../safe-actions";
+import { addCategory, categoryForCandidates, editCategory, reorderCategory, showCategory } from "../safe-actions";
 
-type Row = { key: string; nameEn: string; nameAr: string; active: boolean; candidates: number; companies: number };
+type Row = { key: string; nameEn: string; nameAr: string; active: boolean; forCandidates: boolean; candidates: number; companies: number };
 type Res = { ok: boolean; error?: string; field?: string };
 
 export function CategoryAdmin({ rows }: { rows: Row[] }) {
@@ -13,7 +13,7 @@ export function CategoryAdmin({ rows }: { rows: Row[] }) {
   const te = useTranslations("errors");
   const router = useRouter();
   const toast = useToast();
-  const [add, setAdd] = useState({ nameEn: "", nameAr: "" });
+  const [add, setAdd] = useState({ nameEn: "", nameAr: "", forCandidates: true });
   const [busy, setBusy] = useState(false);
 
   async function run(p: Promise<Res>, msg: string) {
@@ -34,17 +34,24 @@ export function CategoryAdmin({ rows }: { rows: Row[] }) {
           <div><label className="lbl" htmlFor="cat-en">{t("nameEn")}</label><input className="i" id="cat-en" value={add.nameEn} maxLength={40} onChange={(e) => setAdd({ ...add, nameEn: e.target.value })} placeholder="Real estate" /></div>
           <div><label className="lbl" htmlFor="cat-ar">{t("nameAr")}</label><input className="i" id="cat-ar" dir="rtl" value={add.nameAr} maxLength={40} onChange={(e) => setAdd({ ...add, nameAr: e.target.value })} placeholder="العقارات" /></div>
         </div>
+        <label className="chk" style={{ marginTop: 10 }}><input type="checkbox" checked={add.forCandidates} onChange={(e) => setAdd({ ...add, forCandidates: e.target.checked })} /><span>{t("forEveryoneLabel")}</span></label>
         <button type="button" className="btn" style={{ marginTop: 12 }} disabled={busy || !add.nameEn.trim() || !add.nameAr.trim()}
-          onClick={async () => { if (await run(addCategory(add.nameEn, add.nameAr), t("added"))) setAdd({ nameEn: "", nameAr: "" }); }}>{t("add")}</button>
+          onClick={async () => { if (await run(addCategory(add.nameEn, add.nameAr, add.forCandidates), t("added"))) setAdd({ nameEn: "", nameAr: "", forCandidates: true }); }}>{t("add")}</button>
         <p className="note" style={{ marginTop: 8 }}>{t("addNote")}</p>
       </section>
 
-      <section className="card">
-        <h2 className="h3">{t("listTitle", { n: rows.length })}</h2>
-        <div className="stack" style={{ gap: 10, marginTop: 8 }}>
-          {rows.map((r, i) => <CatRow key={r.key} r={r} first={i === 0} last={i === rows.length - 1} run={run} busy={busy} />)}
-        </div>
-      </section>
+      {([true, false] as const).map((everyone) => {
+        const list = rows.filter((r) => r.forCandidates === everyone);
+        return (
+          <section key={String(everyone)} className="card">
+            <h2 className="h3">{everyone ? t("everyoneTitle", { n: list.length }) : t("companiesTitle", { n: list.length })}</h2>
+            <p className="note">{everyone ? t("everyoneNote") : t("companiesNote")}</p>
+            <div className="stack" style={{ gap: 10, marginTop: 8 }}>
+              {list.map((r, i) => <CatRow key={r.key} r={r} first={i === 0} last={i === list.length - 1} run={run} busy={busy} />)}
+            </div>
+          </section>
+        );
+      })}
     </>
   );
 }
@@ -68,6 +75,7 @@ function CatRow({ r, first, last, run, busy }: { r: Row; first: boolean; last: b
       </div>
       <div className="catrow-btns">
         {changed ? <button type="button" className="btn sm" disabled={busy} onClick={() => run(editCategory(r.key, v.nameEn, v.nameAr), t("saved"))}>{t("save")}</button> : null}
+        <button type="button" className="btn sm g" disabled={busy} onClick={() => run(categoryForCandidates(r.key, !r.forCandidates), r.forCandidates ? t("companiesOnlyDone") : t("everyoneDone"))}>{r.forCandidates ? t("makeCompaniesOnly") : t("makeEveryone")}</button>
         <button type="button" className="btn sm g" disabled={busy} onClick={() => run(showCategory(r.key, !r.active), r.active ? t("hiddenDone") : t("shownDone"))}>{r.active ? t("hide") : t("show")}</button>
       </div>
     </div>

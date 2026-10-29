@@ -6,7 +6,7 @@ import { REJECTION_REASONS } from "@/lib/constants";
 import { adminOrNull } from "@/server/session";
 import { approveVideo } from "@/server/videos";
 import { notifyUsers } from "@/server/push";
-import { type ContentResult, setTopEmployersVisible, createCategory, featureCompany, moveCategory, moveFeatured, renameCategory, setCategoryActive, unfeatureCompany } from "@/server/admin-content";
+import { type ContentResult, setCategoryForCandidates, setTopEmployersVisible, createCategory, featureCompany, moveCategory, moveFeatured, renameCategory, setCategoryActive, unfeatureCompany } from "@/server/admin-content";
 
 type R = { ok: true } | { ok: false; error: string };
 
@@ -153,9 +153,9 @@ export async function removeCandidatePhoto(candidateId: string, reason = ""): Pr
 type CR = { ok: true } | { ok: false; error: string; field?: string };
 const done = (r: ContentResult): CR => (r.ok ? { ok: true } : { ok: false, error: r.error, field: r.field });
 
-export async function addCategory(nameEn: string, nameAr: string): Promise<CR> {
+export async function addCategory(nameEn: string, nameAr: string, forCandidates = true): Promise<CR> {
   const a = await admin();
-  const r = await createCategory(String(nameEn), String(nameAr));
+  const r = await createCategory(String(nameEn), String(nameAr), Boolean(forCandidates));
   if (r.ok) await audit(a.id, "category.create", "Category", r.key!, `${nameEn} / ${nameAr}`);
   revalidatePath("/", "layout");
   return done(r);
@@ -173,6 +173,14 @@ export async function showCategory(key: string, active: boolean): Promise<CR> {
   const a = await admin();
   const r = await setCategoryActive(key, Boolean(active));
   if (r.ok) await audit(a.id, active ? "category.show" : "category.hide", "Category", key);
+  revalidatePath("/", "layout");
+  return done(r);
+}
+
+export async function categoryForCandidates(key: string, on: boolean): Promise<CR> {
+  const a = await admin();
+  const r = await setCategoryForCandidates(key, Boolean(on));
+  if (r.ok) await audit(a.id, on ? "category.for_everyone" : "category.companies_only", "Category", key);
   revalidatePath("/", "layout");
   return done(r);
 }

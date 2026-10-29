@@ -568,5 +568,7 @@ model Category {
   nameAr    String
   sortOrder Int      @default(0)
   active    Boolean  @default(true)
+  // false = only companies pick it (their industry); true = also candidates, the homepage strip and reel filters
+  forCandidates Boolean @default(true)
   createdAt DateTime @default(now())
 }

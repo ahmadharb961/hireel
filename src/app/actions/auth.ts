@@ -26,7 +26,7 @@ export async function signUpAction(_prev: SignUpState, form: FormData): Promise<
     return { error: e.code, field: e.field };
   }
   const data = parsed.data;
-  if ("companyName" in data && !(await isCategory(data.industry))) return { error: "required", field: "industry" };
+  if ("companyName" in data && !(await isCategory(data.industry, "company"))) return { error: "required", field: "industry" };
   const locale = resolveLocale((await cookies()).get(LOCALE_COOKIE)?.value);
   const name = "companyName" in data ? data.contactName : `${data.firstName} ${data.lastName}`;
 

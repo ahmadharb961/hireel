@@ -18,7 +18,7 @@ export default async function CategoriesAdmin() {
   return (
     <AdminFrame tab="categories">
       <div><h1 className="h2">{t("title")}</h1><p className="p">{t("sub")}</p></div>
-      <CategoryAdmin rows={cats.map((c) => ({ key: c.key, nameEn: c.nameEn, nameAr: c.nameAr, active: c.active, candidates: n(cands, c.key), companies: n(cos, c.key) }))} />
+      <CategoryAdmin rows={cats.map((c) => ({ key: c.key, nameEn: c.nameEn, nameAr: c.nameAr, active: c.active, forCandidates: c.forCandidates, candidates: n(cands, c.key), companies: n(cos, c.key) }))} />
     </AdminFrame>
   );
 }

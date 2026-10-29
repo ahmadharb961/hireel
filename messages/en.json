@@ -1390,7 +1390,16 @@
     "shownDone": "Category shown",
     "moved": "Order changed",
     "up": "Move {name} up",
-    "down": "Move {name} down"
+    "down": "Move {name} down",
+    "forEveryoneLabel": "Also for candidates, the homepage strip and reel filters (untick for companies only)",
+    "everyoneTitle": "For everyone ({n})",
+    "everyoneNote": "Candidates pick these, and they appear on the homepage strip, in reel filters and search. Companies can pick them too.",
+    "companiesTitle": "Companies only ({n})",
+    "companiesNote": "Only companies pick these as their industry (A to Z in their form). They don’t appear in filters or for candidates.",
+    "makeCompaniesOnly": "Companies only",
+    "makeEveryone": "For everyone",
+    "companiesOnlyDone": "Now for companies only",
+    "everyoneDone": "Now for everyone"
   },
   "adminFeat": {
     "title": "Top employers",

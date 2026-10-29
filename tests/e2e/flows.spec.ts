@@ -93,6 +93,8 @@ test.describe.serial("Hireel core loop", () => {
     await page.fill("#location", "Beirut, Lebanon");
     await page.getByRole("button", { name: "Continue" }).click();
     await page.fill("#currentTitle", "QA Lead");
+    // Candidates get the short list.
+    await expect(page.locator("#industry option", { hasText: "Automotive" })).toHaveCount(0);
     await page.selectOption("#industry", "technology");
     await page.fill("#years", "5");
     await page.fill("#skill", "Playwright");
@@ -160,6 +162,9 @@ test.describe.serial("Hireel core loop", () => {
     await page.fill("#email", empEmail);
     await page.fill("#contactName", "Sara Recruiter");
     await page.fill("#position", "HR Manager");
+    // Companies choose from the full list of industries.
+    await expect(page.locator("#industry option", { hasText: "Automotive" })).toHaveCount(1);
+    await expect(page.locator("#industry option", { hasText: "InsurTech" })).toHaveCount(1);
     await page.selectOption("#industry", "retail");
     await page.fill("#password", PASSWORD);
     await page.check('input[name="agree"]');
@@ -449,16 +454,18 @@ test.describe.serial("Hireel core loop", () => {
 
     // Categories: add one; it shows up in the reels filter and the homepage strip, in both languages.
     await page.goto("/admin/categories");
-    await page.fill("#cat-en", "Real Estate");
-    await page.fill("#cat-ar", "العقارات");
+    await page.fill("#cat-en", "Marine Biology");
+    await page.fill("#cat-ar", "علم الأحياء البحرية");
     await page.getByRole("button", { name: "Add category" }).click();
     await expect(page.getByText("Category added")).toBeVisible();
-    await expect(page.getByLabel("Name in English · Real Estate")).toBeVisible();
+    await expect(page.getByLabel("Name in English · Marine Biology")).toBeVisible();
     await page.getByLabel("Name in English · Marketing").fill("Marketing & PR");
     await page.locator(".catrow", { has: page.getByLabel("Name in English · Marketing") }).getByRole("button", { name: "Save" }).click();
     await expect(page.getByText("Saved", { exact: true })).toBeVisible();
     await page.goto("/");
-    await expect(page.locator(".cats").getByRole("link", { name: "Real Estate" })).toHaveAttribute("href", "/feed?industry=real-estate");
+    await expect(page.locator(".cats").getByRole("link", { name: "Marine Biology" })).toHaveAttribute("href", "/feed?industry=marine-biology");
+    // Company-only industries stay out of the homepage strip.
+    await expect(page.locator(".cats").getByRole("link", { name: "Automotive" })).toHaveCount(0);
     await expect(page.locator(".cats").getByRole("link", { name: "Marketing & PR" })).toBeVisible();
 
     // Top employers: the admin picks the company; it shows on the homepage and opens its page.

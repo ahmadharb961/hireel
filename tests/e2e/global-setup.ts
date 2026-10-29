@@ -14,7 +14,7 @@ export default async function setup() {
   await db.query(`DELETE FROM "session" WHERE "userId" IN (${admin})`);
   await db.query(`UPDATE "user" SET "twoFactorEnabled" = false WHERE email = 'admin@hireel.test'`);
   // The admin test adds a category, renames one and picks a Top employer: start from the original state.
-  await db.query(`DELETE FROM "Category" WHERE "key" = 'real-estate'`);
+  await db.query(`DELETE FROM "Category" WHERE "key" = 'marine-biology'`);
   await db.query(`UPDATE "Category" SET "nameEn" = 'Marketing' WHERE "key" = 'marketing'`);
   await db.query(`UPDATE "Company" SET "featuredRank" = NULL`);
   await db.query(`DELETE FROM "PlatformSetting" WHERE "key" = 'home.topEmployers'`);
