@@ -226,7 +226,7 @@ export function Recorder({ open, onClose, onDone, onFallback, points }: { open: 
 
       <div className="recx-stage">
         {phase === "review" && clip ? (
-          <video key="review" className="recx-video" src={clip.url} controls playsInline autoPlay loop={false} />
+          <video key="review" className="recx-video review" src={clip.url} controls playsInline autoPlay loop={false} />
         ) : (
           <video key="live" ref={live} className={`recx-video${facing === "user" ? " mirror" : ""}`} muted playsInline autoPlay />
         )}
