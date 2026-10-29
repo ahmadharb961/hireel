@@ -36,7 +36,11 @@ async function signIn(page: Page, email: string, password = PASSWORD) {
 // The install banner has its own test; keep it out of the way elsewhere.
 test.beforeEach(async ({ page }, info) => {
   if (info.title.startsWith("install banner")) return;
-  await page.addInitScript(() => localStorage.setItem("hireel_install_dismissed", String(Date.now())));
+  await page.addInitScript(() => {
+    localStorage.setItem("hireel_install_dismissed", String(Date.now()));
+    // The notifications reminder has its own check (company dashboard test).
+    if (!sessionStorage.getItem("test_notify_guard")) localStorage.setItem("hireel_notify_later", String(Date.now() + 864e5));
+  });
 });
 
 test.describe.serial("Hireel core loop", () => {
@@ -105,11 +109,15 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.getByRole("heading", { name: "Welcome, Test" })).toBeVisible();
     await noSideScroll(page);
 
-    // A friendly ask for notifications (the phone's own question only comes after "Turn on").
-    const ask = page.getByRole("region", { name: "Turn on notifications" });
+    // Hireel checks notifications on every visit and asks (the phone's own question only comes after "Turn on").
+    await page.evaluate(() => { sessionStorage.setItem("test_notify_guard", "1"); localStorage.removeItem("hireel_notify_later"); });
+    await page.reload();
+    const ask = page.getByRole("region", { name: "Notifications are off on this device" });
     await expect(ask).toBeVisible();
-    await ask.getByRole("button", { name: "Not now" }).click();
+    await expect(ask.getByRole("button", { name: "Turn on" })).toBeVisible();
+    await ask.getByRole("button", { name: "Later" }).click();
     await expect(ask).toHaveCount(0);
+    await page.evaluate(() => sessionStorage.removeItem("test_notify_guard"));
 
     // Signed in, the candidate can still open the homepage and the reels, and get back.
     await page.goto("/");
@@ -316,7 +324,7 @@ test.describe.serial("Hireel core loop", () => {
     // The candidate sees it on the requests page and replies.
     const cand = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
     const cp = await cand.newPage();
-    await cp.addInitScript(() => localStorage.setItem("hireel_install_dismissed", String(Date.now())));
+    await cp.addInitScript(() => { localStorage.setItem("hireel_install_dismissed", String(Date.now())); localStorage.setItem("hireel_notify_later", String(Date.now() + 864e5)); });
     await signIn(cp, candEmail);
     await cp.goto("/candidate");
     // The menu shows a new message, and home lists the chat with the message.
@@ -582,6 +590,15 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.locator(".msec .convs").getByText(`Test ${lastName}`)).toBeVisible();
     await expect(page.getByText("Requests sent")).toBeVisible();
     await expect(page.getByText(/next update/)).toHaveCount(0);
+    // Notifications aren't on for this browser (blocked in test browsers): Hireel reminds, "Later" hides it for a day.
+    await page.evaluate(() => { sessionStorage.setItem("test_notify_guard", "1"); localStorage.removeItem("hireel_notify_later"); });
+    await page.reload();
+    const guard = page.getByRole("region", { name: "Notifications are off on this device" });
+    await expect(guard).toContainText("Notifications are blocked on this device");
+    await guard.getByRole("button", { name: "Later" }).click();
+    await expect(guard).toHaveCount(0);
+    await page.reload();
+    await expect(guard).toHaveCount(0);
     await page.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/emp-dashboard.png", fullPage: true }).catch(() => {});
 
     // A new company signs up, downloads its data, then deletes the account (and the company).

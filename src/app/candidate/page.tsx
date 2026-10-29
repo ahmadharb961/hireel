@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { CandidateNav } from "@/components/Nav";
-import { PushCard } from "@/components/PushCard";
 import { ConversationRow } from "@/components/chat/ConversationRow";
 import { listTime } from "@/lib/chat-time";
 import { prisma } from "@/lib/db";
@@ -89,7 +88,6 @@ export default async function CandidateHome() {
             ) : <div className="mempty"><b>{tr("emptyTitle")}</b>{tr("empty")}</div>}
           </section>
 
-          {profile.status === "PUBLISHED" ? <PushCard variant="prompt" who="candidate" /> : null}
 
           {pct < 100 ? (
             <div className="card">

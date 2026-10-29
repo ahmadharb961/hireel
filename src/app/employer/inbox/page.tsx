@@ -1,7 +1,6 @@
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Header } from "@/components/Header";
 import { EmployerNav } from "@/components/Nav";
-import { PushCard } from "@/components/PushCard";
 import { ConversationRow } from "@/components/chat/ConversationRow";
 import { listTime } from "@/lib/chat-time";
 import { prisma } from "@/lib/db";
@@ -36,7 +35,6 @@ export default async function InboxPage() {
       <Header home="/feed" />
       <main className="main"><div className="stack">
         <div><h1 className="h2">{t("title")}</h1><p className="p">{t("subtitle")}</p></div>
-        {reqs.length ? <PushCard variant="prompt" who="employer" /> : null}
         {reqs.length === 0 ? <div className="mempty"><b>{t("emptyTitle")}</b>{t("empty")}</div> : null}
 
         {chats.length ? (

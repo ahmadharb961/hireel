@@ -1506,5 +1506,17 @@
     "youShared": "You shared",
     "contact": "Contact",
     "years": "{n, plural, one {# year} other {# years}}"
+  },
+  "notifyGuard": {
+    "title": "Notifications are off on this device",
+    "why": {
+      "employer": "Turn them on so you see candidates’ replies right away, even when Hireel is closed or in another tab.",
+      "candidate": "Turn them on so you know the moment a company messages you or sends a request."
+    },
+    "turnOn": "Turn on",
+    "later": "Later",
+    "blockedTitle": "Notifications are blocked on this device",
+    "blockedBody": "On a computer: click the lock icon next to the web address → Notifications → Allow. On iPhone: Settings → Notifications → Hireel. On Android: your browser’s site settings. Then tap Done.",
+    "done": "Done"
   }
 }

@@ -42,7 +42,7 @@ export const DYNAMIC: string[] = [
   ...["fake", "money", "harassment", "other"].map((k) => `requests.reasons.${k}`),
   ...["fake", "money", "harassment", "other"].map((k) => `chat.reasons.${k}`),
   ...["chat_closed", "message_empty", "too_long"].map((k) => `chat.err.${k}`),
-  "push.ctaMessage", "push.ctaInbox",
+  "push.ctaMessage", "push.ctaInbox", "notifyGuard.why.candidate", "notifyGuard.why.employer",
   ...["fake", "inappropriate", "contact_in_video", "other"].map((k) => `report.reasons.${k}`),
   ...["quiet_audio", "not_intro", "contact_details", "inappropriate", "poor_quality", "custom"].map((k) => `rejection.${k}`),
   ...["PENDING", "ACCEPTED", "DECLINED", "WITHDRAWN"].map((k) => `inbox.status.${k}`),

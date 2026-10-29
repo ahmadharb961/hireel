@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icons";
 import { Logo } from "@/components/Logo";
 import { ChatDeskLive } from "./ChatDeskLive";
-import { PushCard } from "@/components/PushCard";
+import { NotifyGuard } from "@/components/NotifyGuard";
 import { ConversationRow, type Conversation } from "./ConversationRow";
 
 export type DeskNavItem = { href: string; icon: IconName; label: string; on?: boolean };
@@ -27,11 +27,11 @@ export function ChatDesk({ nav, list, details, labels, who, children }: {
         </nav>
         <h2 className="cd-h">{labels.chats}</h2>
         <div className="cd-list">{list.map((c) => <ConversationRow key={c.href} c={c} labels={labels} />)}</div>
-        <div className="cd-push"><PushCard variant="prompt" who={who} /></div>
       </aside>
       <div className="cd-main">{children}</div>
       <aside className="cd-right">{details}</aside>
       <ChatDeskLive />
+      <NotifyGuard who={who} inChat />
     </div>
   );
 }

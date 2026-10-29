@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { MessageAlerts } from "./chat/MessageAlerts";
+import { NotifyGuard } from "./NotifyGuard";
 import { useUnread } from "@/lib/unread-client";
 import { Icon, type IconName } from "./Icons";
 
@@ -46,6 +47,7 @@ export function CandidateNav() {
         ]}
       />
       <MessageAlerts />
+      <NotifyGuard who="candidate" />
     </>
   );
 }
@@ -66,6 +68,7 @@ export function CandidateBrowseNav({ floating }: { floating?: boolean }) {
         ]}
       />
       <MessageAlerts />
+      <NotifyGuard who="candidate" />
     </>
   );
 }
@@ -88,7 +91,7 @@ export function EmployerNav({ floating, savedCount, visitor, onGate }: { floatin
           { href: "/employer/account", icon: "home", label: visitor ? t("account") : t("dashboard"), gate: visitor },
         ]}
       />
-      {visitor ? null : <MessageAlerts />}
+      {visitor ? null : <><MessageAlerts /><NotifyGuard who="employer" /></>}
     </>
   );
 }

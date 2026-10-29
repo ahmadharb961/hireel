@@ -839,3 +839,18 @@ html[lang="ar"] .cd-sec h3 { letter-spacing: 0; }
 .cd-push { padding: 10px; border-top: 1px solid var(--bd); }
 .cd-push:empty { display: none; }
 .cd-push .pushcard { margin: 0; }
+
+/* ---------- notifications reminder (every signed-in page until they're on) ---------- */
+/* Below pop-up windows (.sheet is 900) so it never covers their buttons. */
+.nguard { position: fixed; z-index: 880; inset-inline: 12px; bottom: calc(80px + env(safe-area-inset-bottom)); display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 18px; background: var(--card); color: var(--tx); border: 1px solid var(--bd); box-shadow: 0 16px 36px rgba(15,42,33,.2); }
+.nguard-ic { flex: none; font-size: 22px; line-height: 1; }
+.nguard-tx { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.nguard-tx > span { font-size: 13px; color: var(--tx2); line-height: 1.45; }
+.nguard-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+/* On a phone's chat screen it would cover the typing box: shown on the other pages instead. */
+.nguard.inchat { display: none; }
+@media (min-width: 960px) {
+  .nguard.inchat { display: flex; }
+  .nguard { inset-inline: 24px auto; bottom: 24px; width: 380px; }
+  [dir="rtl"] .nguard { inset-inline: auto 24px; }
+}
