@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { Icon, type IconName } from "./Icons";
 
-type Item = { href: string; icon: IconName; label: string; gate?: boolean; exact?: boolean };
+type Item = { href: string; icon: IconName; label: string; gate?: boolean; exact?: boolean; badge?: number };
 
 function NavBar({ items, floating, onGate }: { items: Item[]; floating?: boolean; onGate?: () => void }) {
   const path = usePathname();
@@ -21,7 +22,7 @@ function NavBar({ items, floating, onGate }: { items: Item[]; floating?: boolean
         }
         return (
           <Link key={it.href} href={it.href} className={on ? "on" : ""} aria-current={on ? "page" : undefined}>
-            <i><Icon name={it.icon} /></i><span>{it.label}</span>
+            <i><Icon name={it.icon} />{it.badge ? <b className="nb" aria-label={String(it.badge)}>{it.badge > 9 ? "9+" : it.badge}</b> : null}</i><span>{it.label}</span>
           </Link>
         );
       })}
@@ -60,8 +61,23 @@ export function CandidateBrowseNav({ floating }: { floating?: boolean }) {
 }
 
 /** Employer nav. Visitors (not signed in) get a sign-up prompt for Saved, Inbox and Account. */
+/** Chats with unread messages. Checked when the page opens and when the app comes back to the screen. */
+function useUnreadChats(on: boolean) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!on) return;
+    const load = () => fetch("/api/chat/unread", { cache: "no-store" }).then((r) => r.json()).then((d: { n: number }) => setN(d.n)).catch(() => {});
+    load();
+    const onVis = () => { if (document.visibilityState === "visible") load(); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [on]);
+  return n;
+}
+
 export function EmployerNav({ floating, savedCount, visitor, onGate }: { floating?: boolean; savedCount?: number; visitor?: boolean; onGate?: () => void }) {
   const t = useTranslations("nav");
+  const unread = useUnreadChats(!visitor);
   const gate = visitor ? onGate ?? (() => { window.location.href = "/signup?role=employer"; }) : undefined;
   return (
     <NavBar
@@ -71,7 +87,7 @@ export function EmployerNav({ floating, savedCount, visitor, onGate }: { floatin
         { href: "/feed", icon: "discover", label: t("discover") },
         { href: "/search", icon: "search", label: t("search") },
         { href: "/employer/saved", icon: "saved", label: visitor ? t("saved") : t("savedCount", { n: savedCount ?? 0 }), gate: visitor },
-        { href: "/employer/inbox", icon: "inbox", label: t("inbox"), gate: visitor },
+        { href: "/employer/inbox", icon: "chat", label: t("inbox"), gate: visitor, badge: unread },
         { href: "/employer/account", icon: "account", label: t("account"), gate: visitor },
       ]}
     />

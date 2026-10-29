@@ -3,17 +3,18 @@ import { bannerUrl, logoUrl } from "@/lib/logo";
 import { CandidateNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
 import { requireOnboardedCandidate } from "@/server/candidate-data";
+import { hasUnread } from "@/server/chat";
 import { CandidateHeader } from "../CandidateHeader";
 import { RequestCard } from "./RequestCard";
 
 export default async function RequestsPage() {
-  const { profile } = await requireOnboardedCandidate();
+  const { profile, viewer } = await requireOnboardedCandidate();
   const t = await getTranslations("requests");
   const fmt = await getFormatter();
   const reqs = await prisma.introRequest.findMany({
     where: { candidateId: profile.id, company: { status: { not: "SUSPENDED" } } },
     orderBy: { createdAt: "desc" },
-    include: { company: true, sender: { include: { user: { select: { name: true } } } } },
+    include: { company: true, sender: { include: { user: { select: { name: true } } } }, messages: { orderBy: { createdAt: "desc" }, take: 1 } },
     take: 100,
   });
   const blocked = new Set((await prisma.block.findMany({ where: { candidateId: profile.id }, select: { companyId: true } })).map((b) => b.companyId));
@@ -52,6 +53,11 @@ export default async function RequestsPage() {
                 date: fmt.relativeTime(r.createdAt, new Date()),
                 shared: { email: r.shareEmail, phone: r.sharePhone, cv: r.shareCv },
                 isDemo: r.isDemo,
+                chat: {
+                  unread: hasUnread(r, "candidate"),
+                  last: r.messages[0] ? { body: r.messages[0].body, mine: r.messages[0].senderId === viewer.id } : null,
+                  ended: Boolean(r.chatClosedAt),
+                },
               }}
             />
           ))}

@@ -261,6 +261,68 @@ test.describe.serial("Hireel core loop", () => {
     expect((await page.request.get(cvUrl)).status()).toBe(404);
   });
 
+  test("after accepting, the company and the candidate can chat (text only)", async ({ page, browser }) => {
+    // The company writes first.
+    await signIn(page, empEmail);
+    await page.goto("/employer/inbox");
+    await page.getByRole("link", { name: /^Message / }).click();
+    await page.waitForURL(/\/employer\/chat\//);
+    const chatUrl = page.url();
+    await expect(page.getByText("Keep it professional")).toBeVisible();
+    await page.getByLabel("Write a message").fill("Hello from Cedar! Are you free for a call on Monday?");
+    await page.getByRole("button", { name: "Send", exact: true }).click();
+    await expect(page.locator(".bub.me").last()).toContainText("free for a call");
+    await expect(page.getByText("Sending…")).toHaveCount(0);
+    // The candidate gets an email that opens the chat.
+    const mailLink = await linkFromEmail(candEmail, /New message from/);
+    expect(mailLink).toContain("/candidate/chat/");
+
+    // The candidate sees it on the requests page and replies.
+    const cand = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    const cp = await cand.newPage();
+    await cp.addInitScript(() => localStorage.setItem("hireel_install_dismissed", String(Date.now())));
+    await signIn(cp, candEmail);
+    await cp.goto("/candidate/requests");
+    await expect(cp.getByText("free for a call")).toBeVisible();
+    await cp.getByRole("link", { name: /Open chat/ }).click();
+    await cp.waitForURL(/\/candidate\/chat\//);
+    await expect(cp.getByText("Hireel never asks you to pay")).toBeVisible();
+    await expect(cp.locator(".bub:not(.me)")).toContainText("free for a call");
+    await cp.getByLabel("Write a message").fill("Yes, Monday works. مرحبا!");
+    await cp.getByRole("button", { name: "Send", exact: true }).click();
+    await expect(cp.locator(".bub.me").last()).toContainText("Monday works");
+    await cp.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/chat-candidate.png" }).catch(() => {});
+    // The send button and the box are not hidden behind anything.
+    const box = await cp.locator(".chat-bar").boundingBox();
+    expect(box && box.y + box.height).toBeLessThanOrEqual(844);
+
+    // The company's open chat picks up the reply within a few seconds, without reloading.
+    await expect(page.locator(".bub:not(.me)").last()).toContainText("Monday works", { timeout: 15000 });
+    await page.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/chat-company.png" }).catch(() => {});
+
+    // Nobody else can read it.
+    await cp.context().clearCookies();
+    expect((await cp.request.get(`/api/chat/${chatUrl.split("/").pop()}`)).status()).toBe(404);
+
+    // The candidate reports the chat; the report lets the Hireel team read it.
+    await signIn(cp, candEmail);
+    await cp.goto(mailLink.replace(/^https?:\/\/[^/]+/, ""));
+    await cp.getByRole("button", { name: "Chat options" }).click();
+    await cp.getByRole("button", { name: "Report this company" }).click();
+    await cp.getByLabel("Asked for money or personal documents").check();
+    await cp.getByRole("button", { name: "Send report" }).click();
+    await expect(cp.getByText("Report sent to the Hireel team")).toBeVisible();
+
+    // Ending the chat stops both sides from writing.
+    await cp.getByRole("button", { name: "Chat options" }).click();
+    await cp.getByRole("button", { name: "End chat" }).click();
+    await cp.getByRole("dialog").getByRole("button", { name: "End chat" }).click();
+    await expect(cp.getByText("You ended this chat")).toBeVisible();
+    await expect(cp.getByLabel("Write a message")).toHaveCount(0);
+    await expect(page.getByLabel("Write a message")).toHaveCount(0, { timeout: 15000 });
+    await cand.close();
+  });
+
   test("permissions are enforced on the server", async ({ page, request }) => {
     await signIn(page, empEmail);
     await page.goto("/candidate");
@@ -315,6 +377,12 @@ test.describe.serial("Hireel core loop", () => {
     await page.getByRole("link", { name: `Cedar Test ${id}` }).first().click();
     await expect(page.getByRole("heading", { name: new RegExp(`Cedar Test ${id}`) })).toBeVisible();
     await expect(page.getByText(empEmail)).toBeVisible();
+
+    // A reported chat can be read; the visit is recorded.
+    await page.goto("/admin/reports");
+    await page.getByRole("link", { name: "Read the reported chat" }).first().click();
+    await expect(page.getByText("Chats are private")).toBeVisible();
+    await expect(page.getByText("free for a call")).toBeVisible();
 
     await signIn(page, empEmail);
     await page.goto("/employer/account");

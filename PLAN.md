@@ -223,8 +223,10 @@ After **every** phase: run the app → run automated tests → fix problems → 
 ### Phase 2: Conversations and teams
 - [x] CV file (PDF or Word) upload, shared only on accepted requests
 - [x] Profile photo
-- [ ] In-app chat, only between a company and a candidate after the candidate accepts its intro request;
+- [x] In-app chat, only between a company and a candidate after the candidate accepts its intro request;
       phone numbers stay private, block and report work inside the chat, with new-message notifications
+      (text only; the person who sent the request chats; new messages arrive every few seconds; one email per unread batch;
+      the Hireel team can read a chat only after it is reported, and each visit is logged)
 - [ ] Shortlists with private notes
 - [x] Phone notifications (new request, request answered, video approved/rejected, admin review queue), on/off per device
 - [ ] Email notifications (with per-user settings)

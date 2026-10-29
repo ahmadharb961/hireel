@@ -62,11 +62,13 @@ export async function requestIntro(input: unknown): Promise<R> {
   return { ok: true };
 }
 
-export async function reportCandidate(candidateId: string, reason: string, details: string): Promise<R> {
+/** `requestId` is set when reporting from a chat, so the Hireel team can read that chat. */
+export async function reportCandidate(candidateId: string, reason: string, details: string, requestId?: string): Promise<R> {
   const emp = await employerOrNull();
   if (!emp) return { ok: false, error: "signup_required" };
   if (!(await rateLimit(`report:${emp.viewer.id}`, 10, 3600))) return { ok: false, error: "rate_limited" };
-  await prisma.report.create({ data: { reporterId: emp.viewer.id, targetType: "CANDIDATE", targetId: candidateId, reason: reason.slice(0, 60), details: details.slice(0, 1000) } });
+  const chat = requestId ? await prisma.introRequest.findFirst({ where: { id: requestId, candidateId, senderId: emp.member.id }, select: { id: true } }) : null;
+  await prisma.report.create({ data: { reporterId: emp.viewer.id, targetType: "CANDIDATE", targetId: candidateId, reason: reason.slice(0, 60), details: details.slice(0, 1000), requestId: chat?.id ?? null } });
   return { ok: true };
 }
 

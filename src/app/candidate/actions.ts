@@ -179,12 +179,13 @@ export async function blockCompany(requestId: string): Promise<Result> {
   return { ok: true };
 }
 
-export async function reportCompany(requestId: string, reason: string, details: string): Promise<Result> {
+/** `fromChat` lets the Hireel team read that request's chat while handling the report. */
+export async function reportCompany(requestId: string, reason: string, details: string, fromChat = false): Promise<Result> {
   const { viewer, profile } = await me();
   if (!(await rateLimit(`report:${viewer.id}`, 10, 3600))) return fail("rate_limited");
   const req = await prisma.introRequest.findFirst({ where: { id: requestId, candidateId: profile.id } });
   if (!req) return fail("not_found");
-  await prisma.report.create({ data: { reporterId: viewer.id, targetType: "COMPANY", targetId: req.companyId, reason: reason.slice(0, 60), details: details.slice(0, 1000) } });
+  await prisma.report.create({ data: { reporterId: viewer.id, targetType: "COMPANY", targetId: req.companyId, reason: reason.slice(0, 60), details: details.slice(0, 1000), requestId: fromChat ? req.id : null } });
   return { ok: true };
 }
 

@@ -53,9 +53,9 @@ const translator = (locale: string) => createTranslator({ locale, messages: loca
  * a phone notification on every device they turned on, and an email to their login address.
  * Never throws: a failed notification must not break the action that caused it.
  */
-export async function notifyUsers(userIds: string[], build: (t: T) => Msg) {
+export async function notifyUsers(userIds: string[], build: (t: T) => Msg, opts: { email?: boolean } = {}) {
   if (!userIds.length) return;
-  await Promise.allSettled([sendPush(userIds, build), sendEmails(userIds, build)]);
+  await Promise.allSettled([sendPush(userIds, build), opts.email === false ? null : sendEmails(userIds, build)]);
 }
 
 async function sendEmails(userIds: string[], build: (t: T) => Msg) {

@@ -10,7 +10,12 @@ export async function linkFromEmail(to: string, subjectPart?: RegExp): Promise<s
   for (let i = 0; i < 40; i++) {
     const files = fs.existsSync(MAIL_DIR) ? fs.readdirSync(MAIL_DIR).filter((f) => f.includes(to.replace(/[^a-z0-9@.]/gi, "_"))).sort() : [];
     for (const f of files.reverse()) {
-      const mail = JSON.parse(fs.readFileSync(path.join(MAIL_DIR, f), "utf8")) as { subject: string; text: string };
+      let mail: { subject: string; text: string };
+      try {
+        mail = JSON.parse(fs.readFileSync(path.join(MAIL_DIR, f), "utf8"));
+      } catch {
+        continue; // still being written; read it next round
+      }
       if (subjectPart && !subjectPart.test(mail.subject)) continue;
       const m = mail.text.match(/https?:\/\/\S+/);
       if (m) return m[0];

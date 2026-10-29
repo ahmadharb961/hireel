@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/server/session";
@@ -27,6 +28,7 @@ export default async function ReportsAdmin() {
           </div>
           {r.details ? <p className="p" style={{ marginTop: 8, color: "var(--tx)", whiteSpace: "pre-wrap" }}>{r.details}</p> : null}
           <p className="note" style={{ marginTop: 6 }}>{fmt.dateTime(r.createdAt, { dateStyle: "medium", timeStyle: "short" })}</p>
+          {r.requestId ? <p style={{ marginTop: 8 }}><Link className="btn sm g" href={`/admin/chats/${r.requestId}`}>{t("readChat")}</Link></p> : null}
           <ReportControls id={r.id} />
         </div>
       ))}

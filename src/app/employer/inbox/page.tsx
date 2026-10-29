@@ -6,18 +6,24 @@ import { EmployerNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
 import { photoUrl } from "@/lib/photo";
 import { savedCount } from "@/server/employer-data";
+import { hasUnread } from "@/server/chat";
 import { requireEmployer } from "@/server/session";
 
 /** Requests this company sent. Contact details appear only for accepted requests, as shared. */
 export default async function InboxPage() {
   const { member, company } = await requireEmployer();
   const t = await getTranslations("inbox");
+  const tc = await getTranslations("chat");
   const tcv = await getTranslations("cvFile");
   const fmt = await getFormatter();
   const reqs = await prisma.introRequest.findMany({
     where: { companyId: company.id },
     orderBy: { createdAt: "desc" },
-    include: { candidate: { include: { user: { select: { email: true } }, cvFile: { select: { id: true } } } } },
+    include: {
+      candidate: { include: { user: { select: { email: true } }, cvFile: { select: { id: true } } } },
+      sender: { include: { user: { select: { name: true } } } },
+      messages: { orderBy: { createdAt: "desc" }, take: 1 },
+    },
     take: 100,
   });
   const n = await savedCount(member.id);
@@ -31,6 +37,10 @@ export default async function InboxPage() {
         {reqs.length === 0 ? <div className="empty">{t("empty")}</div> : reqs.map((r) => {
           const c = r.candidate;
           const accepted = r.status === "ACCEPTED";
+          // Only the person who sent the request chats with the candidate.
+          const mine = r.senderId === member.id;
+          const last = r.messages[0];
+          const unread = mine && hasUnread(r, "company");
           return (
             <div key={r.id} className="card">
               <div className="sw">
@@ -43,7 +53,15 @@ export default async function InboxPage() {
                   {r.sharePhone && c.phone ? <div className="kv"><span>{t("phone")}</span><b dir="ltr">{c.phone}</b></div> : null}
                   {r.shareCv ? <div className="kv"><span>{t("cv")}</span><b><Link href={`/c/${c.id}`}>{t("viewCv")}</Link>{c.cvFile ? <> · <a href={`/api/cv/${c.id}`}>{tcv("downloadCv")}</a></> : null}</b></div> : null}
                   {!r.shareEmail && !r.sharePhone && !r.shareCv ? <p className="note">{t("sharedNothing")}</p> : null}
-                  <p className="note" style={{ marginTop: 6 }}>{t("messagingSoon")}</p>
+                  {mine ? (
+                    <>
+                      {last ? <p className={`chatlast${unread ? " new" : ""}`} dir="auto">{last.senderId === member.userId ? `${tc("you")}: ` : ""}{last.body}</p> : null}
+                      <Link className={`btn sm w chatbtn${last || r.chatClosedAt ? " g" : ""}`} href={`/employer/chat/${r.id}`}>
+                        {last || r.chatClosedAt ? tc("openChat") : tc("messageX", { name: c.fullName.split(" ")[0] || c.fullName })}
+                        {unread ? <span className="nb2">{tc("new")}</span> : null}
+                      </Link>
+                    </>
+                  ) : <p className="note" style={{ marginTop: 6 }}>{tc("onlySender", { name: r.sender.user.name })}</p>}
                 </div>
               ) : <p className="note" style={{ marginTop: 8 }}>{r.wantsCv ? `${t("askedCv")} ` : ""}{t("appearIfAccepted")}</p>}
             </div>

@@ -23,7 +23,7 @@
     "search": "Search",
     "saved": "Saved",
     "savedCount": "Saved ({n})",
-    "inbox": "Requests",
+    "inbox": "Messages",
     "account": "Account",
     "reels": "Reels",
     "myArea": "My area",
@@ -286,7 +286,7 @@
     "doneBody": "You can now log in with your new password. You’ve been signed out on other devices."
   },
   "candidate": {
-    "requestsBell": "Intro requests ({n} new)",
+    "requestsBell": "Requests and messages ({n} new)",
     "welcome": "Welcome, {name}",
     "welcomeSub": "Employers discover you through video.",
     "complete": "Profile {pct}% complete",
@@ -405,7 +405,7 @@
     "pauseOff": "Job search active again"
   },
   "requests": {
-    "title": "Intro requests",
+    "title": "Requests & messages",
     "subtitle": "Your contact details stay private until you accept.",
     "empty": "No requests yet. When an employer asks to meet you, it shows up here.",
     "new": "New",
@@ -690,8 +690,8 @@
     "phase2": "Shortlists with private notes arrive in the next update."
   },
   "inbox": {
-    "title": "Requests you sent",
-    "subtitle": "One request per candidate. No reminders or repeat messages.",
+    "title": "Requests & messages",
+    "subtitle": "One request per candidate. Once they accept, you can message them here.",
     "empty": "No requests yet.",
     "sent": "sent {date}",
     "status": {
@@ -705,7 +705,6 @@
     "cv": "CV",
     "viewCv": "View on profile",
     "sharedNothing": "They accepted but haven’t shared contact details.",
-    "messagingSoon": "Messaging arrives in the next update.",
     "askedCv": "You also asked for their CV and contact details.",
     "appearIfAccepted": "Contact details appear here if they accept."
   },
@@ -832,7 +831,8 @@
     "reportedBy": "reported by {email}",
     "dismissReport": "Dismiss",
     "resolved": "Report closed",
-    "suspendConfirm": "Suspend this account? They lose access immediately. You can reactivate companies later."
+    "suspendConfirm": "Suspend this account? They lose access immediately. You can reactivate companies later.",
+    "readChat": "Read the reported chat"
   },
   "setup2fa": {
     "title": "Turn on two-step sign-in",
@@ -1166,7 +1166,10 @@
     "sharePhone": "phone",
     "shareCv": "CV",
     "lineReason": "Reason",
-    "emailFooter": "You’re getting this email because you have a Hireel account. Hireel · hireel.app"
+    "emailFooter": "You’re getting this email because you have a Hireel account. Hireel · hireel.app",
+    "messageTitle": "New message from {name}",
+    "ctaReply": "Reply on Hireel",
+    "lineMoreMessages": "We’ll email you once per batch of new messages. Open the chat to see them all."
   },
   "pushCard": {
     "title": "Turn on notifications",
@@ -1223,5 +1226,65 @@
     "remove": "Remove",
     "saved": "Cover saved",
     "removed": "Cover removed"
+  },
+  "chat": {
+    "back": "Back",
+    "options": "Chat options",
+    "messagesWith": "Messages with {name}",
+    "safetyCandidate": "Hireel never asks you to pay. If anyone asks for money or personal documents, report them.",
+    "safetyCompany": "Keep it professional. The candidate can report or block at any time.",
+    "empty": "No messages yet. Say hello to {name}.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "sending": "Sending…",
+    "notSent": "Not sent · Tap to retry",
+    "endedByYou": "You ended this chat. Messages stay here, but nobody can write any more.",
+    "endedByThem": "This chat was ended. Messages stay here, but nobody can write any more.",
+    "blockedByYou": "You blocked this company. They can’t message you.",
+    "unavailable": "This chat is no longer available.",
+    "placeholder": "Write a message",
+    "send": "Send",
+    "viewCompany": "View company",
+    "viewProfile": "View profile",
+    "reportCompany": "Report this company",
+    "reportCandidate": "Report this candidate",
+    "blockCompany": "Block this company",
+    "endChat": "End chat",
+    "cancel": "Cancel",
+    "endTitle": "End this chat?",
+    "endBody": "Neither you nor {name} will be able to send messages. You can still read the chat.",
+    "blockBody": "{name} won’t be able to message you, send you requests or see your profile.",
+    "block": "Block",
+    "blockedDone": "Company blocked",
+    "endedDone": "Chat ended",
+    "reportTitle": "Report this chat",
+    "reportBody": "The Hireel team will read this chat to check what happened. The other person isn’t told who reported.",
+    "reasons": {
+      "fake": "Fake or misleading",
+      "money": "Asked for money or personal documents",
+      "harassment": "Harassment or offensive messages",
+      "other": "Something else"
+    },
+    "details": "Details (optional)",
+    "sendReport": "Send report",
+    "reportSent": "Report sent to the Hireel team",
+    "err": {
+      "chat_closed": "This chat has ended.",
+      "message_empty": "Write a message first.",
+      "too_long": "Message is too long (2,000 characters max)."
+    },
+    "you": "You",
+    "openChat": "Open chat",
+    "messageX": "Message {name}",
+    "new": "New",
+    "onlySender": "Only {name}, who sent this request, can chat with the candidate."
+  },
+  "adminChat": {
+    "back": "Back to reports",
+    "title": "Reported chat",
+    "privateNote": "Chats are private. You can read this one because someone in it reported it. This visit is recorded.",
+    "ended": "Ended by {who} on {date}",
+    "none": "No messages.",
+    "viewLogged": "Your visit to this chat was recorded in the audit log."
   }
 }

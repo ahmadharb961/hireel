@@ -109,6 +109,7 @@ model User {
   reports    Report[]          @relation("reporter")
   audit      AuditLog[]
   pushSubs   PushSubscription[]
+  messages   Message[]
 
   @@map("user")
 }
@@ -404,6 +405,16 @@ model IntroRequest {
   respondedAt  DateTime?
   isDemo       Boolean          @default(false)
   createdAt    DateTime         @default(now())
+  // chat, open once accepted (between the candidate and the person who sent the request)
+  messages           Message[]
+  lastMessageAt      DateTime?
+  candidateReadAt    DateTime?
+  employerReadAt     DateTime?
+  // when each side was last emailed about new messages (one email per unread batch)
+  candidateEmailedAt DateTime?
+  employerEmailedAt  DateTime?
+  chatClosedAt       DateTime?
+  chatClosedBy       String           @default("") // "candidate" | "company"
 
   @@index([candidateId, status])
   @@index([companyId, candidateId])
@@ -441,6 +452,8 @@ model Report {
   targetId   String
   reason     String
   details    String       @default("")
+  // set when the report was sent from a chat: lets the Hireel team read that one chat
+  requestId  String?
   status     ReportStatus @default(OPEN)
   createdAt  DateTime     @default(now())
 
@@ -521,4 +534,16 @@ model CompanyBanner {
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   data      Bytes
   updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id        String       @id @default(cuid())
+  requestId String
+  request   IntroRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime     @default(now())
+
+  @@index([requestId, createdAt])
 }

@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,12 +15,14 @@ export type RequestView = {
   roleTitle: string; employment: string; workLocation: string; payRange: string; message: string; wantsCv: boolean;
   status: "PENDING" | "ACCEPTED" | "DECLINED" | "WITHDRAWN" | "BLOCKED"; date: string;
   shared: { email: boolean; phone: boolean; cv: boolean }; isDemo: boolean;
+  chat: { unread: boolean; last: { body: string; mine: boolean } | null; ended: boolean };
 };
 
 const REPORT_REASONS = ["fake", "money", "harassment", "other"] as const;
 
 export function RequestCard({ r }: { r: RequestView }) {
   const t = useTranslations("requests");
+  const tc = useTranslations("chat");
   const ti = useTranslations("industries");
   const tm = useTranslations("employment");
   const te = useTranslations("errors");
@@ -98,7 +101,14 @@ export function RequestCard({ r }: { r: RequestView }) {
           </>
         )
       ) : r.status === "ACCEPTED" ? (
-        <p className="note" style={{ marginTop: 10 }}>{t("youShared", { list: sharedList || t("nothing") })}</p>
+        <>
+          <p className="note" style={{ marginTop: 10 }}>{t("youShared", { list: sharedList || t("nothing") })}</p>
+          {r.chat.last ? <p className={`chatlast${r.chat.unread ? " new" : ""}`} dir="auto">{r.chat.last.mine ? `${tc("you")}: ` : ""}{r.chat.last.body}</p> : null}
+          <Link className={`btn sm w chatbtn${r.chat.last || r.chat.ended ? " g" : ""}`} href={`/candidate/chat/${r.id}`}>
+            {r.chat.last || r.chat.ended ? tc("openChat") : tc("messageX", { name: r.company })}
+            {r.chat.unread ? <span className="nb2">{tc("new")}</span> : null}
+          </Link>
+        </>
       ) : null}
 
       <Sheet open={sheet === "accept"} onClose={() => setSheet(null)} label={t("acceptTitle", { company: r.company })}>
