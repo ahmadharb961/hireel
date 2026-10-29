@@ -11,6 +11,7 @@ import { listTime } from "@/lib/chat-time";
 import { prisma } from "@/lib/db";
 import { logoUrl } from "@/lib/logo";
 import { photoUrl } from "@/lib/photo";
+import { companyHref } from "@/lib/safe-next";
 import { categoryNamer } from "@/server/categories";
 import { hasUnread } from "@/server/chat";
 import { quotaFor, savedCount } from "@/server/employer-data";
@@ -105,7 +106,7 @@ export default async function EmployerDashboard() {
           </div>
           <div className="row" style={{ marginTop: 10 }}>
             <Link className="btn sm o" href="/employer/company">{tc("editButton")}</Link>
-            <Link className="btn sm g" href={`/companies/${company.id}`}>{td("viewPage")}</Link>
+            <Link className="btn sm g" href={companyHref(company.id, "/employer/account")}>{td("viewPage")}</Link>
           </div>
           <p className="note" style={{ marginTop: 8 }}>{company.status === "VERIFIED" ? t("verifiedNote") : company.status === "SUSPENDED" ? t("suspendedNote") : t("notVerifiedNote")}</p>
         </div>

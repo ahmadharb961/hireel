@@ -31,7 +31,7 @@ export default async function CompaniesPage() {
         <p className="lsec-sub">{t("sub")}</p>
         {rows.length === 0 ? <div className="empty" style={{ marginTop: 18 }}>{t("empty")}</div> : (
           <div className="egrid">
-            {rows.map((c) => <EmployerCard key={c.id} c={{ id: c.id, name: c.name, category: catName(c.industry), logo: logoUrl(c), banner: bannerUrl(c), verified: c.status === "VERIFIED", isDemo: c.isDemo }} />)}
+            {rows.map((c) => <EmployerCard key={c.id} back="/companies" c={{ id: c.id, name: c.name, category: catName(c.industry), logo: logoUrl(c), banner: bannerUrl(c), verified: c.status === "VERIFIED", isDemo: c.isDemo }} />)}
           </div>
         )}
       </main>

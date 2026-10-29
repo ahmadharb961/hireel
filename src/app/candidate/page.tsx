@@ -105,7 +105,7 @@ export default async function CandidateHome() {
           {interest.length ? (
             <section className="msec" aria-labelledby="home-int">
               <h2 className="msec-h" id="home-int">{ti("title")}<Link className="lsec-link" href="/candidate/interest">{t("seeAll")} →</Link></h2>
-              <InterestList rows={interest} category={catName} when={(d) => listTime(d, fmt)}
+              <InterestList back="/candidate" rows={interest} category={catName} when={(d) => listTime(d, fmt)}
                 label={(c) => (c.savedAt ? (c.views ? ti("savedAndViewed", { n: c.views }) : ti("saved")) : ti("viewed", { n: c.views }))} />
             </section>
           ) : null}

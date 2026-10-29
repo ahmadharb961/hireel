@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { loginTo } from "@/lib/safe-next";
+import { companyHref, loginTo } from "@/lib/safe-next";
 import { getViewer } from "@/server/session";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { bannerUrl, logoUrl } from "@/lib/logo";
@@ -41,7 +41,7 @@ export default async function CandidateChatPage({ params }: { params: Promise<{ 
         <h2>{c.name} {c.status === "VERIFIED" ? <span className="tag">✓ {t("verified")}</span> : null}</h2>
         <p>{[catName(c.industry), c.country].filter(Boolean).join(" · ")}</p>
       </div>
-      <div className="cd-btns"><Link className="btn" href={`/companies/${c.id}`}>{td("viewCompany")}</Link></div>
+      <div className="cd-btns"><Link className="btn" href={companyHref(c.id, `/candidate/chat/${id}`)}>{td("viewCompany")}</Link></div>
       <div className="cd-sec">
         <h3>{td("request")}</h3>
         <div className="kv"><span>{td("role")}</span><b>{r.roleTitle}</b></div>

@@ -3,14 +3,15 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LIcon } from "./icons";
+import { companyHref } from "@/lib/safe-next";
 
 export type TopEmployer = { id: string; name: string; category: string; logo: string | null; banner: string | null; verified: boolean; isDemo: boolean };
 
 /** A company card: cover picture, logo overlapping it, name with the verified tick, and category. */
-export function EmployerCard({ c }: { c: TopEmployer }) {
+export function EmployerCard({ c, back = "/#top-employers" }: { c: TopEmployer; back?: string }) {
   const t = useTranslations("landing.topEmployers");
   return (
-    <Link href={`/companies/${c.id}`} className="tecard">
+    <Link href={companyHref(c.id, back)} className="tecard">
       <span className="tecard-cover" style={c.banner ? { backgroundImage: `url(${c.banner})` } : undefined} />
       <span className="tecard-logo">{c.logo ? <img src={c.logo} alt="" loading="lazy" /> : c.name.slice(0, 1)}</span>
       <span className="tecard-body">

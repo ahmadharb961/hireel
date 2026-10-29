@@ -9,6 +9,7 @@ import { SiteNav } from "@/components/landing/SiteNav";
 import { prisma } from "@/lib/db";
 import { bannerUrl, logoUrl } from "@/lib/logo";
 import { siteLink } from "@/lib/social";
+import { safeBack } from "@/lib/safe-next";
 import { categoryNamer } from "@/server/categories";
 import { getViewer, homeFor } from "@/server/session";
 
@@ -28,8 +29,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 /** A company's public page, opened from "Top employers" on the homepage. */
-export default async function CompanyPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function CompanyPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ back?: string }> }) {
   const { id } = await params;
+  // Back returns to where the person came from (a chat, their home, the homepage...).
+  const back = safeBack((await searchParams).back) ?? "/companies";
   const c = await load(id);
   if (!c) notFound();
   const [t, fmt, catName, viewer] = await Promise.all([getTranslations("companyPage"), getFormatter(), categoryNamer(), getViewer()]);
@@ -41,7 +44,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ id: st
     <div className="site2">
       <SiteNav account={viewer ? homeFor(viewer.role) : null} />
       <main className="wrapx cpage">
-        <Link className="cpage-back" href="/companies"><LIcon name="arrow" size={16} className="cpage-backic" /> {t("back")}</Link>
+        <Link className="cpage-back" href={back}><LIcon name="arrow" size={16} className="cpage-backic" /> {t("back")}</Link>
         <article className="cpage-card">
           <div className="cpage-banner" style={bannerUrl(c) ? { backgroundImage: `url(${bannerUrl(c)})` } : undefined} />
           <div className="cpage-body">
