@@ -66,6 +66,8 @@ export default async function EmployerDashboard() {
           <p className="p">{summary}</p>
         </div>
 
+        <PushCard variant="prompt" who="employer" />
+
         <div className="row">
           <Link className="btn" href="/feed">{td("discover")}</Link>
           <Link className="btn g" href="/search">{td("search")}</Link>

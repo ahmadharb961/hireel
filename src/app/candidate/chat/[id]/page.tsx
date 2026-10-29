@@ -58,6 +58,7 @@ export default async function CandidateChatPage({ params }: { params: Promise<{ 
   );
   return (
     <ChatDesk
+      who="candidate"
       nav={[
         { href: "/candidate", icon: "home", label: tn("home") },
         { href: "/candidate/requests", icon: "chat", label: tn("inbox"), on: true },

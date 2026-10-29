@@ -10,7 +10,7 @@ vi.mock("@/server/push", () => ({
 
 import { prisma } from "@/lib/db";
 import { sendIntroRequest } from "@/server/requests";
-import { closeChat, hasUnread, listMessages, markLeft, markRead, openChat, sendMessage, unreadChatsForCandidate, unreadChatsForMember } from "@/server/chat";
+import { chatTimers, closeChat, followUpMessage, hasUnread, listMessages, markLeft, markRead, openChat, sendMessage, unreadChatsForCandidate, unreadChatsForMember } from "@/server/chat";
 import { intro, makeCandidate, makeCompany, reset } from "./helpers";
 
 async function setup(accept = true) {
@@ -23,8 +23,11 @@ async function setup(accept = true) {
 }
 const at = (s: number) => new Date(Date.UTC(2026, 9, 1, 10, 0, 0) + s * 1000);
 
+const scheduled: (() => void)[] = [];
+chatTimers.schedule = (fn) => { scheduled.push(fn); };
+
 describe("chat after an accepted request", () => {
-  beforeEach(async () => { await reset(); pings.length = 0; });
+  beforeEach(async () => { await reset(); pings.length = 0; scheduled.length = 0; });
 
   it("opens only once the candidate accepts", async () => {
     const { c, e, id } = await setup(false);
@@ -116,5 +119,27 @@ describe("chat after an accepted request", () => {
     await prisma.company.update({ where: { id: e.companyId }, data: { status: "SUSPENDED" } });
     expect(await openChat(c.userId, id)).toBeNull();
     expect((await openChat(e.userId, id))?.state).toBe("unavailable");
+  });
+
+  it("if they seemed to be watching but never read it (app closed, phone locked), they're notified shortly after", async () => {
+    const { c, e, id } = await setup();
+    await markRead(id, "candidate", new Date(), true); // the chat is on their screen
+    await sendMessage(e.userId, id, "Are you there?");
+    expect(pings).toHaveLength(0);
+    expect(scheduled).toHaveLength(1);
+    // A moment later it's still unread: notify.
+    const m = await prisma.message.findFirstOrThrow({ where: { requestId: id } });
+    expect(await followUpMessage(m.id)).toBe(true);
+    expect(pings).toEqual([expect.objectContaining({ to: [c.userId], email: true })]);
+  });
+
+  it("no follow-up if they read it", async () => {
+    const { e, id } = await setup();
+    await markRead(id, "candidate", new Date(), true);
+    await sendMessage(e.userId, id, "Hi");
+    await markRead(id, "candidate", new Date(Date.now() + 2000), true);
+    const m = await prisma.message.findFirstOrThrow({ where: { requestId: id } });
+    expect(await followUpMessage(m.id)).toBe(false);
+    expect(pings).toHaveLength(0);
   });
 });

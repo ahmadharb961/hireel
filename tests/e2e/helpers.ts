@@ -7,7 +7,7 @@ const MAIL_DIR = path.join(process.cwd(), ".dev-mail");
 
 /** Reads the newest development email sent to `to` and returns the first link in it. */
 export async function linkFromEmail(to: string, subjectPart?: RegExp): Promise<string> {
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 80; i++) {
     const files = fs.existsSync(MAIL_DIR) ? fs.readdirSync(MAIL_DIR).filter((f) => f.includes(to.replace(/[^a-z0-9@.]/gi, "_"))).sort() : [];
     for (const f of files.reverse()) {
       let mail: { subject: string; text: string };

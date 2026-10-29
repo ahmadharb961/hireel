@@ -821,3 +821,21 @@ button.chat-who { border: 0; background: none; padding: 0; text-align: start; fo
 html[lang="ar"] .cd-sec h3 { letter-spacing: 0; }
 .cd-sec .kv b { overflow-wrap: anywhere; text-align: end; }
 .cd-btns { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+
+/* ---------- candidate Profile on computers ---------- */
+.cprofile { display: flex; flex-direction: column; gap: 12px; }
+.pp-about { margin-top: 12px; color: #e3efe9; font-size: 14px; line-height: 1.55; white-space: pre-wrap; }
+.pp-info { min-width: 0; }
+@media (min-width: 960px) {
+  .cprofile { display: grid; grid-template-columns: minmax(0, 1fr) 380px; grid-template-areas: "main photo" "main side"; grid-template-rows: auto 1fr; gap: 20px 24px; align-items: start; max-width: 1200px; margin: 0 auto; }
+  .cprofile .cp-photo { grid-area: photo; }
+  .cprofile .cp-main { grid-area: main; }
+  .cprofile .cp-side { grid-area: side; }
+  /* Video on the left at a size that fits the screen; name, skills and about beside it. */
+  .cprofile .pp:not(.text) { display: grid; grid-template-columns: min(320px, calc((100dvh - 260px) * 9 / 16)) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .cprofile .pp:not(.text) .vp { aspect-ratio: 9 / 16; margin-bottom: 10px; }
+  .cprofile .cp-photo .phup { flex-wrap: wrap; }
+}
+.cd-push { padding: 10px; border-top: 1px solid var(--bd); }
+.cd-push:empty { display: none; }
+.cd-push .pushcard { margin: 0; }

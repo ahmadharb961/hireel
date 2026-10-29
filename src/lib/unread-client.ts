@@ -3,17 +3,21 @@ import { useSyncExternalStore } from "react";
 
 /**
  * Unread chats, shared by every menu and alert on the page so the server is asked once.
- * Checked every 20 seconds while the page is on screen, and straight away when it comes back.
+ * Checked every 20 seconds while the page is on screen, every minute while it's a background tab
+ * (so the tab title shows new messages), and straight away when it comes back.
  */
 export type Unread = { n: number; latest: { id: string; from: string; snippet: string; url: string } | null };
 
 const EMPTY: Unread = { n: 0, latest: null };
 const POLL_MS = 20_000;
+const HIDDEN_POLL_MS = 60_000;
+let lastLoad = 0;
 let state: Unread = EMPTY;
 const listeners = new Set<() => void>();
 let timer: ReturnType<typeof setInterval> | null = null;
 
 async function load() {
+  lastLoad = Date.now();
   try {
     const d = (await fetch("/api/chat/unread", { cache: "no-store" }).then((r) => r.json())) as Unread;
     if (d.n !== state.n || d.latest?.id !== state.latest?.id) {
@@ -30,7 +34,9 @@ function subscribe(l: () => void) {
   listeners.add(l);
   if (listeners.size === 1) {
     void load();
-    timer = setInterval(() => { if (document.visibilityState === "visible") void load(); }, POLL_MS);
+    timer = setInterval(() => {
+      if (document.visibilityState === "visible" || Date.now() - lastLoad >= HIDDEN_POLL_MS) void load();
+    }, POLL_MS);
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("focus", onVis);
   }

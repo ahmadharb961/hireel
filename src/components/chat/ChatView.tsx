@@ -86,7 +86,10 @@ export function ChatView(p: ChatProps) {
   // straight away, and updates the unread badges.
   useEffect(() => {
     const leave = () => {
-      fetch(`/api/chat/${p.id}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ leave: true }), keepalive: true }).catch(() => {});
+      const body = JSON.stringify({ leave: true });
+      // sendBeacon is made for this: the browser delivers it even while the page is closing.
+      if (navigator.sendBeacon?.(`/api/chat/${p.id}`, new Blob([body], { type: "application/json" }))) return;
+      fetch(`/api/chat/${p.id}`, { method: "POST", headers: { "content-type": "application/json" }, body, keepalive: true }).catch(() => {});
     };
     const onVis = () => { if (document.visibilityState === "hidden") leave(); };
     document.addEventListener("visibilitychange", onVis);

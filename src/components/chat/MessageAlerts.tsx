@@ -64,7 +64,16 @@ export function MessageAlerts() {
     // Stays until closed or opened, so a message that arrives while the person is away isn't missed.
     setShown(latest);
     chime();
-    pushState().then(setPush).catch(() => setPush(null));
+    pushState().then((s) => {
+      setPush(s);
+      // Hireel is open in a background tab and notifications are allowed but this device isn't
+      // subscribed: show the computer's own notification from here. (When subscribed, the server sends it.)
+      if (document.visibilityState === "hidden" && s !== "on" && "Notification" in window && Notification.permission === "granted") {
+        navigator.serviceWorker?.getRegistration("/").then((reg) =>
+          reg?.showNotification(t("title", { name: latest.from }), { body: latest.snippet, tag: `chat-${latest.url}`, data: { url: latest.url }, icon: "/icons/icon-192.png" }),
+        ).catch(() => {});
+      }
+    }).catch(() => setPush(null));
   }, [latest, path]);
 
   if (!shown || typeof document === "undefined") return null;

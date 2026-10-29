@@ -60,6 +60,7 @@ export default async function EmployerChatPage({ params }: { params: Promise<{ i
 
   return (
     <ChatDesk
+      who="employer"
       nav={[
         { href: "/employer/account", icon: "home", label: tn("dashboard") },
         { href: "/feed", icon: "discover", label: tn("discover") },

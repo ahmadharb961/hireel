@@ -11,7 +11,8 @@ export function PreviewCard({ name, photo, headline, city, skills, textOnly, abo
   const [sel, setSel] = useState(() => videos.find((v) => v.primary)?.id ?? videos[0]?.id);
   const v = videos.find((x) => x.id === sel);
   return (
-    <div className="pp">
+    <div className={`pp${textOnly ? " text" : ""}`}>
+      <div className="pp-media">
       {textOnly ? (
         <div className="vp" style={{ aspectRatio: "auto", padding: 16, textAlign: "start", display: "block", lineHeight: 1.5 }}>{about}</div>
       ) : (
@@ -26,9 +27,13 @@ export function PreviewCard({ name, photo, headline, city, skills, textOnly, abo
           ))}
         </div>
       ) : null}
-      <div className="pv-name">{photo ? <img className="pv-av" src={photo} alt="" /> : null}<h2 className="h2">{name}</h2></div>
-      <p style={{ color: "#e3efe9", fontSize: 14 }}>{headline}{city ? ` · ${city}` : ""}</p>
-      <div>{skills.map((s) => <span key={s} className="t">{s}</span>)}</div>
+      </div>
+      <div className="pp-info">
+        <div className="pv-name">{photo ? <img className="pv-av" src={photo} alt="" /> : null}<h2 className="h2">{name}</h2></div>
+        <p style={{ color: "#e3efe9", fontSize: 14 }}>{headline}{city ? ` · ${city}` : ""}</p>
+        <div>{skills.map((s) => <span key={s} className="t">{s}</span>)}</div>
+        {about && !textOnly ? <p className="pp-about">{about}</p> : null}
+      </div>
     </div>
   );
 }

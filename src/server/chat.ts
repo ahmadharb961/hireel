@@ -101,27 +101,59 @@ export async function sendMessage(userId: string, requestId: string, text: strin
     prisma.introRequest.update({ where: { id: requestId }, data: { lastMessageAt: now, ...mine } }),
   ]);
 
-  // Tell the other person, unless they are looking at the chat right now.
-  // Phone: every message (each replaces the last one for this chat). Email: once per unread batch.
+  // Tell the other person, unless they are looking at the chat right now. If they seem to be,
+  // check again shortly: if the message is still unread then (they closed the app, the phone
+  // locked...), notify them after all. Nobody misses a message because of timing.
   const toCandidate = side === "company";
+  const active = isWatching(toCandidate ? r.candidateActiveAt : r.employerActiveAt, toCandidate ? r.candidateLeftAt : r.employerLeftAt, now);
+  if (active) chatTimers.schedule(() => void followUpMessage(m.id), FOLLOW_UP_MS);
+  else await pingRecipient(r, toCandidate, body, now);
+  return { ok: true, message: { id: m.id, mine: true, body: m.body, at: m.createdAt.toISOString() } };
+}
+
+/** How long after a message we check whether a recipient who seemed to be watching actually saw it. */
+export const FOLLOW_UP_MS = ACTIVE_MS + 2000;
+/** Replaceable in tests. */
+export const chatTimers = {
+  schedule: (fn: () => void, ms: number) => { setTimeout(fn, ms).unref?.(); },
+};
+
+/** Phone notification for every message (each replaces the last one for this chat); email once per unread batch. */
+async function pingRecipient(r: Loaded, toCandidate: boolean, body: string, now: Date) {
   const readAt = toCandidate ? r.candidateReadAt : r.employerReadAt;
   const emailedAt = toCandidate ? r.candidateEmailedAt : r.employerEmailedAt;
-  const active = isWatching(toCandidate ? r.candidateActiveAt : r.employerActiveAt, toCandidate ? r.candidateLeftAt : r.employerLeftAt, now);
-  if (!active) {
-    const email = !emailedAt || Boolean(readAt && readAt > emailedAt);
-    if (email) await prisma.introRequest.update({ where: { id: requestId }, data: toCandidate ? { candidateEmailedAt: now } : { employerEmailedAt: now } });
-    const from = toCandidate ? `${r.sender.user.name} · ${r.company.name}` : r.candidate.fullName;
-    const snippet = body.length > 140 ? `${body.slice(0, 140)}…` : body;
-    void notifyUsers([toCandidate ? r.candidate.userId : r.sender.userId], (t) => ({
-      title: t("push.messageTitle", { name: from }),
-      body: snippet,
-      url: toCandidate ? `/candidate/chat/${requestId}` : `/employer/chat/${requestId}`,
-      tag: `chat-${requestId}`,
-      cta: t("push.ctaReply"),
-      lines: [`${t("push.lineRole")}: ${r.roleTitle}`, t("push.lineMoreMessages")],
-    }), { email });
+  const email = !emailedAt || Boolean(readAt && readAt > emailedAt);
+  if (email) await prisma.introRequest.update({ where: { id: r.id }, data: toCandidate ? { candidateEmailedAt: now } : { employerEmailedAt: now } });
+  const from = toCandidate ? `${r.sender.user.name} · ${r.company.name}` : r.candidate.fullName;
+  const snippet = body.length > 140 ? `${body.slice(0, 140)}…` : body;
+  void notifyUsers([toCandidate ? r.candidate.userId : r.sender.userId], (t) => ({
+    title: t("push.messageTitle", { name: from }),
+    body: snippet,
+    url: toCandidate ? `/candidate/chat/${r.id}` : `/employer/chat/${r.id}`,
+    tag: `chat-${r.id}`,
+    cta: t("push.ctaReply"),
+    lines: [`${t("push.lineRole")}: ${r.roleTitle}`, t("push.lineMoreMessages")],
+  }), { email });
+}
+
+/** The recipient seemed to be watching when this message arrived: if it's still unread now, notify them. */
+export async function followUpMessage(messageId: string, now = new Date()) {
+  try {
+    const m = await prisma.message.findUnique({ where: { id: messageId } });
+    if (!m) return false;
+    const r = await load(m.requestId);
+    if (!r) return false;
+    const toCandidate = m.senderId !== r.candidate.userId;
+    const readAt = toCandidate ? r.candidateReadAt : r.employerReadAt;
+    if (readAt && readAt >= m.createdAt) return false;
+    // A newer message already notified them (or will): don't send two.
+    if (r.lastMessageAt && r.lastMessageAt > m.createdAt) return false;
+    await pingRecipient(r, toCandidate, m.body, now);
+    return true;
+  } catch (e) {
+    console.error("chat follow-up", e);
+    return false;
   }
-  return { ok: true, message: { id: m.id, mine: true, body: m.body, at: m.createdAt.toISOString() } };
 }
 
 /** Either side can end the chat. Nobody can write after that; the messages stay readable. */

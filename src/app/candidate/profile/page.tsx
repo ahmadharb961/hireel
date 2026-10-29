@@ -26,28 +26,33 @@ export default async function ProfilePreview() {
     <div className="scr">
       <CandidateHeader candidateId={profile.id} />
       <main className="main">
-        <div className="stack">
-          <section className="card"><PhotoUpload initialUrl={photoUrl(profile)} name={profile.fullName} /></section>
-          <div><h1 className="h2">{t("employerView")}</h1><p className="p">{t("employerViewSub")}</p></div>
-          <PreviewCard
-            name={profile.fullName}
-            photo={photoUrl(profile)}
-            headline={profile.headline}
-            city={profile.location.split(",")[0]}
-            skills={skills.map((s) => s.skill.name)}
-            textOnly={profile.profileType === "TEXT_ONLY"}
-            about={profile.about}
-            videos={watchable.map((v) => ({ id: v.id, lang: v.lang, primary: v.primary, hls: v.hls, poster: v.poster, landscape: v.landscape }))}
-          />
-          <p className="note">{t("privateNote")}</p>
-          <section className="card"><h2 className="h3">🔒 {tc("title")}</h2><CvUpload candidateId={profile.id} initial={cv} /></section>
-          <div className="row">
-            <Link className="btn g" href="/candidate/edit">{t("editProfile")}</Link>
-            <Link className="btn g" href="/candidate/share">{t("shareProfile")}</Link>
+        {/* Phones: one column. Computers: the employer preview on the left, photo, CV and settings on the right. */}
+        <div className="cprofile">
+          <section className="card cp-photo"><PhotoUpload initialUrl={photoUrl(profile)} name={profile.fullName} /></section>
+          <div className="cp-main stack">
+            <div><h1 className="h2">{t("employerView")}</h1><p className="p">{t("employerViewSub")}</p></div>
+            <PreviewCard
+              name={profile.fullName}
+              photo={photoUrl(profile)}
+              headline={profile.headline}
+              city={profile.location.split(",")[0]}
+              skills={skills.map((s) => s.skill.name)}
+              textOnly={profile.profileType === "TEXT_ONLY"}
+              about={profile.about}
+              videos={watchable.map((v) => ({ id: v.id, lang: v.lang, primary: v.primary, hls: v.hls, poster: v.poster, landscape: v.landscape }))}
+            />
+            <p className="note">{t("privateNote")}</p>
           </div>
-          <PushCard variant="settings" who="candidate" />
-          <AccountData who="candidate" />
-          <SignOut />
+          <div className="cp-side stack">
+            <section className="card"><h2 className="h3">🔒 {tc("title")}</h2><CvUpload candidateId={profile.id} initial={cv} /></section>
+            <div className="row">
+              <Link className="btn g" href="/candidate/edit">{t("editProfile")}</Link>
+              <Link className="btn g" href="/candidate/share">{t("shareProfile")}</Link>
+            </div>
+            <PushCard variant="settings" who="candidate" />
+            <AccountData who="candidate" />
+            <SignOut />
+          </div>
         </div>
       </main>
       <CandidateNav />

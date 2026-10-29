@@ -1222,15 +1222,15 @@
     "onTitle": "Notifications are on",
     "onBody": "This device gets a notification for important updates. You can turn them off any time.",
     "why": {
-      "candidate": "Get notified the moment a company sends you an intro request, and when your video goes live.",
-      "employer": "Get notified when a candidate answers your intro request.",
+      "candidate": "Get notified the moment a company messages you or sends an intro request, even when Hireel is closed.",
+      "employer": "Get a pop-up on this phone or computer the moment a candidate replies, even when Hireel is closed or in another tab.",
       "admin": "Get notified when a new video is waiting for review."
     },
     "turnOn": "Turn on",
     "turnOff": "Turn off",
     "notNow": "Not now",
     "iosInstall": "On iPhone, notifications work after you add Hireel to your Home Screen: tap Share, then “Add to Home Screen”, and open Hireel from there.",
-    "blocked": "Notifications are blocked for Hireel on this device. To allow them, open your phone’s Settings → Notifications (iPhone) or the site settings in your browser (Android).",
+    "blocked": "Notifications are blocked for Hireel on this device. On a computer: click the lock icon next to the web address → Notifications → Allow, then reload. On iPhone: Settings → Notifications → Hireel. On Android: the site settings in your browser.",
     "unsupported": "This browser can’t show notifications."
   },
   "logo": {

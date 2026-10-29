@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icons";
 import { Logo } from "@/components/Logo";
 import { ChatDeskLive } from "./ChatDeskLive";
+import { PushCard } from "@/components/PushCard";
 import { ConversationRow, type Conversation } from "./ConversationRow";
 
 export type DeskNavItem = { href: string; icon: IconName; label: string; on?: boolean };
@@ -10,7 +11,8 @@ export type DeskNavItem = { href: string; icon: IconName; label: string; on?: bo
  * Chat on computers: the menu and the other chats on the left, the conversation in the middle,
  * and who you're talking to on the right (from 1280px). On phones only the conversation shows.
  */
-export function ChatDesk({ nav, list, details, labels, children }: {
+export function ChatDesk({ nav, list, details, labels, who, children }: {
+  who: "candidate" | "employer";
   nav: DeskNavItem[]; list: Conversation[]; details: React.ReactNode;
   labels: { chats: string; you: string; start: string; ended: string; unread: string; menu: string }; children: React.ReactNode;
 }) {
@@ -25,6 +27,7 @@ export function ChatDesk({ nav, list, details, labels, children }: {
         </nav>
         <h2 className="cd-h">{labels.chats}</h2>
         <div className="cd-list">{list.map((c) => <ConversationRow key={c.href} c={c} labels={labels} />)}</div>
+        <div className="cd-push"><PushCard variant="prompt" who={who} /></div>
       </aside>
       <div className="cd-main">{children}</div>
       <aside className="cd-right">{details}</aside>
