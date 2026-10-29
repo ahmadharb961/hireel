@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { allCategories, categoryOptions } from "@/server/categories";
 import { getLocale, getTranslations } from "next-intl/server";
 import { FILTER_KEYS, parseFeedFilters } from "@/lib/feed-filters";
 import { logoUrl } from "@/lib/logo";
@@ -28,6 +29,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
     : { cards: [], nextCursor: null };
   const locale = await getLocale();
   const quota = emp ? await quotaFor(emp, locale) : null;
+  const categories = await categoryOptions();
   return (
     <div className="shell wide feedshell">
       <ToastProvider>
@@ -40,6 +42,8 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           employer={emp && quota ? { quota: { introLeft: quota.introLeft, cvLeft: quota.cvLeft, planName: quota.planName, isPremium: quota.isPremium }, saved: await savedCount(emp.member.id), maxSaved: emp.company.plan.maxSaved, company: emp.company.name, userName: emp.viewer.name, logo: logoUrl(emp.company) } : null}
           candidateViewer={viewer?.role === "CANDIDATE"}
           limited={!allowed}
+          categories={categories}
+          catNames={Object.fromEntries((await allCategories()).map((c) => [c.key, locale === "ar" ? c.nameAr : c.nameEn]))}
         />
       </ToastProvider>
     </div>

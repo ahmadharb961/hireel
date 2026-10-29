@@ -7,6 +7,7 @@ import { companyProfileSchema, introRequestSchema, firstError } from "@/lib/vali
 import { employerOrNull } from "@/server/session";
 import { rateLimit } from "@/server/ratelimit";
 import { sendIntroRequest } from "@/server/requests";
+import { isCategory } from "@/server/categories";
 
 type R = { ok: true; saved?: boolean } | { ok: false; error: string; field?: string };
 
@@ -79,6 +80,8 @@ export async function updateCompanyProfile(input: unknown): Promise<R> {
   if (!(await rateLimit(`company-edit:${emp.viewer.id}`, 30, 3600))) return { ok: false, error: "rate_limited" };
   const p = companyProfileSchema.safeParse(input);
   if (!p.success) { const e = firstError(p.error); return { ok: false, error: e.code, field: e.field }; }
+  // A hidden category can stay on a company that already has it, but nobody can newly pick it.
+  if (p.data.industry !== emp.company.industry && !(await isCategory(p.data.industry))) return { ok: false, error: "required", field: "industry" };
   const social: Record<string, string> = {};
   for (const k of SOCIALS) {
     const field = `${k}Url` as "linkedinUrl" | "instagramUrl" | "facebookUrl";

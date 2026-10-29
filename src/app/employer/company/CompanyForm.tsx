@@ -1,18 +1,18 @@
 "use client";
+import type { CategoryOption } from "@/lib/categories";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LIcon } from "@/components/landing/icons";
 import { useToast } from "@/components/Toast";
-import { COMPANY_SIZES, COUNTRIES, INDUSTRIES } from "@/lib/constants";
+import { COMPANY_SIZES, COUNTRIES } from "@/lib/constants";
 import { updateCompanyProfile } from "../safe-actions";
 
-type V = { description: string; website: string; industry: string; size: string; country: string; linkedinUrl: string; instagramUrl: string; facebookUrl: string };
+type V = { description: string; website: string; phone: string; industry: string; size: string; country: string; linkedinUrl: string; instagramUrl: string; facebookUrl: string };
 
-export function CompanyForm({ name, initial }: { name: string; initial: V }) {
+export function CompanyForm({ name, initial, categories }: { name: string; initial: V; categories: CategoryOption[] }) {
   const t = useTranslations("companyEdit");
   const ts = useTranslations("signup");
-  const ti = useTranslations("industries");
   const te = useTranslations("errors");
   const router = useRouter();
   const toast = useToast();
@@ -44,8 +44,11 @@ export function CompanyForm({ name, initial }: { name: string; initial: V }) {
       <p className="note">{t("descriptionNote", { n: 1200 - v.description.length })}</p>
       <label className="lbl" htmlFor="website">{t("website")}</label>
       <input className="i" id="website" type="url" dir="ltr" inputMode="url" value={v.website} onChange={set("website")} placeholder="https://" />
+      <label className="lbl" htmlFor="phone">{t("phone")}</label>
+      <input className="i" id="phone" type="tel" dir="ltr" inputMode="tel" autoComplete="tel" value={v.phone} onChange={set("phone")} placeholder="+961 1 234 567" maxLength={20} />
+      <p className="note">{t("phoneNote")}</p>
       <label className="lbl" htmlFor="industry">{ts("industry")}</label>
-      <select className="i" id="industry" value={v.industry} onChange={set("industry")}>{INDUSTRIES.map((k) => <option key={k} value={k}>{ti(k)}</option>)}</select>
+      <select className="i" id="industry" value={v.industry} onChange={set("industry")}>{categories.map((c) => <option key={c.key} value={c.key}>{c.name}</option>)}</select>
       <label className="lbl" htmlFor="size">{ts("size")}</label>
       <select className="i" id="size" value={v.size} onChange={set("size")}>{COMPANY_SIZES.map((k) => <option key={k} value={k}>{k}</option>)}</select>
       <label className="lbl" htmlFor="country">{ts("country")}</label>

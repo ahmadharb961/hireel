@@ -1,10 +1,11 @@
 "use client";
+import type { CategoryOption } from "@/lib/categories";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { SkillsInput } from "@/components/SkillsInput";
-import { AVAILABILITY, CITY_SUGGESTIONS, INDUSTRIES } from "@/lib/constants";
+import { AVAILABILITY, CITY_SUGGESTIONS } from "@/lib/constants";
 import { chooseProfileType, publishProfile, saveBasics, saveExperience } from "../safe-actions";
 
 type Init = {
@@ -12,10 +13,9 @@ type Init = {
   yearsExperience: string; availability: string; skills: string[]; about: string; profileType: "VIDEO" | "TEXT_ONLY"; visibility: "EVERYONE" | "EMPLOYERS_ONLY";
 };
 
-export function Wizard({ initialStep, initial, photo }: { initialStep: number; initial: Init; photo: string | null }) {
+export function Wizard({ initialStep, initial, photo, categories }: { initialStep: number; initial: Init; photo: string | null; categories: CategoryOption[] }) {
   const t = useTranslations("onboarding");
   const te = useTranslations("errors");
-  const ti = useTranslations("industries");
   const ta = useTranslations("availability");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -73,7 +73,7 @@ export function Wizard({ initialStep, initial, photo }: { initialStep: number; i
               <label className="lbl" htmlFor="industry">{t("industry")}</label>
               <select className="i" id="industry" value={v.industry} onChange={set("industry")}>
                 <option value="" disabled>{tc("choose")}</option>
-                {INDUSTRIES.map((k) => <option key={k} value={k}>{ti(k)}</option>)}
+                {categories.map((c) => <option key={c.key} value={c.key}>{c.name}</option>)}
               </select>
             </div>
             <div>

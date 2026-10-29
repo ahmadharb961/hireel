@@ -1,10 +1,6 @@
 /** Shared lists. Labels live in messages/*.json under the same keys. */
 
-export const INDUSTRIES = [
-  "marketing", "technology", "finance", "sales", "design", "hospitality",
-  "engineering", "healthcare", "education", "logistics", "retail", "hr", "other",
-] as const;
-export type Industry = (typeof INDUSTRIES)[number];
+// Job categories live in the database (Category) so the Hireel team can manage them from the admin dashboard.
 
 export const AVAILABILITY = ["AVAILABLE_NOW", "TWO_WEEKS", "ONE_MONTH", "TWO_MONTHS", "OPEN_TO_OFFERS"] as const;
 export type Availability = (typeof AVAILABILITY)[number];

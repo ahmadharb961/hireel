@@ -4,6 +4,7 @@ import { CandidateNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
 import { requireOnboardedCandidate } from "@/server/candidate-data";
 import { hasUnread } from "@/server/chat";
+import { categoryNamer } from "@/server/categories";
 import { CandidateHeader } from "../CandidateHeader";
 import { RequestCard } from "./RequestCard";
 
@@ -11,6 +12,7 @@ export default async function RequestsPage() {
   const { profile, viewer } = await requireOnboardedCandidate();
   const t = await getTranslations("requests");
   const fmt = await getFormatter();
+  const catName = await categoryNamer();
   const reqs = await prisma.introRequest.findMany({
     where: { candidateId: profile.id, company: { status: { not: "SUSPENDED" } } },
     orderBy: { createdAt: "desc" },
@@ -31,11 +33,13 @@ export default async function RequestsPage() {
               key={r.id}
               r={{
                 id: r.id,
+                companyId: r.company.id,
                 company: r.company.name,
+                phone: r.company.phone,
                 verified: r.company.status === "VERIFIED",
                 rep: `${r.sender.user.name}${r.sender.position ? `, ${r.sender.position}` : ""}`,
                 description: r.company.description,
-                industry: r.company.industry,
+                industry: catName(r.company.industry),
                 size: r.company.size,
                 website: r.company.website,
                 logo: logoUrl(r.company),

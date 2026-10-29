@@ -2,13 +2,12 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { INDUSTRIES } from "@/lib/constants";
+import type { CategoryOption } from "@/lib/categories";
 import { LIcon } from "./icons";
 
 /** Scrollable row of industry tiles; each opens the feed filtered to that industry. */
-export function CategoryStrip() {
+export function CategoryStrip({ categories }: { categories: CategoryOption[] }) {
   const t = useTranslations("landing.cats");
-  const ti = useTranslations("industries");
   const ref = useRef<HTMLDivElement>(null);
   const [edge, setEdge] = useState({ start: true, end: false });
 
@@ -35,8 +34,8 @@ export function CategoryStrip() {
     <section className="cats" aria-label={t("label")}>
       <div className="cats-track" ref={ref} onScroll={measure}>
         <Link href="/feed" className="cat on"><LIcon name="all" size={26} /><span>{t("all")}</span></Link>
-        {INDUSTRIES.filter((k) => k !== "other").map((k) => (
-          <Link key={k} href={`/feed?industry=${k}`} className="cat"><LIcon name={k} size={26} /><span>{ti(k)}</span></Link>
+        {categories.filter((c) => c.key !== "other").map((c) => (
+          <Link key={c.key} href={`/feed?industry=${c.key}`} className="cat"><LIcon name={c.key} size={26} /><span>{c.name}</span></Link>
         ))}
       </div>
       {!edge.start ? <button type="button" className="cats-nav prev" aria-label={t("back")} onClick={() => scroll(-1)}><LIcon name="chevron" size={20} /></button> : null}

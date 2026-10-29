@@ -190,6 +190,7 @@ test.describe.serial("Hireel core loop", () => {
     await page.fill("#description", "We build retail software in Beirut and care about our people.");
     await page.fill("#website", "cedar.example.com");
     await page.fill("#instagram", "@cedar.test");
+    await page.fill("#phone", "+961 1 234 567");
     await page.fill("#facebook", "https://evil.example.com/page");
     await page.getByRole("button", { name: "Save company profile" }).click();
     await expect(page.getByText("doesn’t look like a Facebook page")).toBeVisible();
@@ -232,6 +233,7 @@ test.describe.serial("Hireel core loop", () => {
     await expect(company.getByRole("link", { name: /cedar\.example\.com/ })).toHaveAttribute("href", "https://cedar.example.com/");
     await expect(company.locator(".cprof-banner")).toHaveAttribute("style", /company-banner/);
     await expect(company.getByRole("link", { name: /instagram/i })).toHaveAttribute("href", "https://www.instagram.com/cedar.test");
+    await expect(company.getByRole("link", { name: "+961 1 234 567" })).toHaveAttribute("href", "tel:+9611234567");
     await company.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/req-company.png" }).catch(() => {});
     await company.getByRole("button", { name: "Close" }).last().click();
     await expect(company).toHaveCount(0);
@@ -336,7 +338,7 @@ test.describe.serial("Hireel core loop", () => {
     expect((await view.json()).counted).toBe(false);
   });
 
-  test("admin must set up two-step sign-in, then can verify companies and edit plans", async ({ page }) => {
+  test("admin must set up two-step sign-in, then can verify companies and edit plans", async ({ page, browser }) => {
     await login(page, "admin@hireel.test", "AdminPass-123");
     await expect(page).toHaveURL(/\/admin\/setup-2fa/);
     await page.fill("#password", "AdminPass-123");
@@ -377,6 +379,44 @@ test.describe.serial("Hireel core loop", () => {
     await page.getByRole("link", { name: `Cedar Test ${id}` }).first().click();
     await expect(page.getByRole("heading", { name: new RegExp(`Cedar Test ${id}`) })).toBeVisible();
     await expect(page.getByText(empEmail)).toBeVisible();
+
+    // Categories: add one; it shows up in the reels filter and the homepage strip, in both languages.
+    await page.goto("/admin/categories");
+    await page.fill("#cat-en", "Real Estate");
+    await page.fill("#cat-ar", "العقارات");
+    await page.getByRole("button", { name: "Add category" }).click();
+    await expect(page.getByText("Category added")).toBeVisible();
+    await expect(page.getByLabel("Name in English · Real Estate")).toBeVisible();
+    await page.getByLabel("Name in English · Marketing").fill("Marketing & PR");
+    await page.locator(".catrow", { has: page.getByLabel("Name in English · Marketing") }).getByRole("button", { name: "Save" }).click();
+    await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+    await page.goto("/");
+    await expect(page.locator(".cats").getByRole("link", { name: "Real Estate" })).toHaveAttribute("href", "/feed?industry=real-estate");
+    await expect(page.locator(".cats").getByRole("link", { name: "Marketing & PR" })).toBeVisible();
+
+    // Top employers: the admin picks the company; it shows on the homepage and opens its page.
+    await page.goto(`/admin/featured?q=${encodeURIComponent(`Cedar Test ${id}`)}`);
+    await page.locator(".frow", { hasText: `Cedar Test ${id}` }).getByRole("button", { name: "Add" }).click();
+    await expect(page.getByText("Added to Top employers")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /On the homepage \(1 of 6\)/ })).toBeVisible();
+    await page.goto("/");
+    const top = page.locator("#top-employers");
+    await expect(top.getByRole("heading", { name: "Top employers" })).toBeVisible();
+    await top.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/top-employers.png" }).catch(() => {});
+    await top.getByRole("link", { name: new RegExp(`Cedar Test ${id}`) }).click();
+    await page.waitForURL(/\/companies\//);
+    await expect(page.getByRole("heading", { name: new RegExp(`Cedar Test ${id}`) })).toBeVisible();
+    await expect(page.getByText("We build retail software in Beirut")).toBeVisible();
+    await expect(page.getByRole("link", { name: "+961 1 234 567" })).toBeVisible();
+    await noSideScroll(page);
+    await page.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/company-page.png", fullPage: true }).catch(() => {});
+    // Visitors see the page too, but must log in to see the phone number.
+    const visitor = await browser.newContext();
+    const vp = await visitor.newPage();
+    await vp.goto(page.url());
+    await expect(vp.getByRole("link", { name: "Log in to see" })).toBeVisible();
+    await expect(vp.getByText("+961 1 234 567")).toHaveCount(0);
+    await visitor.close();
 
     // A reported chat can be read; the visit is recorded.
     await page.goto("/admin/reports");

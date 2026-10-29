@@ -9,6 +9,7 @@ import { candidateOrNull } from "@/server/session";
 import { newShareToken } from "@/server/rules/share";
 import { rateLimit } from "@/server/ratelimit";
 import { activeVideoWhere, archiveData, ensurePrimary } from "@/server/videos";
+import { isCategory } from "@/server/categories";
 
 type Result = { ok: true } | { ok: false; error: string; field?: string };
 const fail = (error: string, field?: string): Result => ({ ok: false, error, field });
@@ -46,6 +47,7 @@ export async function saveExperience(input: unknown, nextStep?: number): Promise
   const { profile } = await me();
   const p = profileExperienceSchema.safeParse(input);
   if (!p.success) { const e = firstError(p.error); return fail(e.code, e.field); }
+  if (p.data.industry !== profile.industry && !(await isCategory(p.data.industry))) return fail("required", "industry");
   const { skills, ...rest } = p.data;
   await prisma.candidateProfile.update({
     where: { id: profile.id },

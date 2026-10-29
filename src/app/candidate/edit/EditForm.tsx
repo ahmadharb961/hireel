@@ -1,11 +1,12 @@
 "use client";
+import type { CategoryOption } from "@/lib/categories";
 import { useTranslations } from "next-intl";
 import { CvUpload } from "@/components/CvUpload";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SkillsInput } from "@/components/SkillsInput";
 import { useToast } from "@/components/Toast";
-import { AVAILABILITY, CITY_SUGGESTIONS, INDUSTRIES } from "@/lib/constants";
+import { AVAILABILITY, CITY_SUGGESTIONS } from "@/lib/constants";
 import { saveAbout, saveBasics, saveExperience } from "../safe-actions";
 
 type V = {
@@ -13,12 +14,11 @@ type V = {
   availability: string; skills: string[]; about: string; workHistory: string; education: string; contactEmail: string;
 };
 
-export function EditForm({ initial, candidateId, cv }: { initial: V; candidateId: string; cv: { fileName: string; size: number } | null }) {
+export function EditForm({ initial, candidateId, cv, categories }: { initial: V; candidateId: string; cv: { fileName: string; size: number } | null; categories: CategoryOption[] }) {
   const t = useTranslations("onboarding");
   const tc = useTranslations("cvFile");
   const tx = useTranslations("edit");
   const te = useTranslations("errors");
-  const ti = useTranslations("industries");
   const ta = useTranslations("availability");
   const toast = useToast();
   const router = useRouter();
@@ -54,7 +54,7 @@ export function EditForm({ initial, candidateId, cv }: { initial: V; candidateId
       <label className="lbl" htmlFor="currentTitle">{t("currentTitle")}</label><input className="i" id="currentTitle" value={v.currentTitle} onChange={set("currentTitle")} />
       <div className="row">
         <div><label className="lbl" htmlFor="industry">{t("industry")}</label>
-          <select className="i" id="industry" value={v.industry} onChange={set("industry")}>{INDUSTRIES.map((k) => <option key={k} value={k}>{ti(k)}</option>)}</select></div>
+          <select className="i" id="industry" value={v.industry} onChange={set("industry")}>{categories.map((c) => <option key={c.key} value={c.key}>{c.name}</option>)}</select></div>
         <div><label className="lbl" htmlFor="years">{t("years")}</label><input className="i" id="years" type="number" min={0} max={50} value={v.yearsExperience} onChange={set("yearsExperience")} /></div>
       </div>
       <SkillsInput value={v.skills} onChange={(skills) => setV({ ...v, skills })} />

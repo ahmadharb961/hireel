@@ -38,3 +38,14 @@ export function normalizeSocial(kind: Social, raw: string): string | null {
     return null;
   }
 }
+
+/** A company website as a safe link (http/https only), labelled with the bare domain. */
+export function siteLink(website: string): { href: string; label: string } | null {
+  if (!website) return null;
+  try {
+    const u = new URL(/^https?:\/\//i.test(website) ? website : `https://${website}`);
+    return /^https?:$/.test(u.protocol) && u.hostname.includes(".") ? { href: u.href, label: u.hostname.replace(/^www\./, "") } : null;
+  } catch {
+    return null;
+  }
+}

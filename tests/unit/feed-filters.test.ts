@@ -7,7 +7,7 @@ describe("feed filters", () => {
     expect(parseFeedFilters((k) => q.get(k))).toEqual({ industry: "finance", lang: "AR", exp: "3-5", place: "Qatar", avail: "AVAILABLE_NOW" });
   });
   it("ignores unknown values", () => {
-    const q = new URLSearchParams("industry=gender&exp=99&place=Mars&avail=x&lang=DE");
+    const q = new URLSearchParams("industry=DROP%20TABLE&exp=99&place=Mars&avail=x&lang=DE");
     expect(Object.values(parseFeedFilters((k) => q.get(k))).every((v) => v === null)).toBe(true);
   });
   it("round-trips through the address bar", () => {

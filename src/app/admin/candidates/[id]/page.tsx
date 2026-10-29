@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { categoryNamer } from "@/server/categories";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/db";
@@ -14,7 +15,7 @@ export default async function CandidateDetail({ params }: { params: Promise<{ id
   const admin = await requireAdmin();
   const { id } = await params;
   const ta = await getTranslations("adminC");
-  const ti = await getTranslations("industries");
+  const catName = await categoryNamer();
   const tv = await getTranslations("availability");
   const tl = await getTranslations("languages");
   const tr = await getTranslations("inbox.status");
@@ -91,7 +92,7 @@ export default async function CandidateDetail({ params }: { params: Promise<{ id
         <h2 className="h3">{ta("profile")}</h2>
         <dl className="afacts">
           {fact(ta("currentTitle"), c.currentTitle)}
-          {fact(ta("industry"), c.industry ? (ti.has(c.industry) ? ti(c.industry) : c.industry) : null)}
+          {fact(ta("industry"), catName(c.industry) || null)}
           {fact(ta("years"), String(c.yearsExperience))}
           {fact(ta("availability"), tv.has(c.availability) ? tv(c.availability) : c.availability)}
           {fact(ta("location"), c.location)}

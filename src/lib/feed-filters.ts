@@ -1,4 +1,5 @@
-import { AVAILABILITY, INDUSTRIES, VIDEO_LANGUAGES, type VideoLang } from "./constants";
+import { CATEGORY_KEY } from "./categories";
+import { AVAILABILITY, VIDEO_LANGUAGES, type VideoLang } from "./constants";
 
 /** Experience bands offered as feed filters (years, inclusive). */
 export const EXP_BANDS: Record<string, [number, number]> = { "0-2": [0, 2], "3-5": [3, 5], "5-10": [5, 10], "10+": [10, 60] };
@@ -19,7 +20,8 @@ export const FILTER_KEYS = ["industry", "lang", "exp", "place", "avail"] as cons
 export function parseFeedFilters(get: (k: string) => string | null | undefined): FeedFilters {
   const pick = <T extends string>(v: string | null | undefined, list: readonly T[]) => (v && (list as readonly string[]).includes(v) ? (v as T) : null);
   return {
-    industry: pick(get("industry"), INDUSTRIES),
+    // Categories are managed by the Hireel team; an unknown one simply finds nobody.
+    industry: CATEGORY_KEY.test(get("industry") ?? "") ? get("industry")! : null,
     lang: pick(get("lang"), VIDEO_LANGUAGES),
     exp: pick(get("exp"), Object.keys(EXP_BANDS)),
     place: pick(get("place"), Object.keys(FEED_PLACES)),

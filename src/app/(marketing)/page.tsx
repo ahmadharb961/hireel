@@ -6,7 +6,9 @@ import { LIcon } from "@/components/landing/icons";
 import { SeeItInAction } from "@/components/landing/SeeItInAction";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { SiteNav } from "@/components/landing/SiteNav";
-import { featuredCandidates } from "@/server/landing-data";
+import { logoUrl } from "@/lib/logo";
+import { categoryNamer, categoryOptions } from "@/server/categories";
+import { featuredCandidates, featuredCompanies } from "@/server/landing-data";
 import { initialsOf } from "@/server/profile-data";
 import { getViewer, homeFor } from "@/server/session";
 
@@ -22,7 +24,7 @@ export default async function Home() {
   const account = viewer ? homeFor(viewer.role) : null;
   const t = await getTranslations("landing");
   const th = await getTranslations("home");
-  const featured = await featuredCandidates(6);
+  const [featured, companies, categories, catName] = await Promise.all([featuredCandidates(6), featuredCompanies(), categoryOptions(), categoryNamer()]);
 
   return (
     <div className="site2">
@@ -53,7 +55,7 @@ export default async function Home() {
         </section>
 
         <div className="wrapx">
-          <CategoryStrip />
+          <CategoryStrip categories={categories} />
 
           {/* ---------- Featured talent (real candidates only) ---------- */}
           <section className="lsec" id="for-employers">
@@ -92,6 +94,27 @@ export default async function Home() {
               </div>
             )}
           </section>
+
+          {/* ---------- Top employers (chosen by the Hireel team, one row) ---------- */}
+          {companies.length ? (
+            <section className="lsec" id="top-employers">
+              <div className="lsec-head">
+                <div><h2 className="lsec-title">{t("topEmployers.title")}</h2><p className="lsec-sub">{t("topEmployers.sub")}</p></div>
+              </div>
+              <div className="temps">
+                {companies.map((c) => (
+                  <Link key={c.id} href={`/companies/${c.id}`} className="temp">
+                    <span className="temp-logo">{logoUrl(c) ? <img src={logoUrl(c)!} alt="" loading="lazy" /> : c.name.slice(0, 1)}</span>
+                    <span className="temp-txt">
+                      <b><span className="temp-nm">{c.name}</span>{c.status === "VERIFIED" ? <span className="temp-ok" aria-label={t("topEmployers.verified")}><LIcon name="check" size={12} /></span> : null}</b>
+                      <span>{catName(c.industry) || "—"}</span>
+                    </span>
+                    {c.isDemo ? <span className="tcard-demo">{t("featured.demo")}</span> : null}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {/* ---------- How it works ---------- */}
           <section className="lsec" id="how">

@@ -283,3 +283,10 @@ For **Phase 0 no accounts are needed**: I'll publish the clickable design as a p
 | Email | Resend | **Hostinger SMTP** (switchable) |
 | Queues | Redis + BullMQ | **PostgreSQL jobs + cron** for now |
 | Pricing on homepage | Free / $49 / $149 / Enterprise | Shown in Phase 0 as **"Sample pricing, not final"**. Real, admin-editable plans arrive in Phase 3 |
+
+## Admin-managed content (done)
+- [x] Categories live in the database: the Super Admin adds, renames (English and Arabic), orders and hides them (Admin → Categories)
+- [x] "Top employers" on the homepage: up to 6 companies in one row, chosen and ordered by the Super Admin (Admin → Top employers)
+- [x] Public company page (/companies/…) opened from Top employers
+- [x] Optional company contact phone (shown to logged-in people and on intro requests)
+

@@ -5,7 +5,8 @@ import { Header } from "@/components/Header";
 import { CandidateBrowseNav, EmployerNav } from "@/components/Nav";
 import { prisma } from "@/lib/db";
 import { photoUrl } from "@/lib/photo";
-import { AVAILABILITY, INDUSTRIES, VIDEO_LANGUAGES } from "@/lib/constants";
+import { AVAILABILITY, VIDEO_LANGUAGES } from "@/lib/constants";
+import { categoryOptions } from "@/server/categories";
 import { savedCount } from "@/server/employer-data";
 import { initialsOf } from "@/server/profile-data";
 import { clientIp, rateLimit } from "@/server/ratelimit";
@@ -19,14 +20,14 @@ type SP = { q?: string; loc?: string; industry?: string; availability?: string; 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const t = await getTranslations("search");
-  const ti = await getTranslations("industries");
+  const categories = await categoryOptions();
   const ta = await getTranslations("availability");
   const tl = await getTranslations("languages");
   const emp = await employerOrNull();
   const isCandidate = (await getViewer())?.role === "CANDIDATE";
   const q = (sp.q ?? "").trim().slice(0, 80);
   const loc = (sp.loc ?? "").trim().slice(0, 60);
-  const industry = INDUSTRIES.find((x) => x === sp.industry);
+  const industry = categories.find((c) => c.key === sp.industry)?.key;
   const availability = AVAILABILITY.find((x) => x === sp.availability);
   const lang = VIDEO_LANGUAGES.find((x) => x === sp.lang);
   const minYears = Math.max(0, Math.min(50, Number(sp.minYears) || 0));
@@ -66,7 +67,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           <div className="row">
             <select className="i" name="industry" defaultValue={industry ?? ""} aria-label={t("industry")}>
               <option value="">{t("anyIndustry")}</option>
-              {INDUSTRIES.map((k) => <option key={k} value={k}>{ti(k)}</option>)}
+              {categories.map((c) => <option key={c.key} value={c.key}>{c.name}</option>)}
             </select>
             <select className="i" name="availability" defaultValue={availability ?? ""} aria-label={t("availability")}>
               <option value="">{t("anyAvailability")}</option>

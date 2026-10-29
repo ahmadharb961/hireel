@@ -1,15 +1,15 @@
 "use client";
+import type { CategoryOption } from "@/lib/categories";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { resendVerification, signUpAction, type SignUpState } from "@/app/actions/auth";
-import { COMPANY_SIZES, COUNTRIES, INDUSTRIES } from "@/lib/constants";
+import { COMPANY_SIZES, COUNTRIES } from "@/lib/constants";
 
-export function SignUpForm({ initialRole }: { initialRole: "candidate" | "employer" }) {
+export function SignUpForm({ initialRole, categories }: { initialRole: "candidate" | "employer"; categories: CategoryOption[] }) {
   const t = useTranslations("signup");
   const te = useTranslations("errors");
   const tc = useTranslations("common");
-  const ti = useTranslations("industries");
   const [role, setRole] = useState(initialRole);
   const [state, setState] = useState<SignUpState>({});
   const [pending, start] = useTransition();
@@ -77,7 +77,7 @@ export function SignUpForm({ initialRole }: { initialRole: "candidate" | "employ
             <label className="lbl" htmlFor="industry">{t("industry")}</label>
             <select className="i" id="industry" name="industry" defaultValue="">
               <option value="" disabled>{tc("choose")}</option>
-              {INDUSTRIES.map((k) => <option key={k} value={k}>{ti(k)}</option>)}
+              {categories.map((c) => <option key={c.key} value={c.key}>{c.name}</option>)}
             </select>
             <div className="row">
               <div><label className="lbl" htmlFor="website">{t("website")}</label><input className="i" id="website" name="website" type="url" placeholder="https://" dir="ltr" /></div>

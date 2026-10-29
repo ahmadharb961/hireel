@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { categoryNamer } from "@/server/categories";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Header } from "@/components/Header";
@@ -21,7 +22,7 @@ export default async function CandidateProfilePage({ params }: { params: Promise
   const { id } = await params;
   const t = await getTranslations("profilePage");
   const ta = await getTranslations("availability");
-  const ti = await getTranslations("industries");
+  const catName = await categoryNamer();
   const emp = await employerOrNull();
   if (!emp) {
     return (
@@ -69,7 +70,7 @@ export default async function CandidateProfilePage({ params }: { params: Promise
         {c.about ? <div className="card"><h2 className="h3">{t("about")}</h2><p className="p" style={{ whiteSpace: "pre-wrap" }}>{c.about}</p></div> : null}
         <div className="card">
           <div className="kv"><span>{t("current")}</span><b>{c.currentTitle}</b></div>
-          <div className="kv"><span>{t("industry")}</span><b>{ti.has(c.industry) ? ti(c.industry) : c.industry}</b></div>
+          <div className="kv"><span>{t("industry")}</span><b>{catName(c.industry)}</b></div>
         </div>
         <div className="card">
           <h2 className="h3">{t("cvTitle")}</h2>

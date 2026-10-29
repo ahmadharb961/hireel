@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { categoryOptionsWith } from "@/server/categories";
 import { prisma } from "@/lib/db";
 import { photoUrl } from "@/lib/photo";
 import { requireCandidate } from "@/server/session";
@@ -16,6 +17,7 @@ export default async function OnboardingPage() {
       <Header home="/candidate/onboarding" right={<AccountMenu name={viewer.name} email={viewer.email} links={[{ href: "/", label: (await getTranslations("nav"))("homepage") }]} />} />
       <main className="main">
         <Wizard
+          categories={await categoryOptionsWith(profile.industry)}
           photo={photoUrl(profile)}
           initialStep={Math.min(Math.max(profile.onboardingStep, 1), 4)}
           initial={{

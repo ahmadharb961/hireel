@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/db";
+import { FEATURED_MAX } from "@/lib/categories";
 import { liveVideoWhere, signedPlayback } from "./videos";
 
 export type FeaturedCandidate = {
@@ -23,4 +24,14 @@ export async function featuredCandidates(limit = 6): Promise<FeaturedCandidate[]
       skills: c.skills.map((s) => s.skill.name), poster: play?.poster ?? null, duration: v?.durationSec ?? null, isDemo: c.isDemo,
     };
   }));
+}
+
+/** Companies the Hireel team chose for "Top employers", in their order. Suspended ones drop out. */
+export async function featuredCompanies() {
+  return prisma.company.findMany({
+    where: { featuredRank: { not: null }, status: { not: "SUSPENDED" } },
+    orderBy: { featuredRank: "asc" },
+    take: FEATURED_MAX,
+    select: { id: true, name: true, industry: true, country: true, status: true, logoUpdatedAt: true, isDemo: true },
+  });
 }

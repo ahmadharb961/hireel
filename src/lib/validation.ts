@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { AVAILABILITY, COMPANY_SIZES, EMPLOYMENT_TYPES, INDUSTRIES, MAX_SKILLS, VIDEO_LANGUAGES } from "./constants";
+import { AVAILABILITY, COMPANY_SIZES, EMPLOYMENT_TYPES, MAX_SKILLS, VIDEO_LANGUAGES } from "./constants";
+import { CATEGORY_KEY } from "./categories";
+
+/** A category key. The server also checks it is one of the categories in use (isCategory). */
+const category = z.string({ message: "required" }).regex(CATEGORY_KEY, "required");
 
 /** Error messages are translation keys (messages → errors.*), not English text. */
 const text = (max: number) => z.string().trim().max(max, "too_long");
@@ -23,7 +27,7 @@ export const employerSignUpSchema = z.object({
   password: passwordSchema,
   contactName: required(100),
   position: text(100),
-  industry: z.enum(INDUSTRIES, { message: "required" }),
+  industry: category,
   website: z.union([z.literal(""), z.string().trim().url("url").max(200)]),
   size: z.enum(COMPANY_SIZES, { message: "required" }),
   country: required(60),
@@ -34,9 +38,10 @@ export const employerSignUpSchema = z.object({
 export const companyProfileSchema = z.object({
   description: text(1200),
   website: z.union([z.literal(""), z.string().trim().url("url").max(200)]),
-  industry: z.enum(INDUSTRIES, { message: "required" }),
+  industry: category,
   size: z.enum(COMPANY_SIZES, { message: "required" }),
   country: required(60),
+  phone: z.union([z.literal(""), z.string().trim().regex(/^\+?[0-9 ()-]{6,20}$/, "phone")]),
   linkedinUrl: text(200),
   instagramUrl: text(200),
   facebookUrl: text(200),
@@ -51,7 +56,7 @@ export const profileBasicsSchema = z.object({
 
 export const profileExperienceSchema = z.object({
   currentTitle: required(100),
-  industry: z.enum(INDUSTRIES, { message: "required" }),
+  industry: category,
   yearsExperience: z.coerce.number({ message: "years" }).int("years").min(0, "years").max(50, "years"),
   availability: z.enum(AVAILABILITY),
   skills: z.array(z.string().trim().min(1).max(40)).min(1, "skills_min").max(MAX_SKILLS, "skills_max"),

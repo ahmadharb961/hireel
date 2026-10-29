@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { categoryOptionsWith } from "@/server/categories";
 import { Header } from "@/components/Header";
 import { EmployerNav } from "@/components/Nav";
 import { PhotoUpload } from "@/components/PhotoUpload";
@@ -20,7 +21,7 @@ export default async function CompanyEditPage() {
         <section className="card chead-card"><BannerUpload initialUrl={bannerUrl(company)} logoUrl={logoUrl(company)} name={company.name} /></section>
         <section className="card"><PhotoUpload kind="logo" initialUrl={logoUrl(company)} name={company.name} /></section>
         <section className="card">
-          <CompanyForm name={company.name} initial={{ description: company.description, website: company.website, industry: company.industry || "other", size: company.size || "1-10", country: company.country || "Lebanon", linkedinUrl: company.linkedinUrl, instagramUrl: company.instagramUrl, facebookUrl: company.facebookUrl }} />
+          <CompanyForm categories={await categoryOptionsWith(company.industry)} name={company.name} initial={{ description: company.description, website: company.website, phone: company.phone, industry: company.industry || "other", size: company.size || "1-10", country: company.country || "Lebanon", linkedinUrl: company.linkedinUrl, instagramUrl: company.instagramUrl, facebookUrl: company.facebookUrl }} />
         </section>
       </div></main>
       <EmployerNav savedCount={await savedCount(member.id)} />

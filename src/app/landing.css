@@ -458,3 +458,53 @@ html[lang="ar"] .sia-title { letter-spacing: 0; line-height: 1.3; }
   .sia-arrow1 { top: 128px; inset-inline-end: 12%; }
   .sia-arrow2 { top: 50%; inset-inline-start: 14px; }
 }
+
+/* ---------- Top employers: one row (scrolls sideways on phones and tablets) ---------- */
+.temps { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 2px 2px 8px; margin-inline: -2px; }
+.temps::-webkit-scrollbar { display: none; }
+.temp { position: relative; flex: 0 0 240px; scroll-snap-align: start; display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; background: var(--card); border: 1px solid var(--bd); color: var(--tx); text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+.temp:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(15,42,33,.10); }
+.temp-logo { flex: none; width: 56px; height: 56px; border-radius: 14px; border: 1px solid var(--bd); background: #fff; color: var(--g); font-weight: 800; font-size: 22px; display: grid; place-items: center; overflow: hidden; }
+.temp-logo img { width: 100%; height: 100%; object-fit: contain; }
+.temp-txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.temp-txt b { display: flex; align-items: center; gap: 6px; font-size: 15px; }
+.temp-nm, .temp-txt > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.temp-txt b { max-width: 100%; }
+.temp-txt > span { font-size: 13px; color: var(--tx2); }
+.temp-ok { flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--g); color: #fff; display: inline-grid; place-items: center; }
+.temp .tcard-demo { top: 6px; inset-inline-start: auto; inset-inline-end: 6px; }
+@media (min-width: 1024px) {
+  .temps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); overflow: visible; }
+  .temp { flex-direction: column; text-align: center; padding: 18px 12px; }
+  .temp-logo { width: 64px; height: 64px; }
+  .temp-txt { align-items: center; width: 100%; }
+  .temp-txt b { justify-content: center; }
+}
+
+/* ---------- Public company page ---------- */
+.cpage { padding-top: 16px; padding-bottom: 40px; }
+.cpage-back { display: inline-flex; align-items: center; gap: 6px; color: var(--tx2); font-weight: 600; font-size: 14px; text-decoration: none; margin-bottom: 12px; }
+.cpage-backic { transform: scaleX(-1); }
+[dir="rtl"] .cpage-backic { transform: none; }
+.cpage-card { background: var(--card); border: 1px solid var(--bd); border-radius: 24px; overflow: hidden; }
+.cpage-banner { aspect-ratio: 3 / 1; max-height: 300px; width: 100%; background: linear-gradient(135deg, var(--soft), color-mix(in srgb, var(--g) 30%, var(--soft))) center / cover no-repeat; }
+.cpage-body { padding: 0 16px 20px; }
+.cpage-logo { position: relative; margin-top: -40px; width: 84px; height: 84px; border-radius: 20px; background: #fff; border: 3px solid var(--card); box-shadow: 0 6px 18px rgba(15,42,33,.12); color: var(--g); font-size: 34px; font-weight: 800; display: grid; place-items: center; overflow: hidden; }
+.cpage-logo img { width: 100%; height: 100%; object-fit: contain; }
+.cpage-name { font-size: 26px; font-weight: 800; line-height: 1.2; margin: 12px 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cpage-meta { color: var(--tx2); margin: 0 0 16px; }
+.cpage-grid { display: grid; gap: 20px; }
+.cpage-grid h2 { font-size: 18px; font-weight: 700; margin: 0 0 8px; }
+.cpage-desc { white-space: pre-wrap; line-height: 1.6; margin: 0; }
+.cpage-facts .kv b { overflow-wrap: anywhere; text-align: end; }
+.cpage-cta { margin-top: 20px; padding: 16px; border-radius: 18px; background: var(--soft); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.cpage-cta p { margin: 0; font-weight: 600; }
+@media (min-width: 720px) {
+  .cpage-body { padding: 0 28px 28px; }
+  .cpage-logo { width: 104px; height: 104px; margin-top: -52px; }
+  .cpage-name { font-size: 32px; }
+}
+@media (min-width: 1024px) {
+  .cpage-grid { grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); gap: 32px; }
+  .cpage-facts { border: 1px solid var(--bd); border-radius: 18px; padding: 8px 18px 16px; align-self: start; }
+}

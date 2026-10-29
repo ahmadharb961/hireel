@@ -12,7 +12,8 @@ import { startNavProgress } from "@/components/NavProgress";
 import { LIcon } from "@/components/landing/icons";
 import { useToast } from "@/components/Toast";
 import { GateSheet, RequestSheet, UpgradeBody, type Quota } from "@/components/employer/Sheets";
-import { AVAILABILITY, INDUSTRIES, VIDEO_LANGUAGES } from "@/lib/constants";
+import { AVAILABILITY, VIDEO_LANGUAGES } from "@/lib/constants";
+import type { CategoryOption } from "@/lib/categories";
 import { EXP_BANDS, FEED_PLACES, filtersToQuery, type FeedFilters } from "@/lib/feed-filters";
 import type { FeedCard } from "@/server/feed";
 import { toggleSave } from "@/app/employer/safe-actions";
@@ -28,9 +29,9 @@ function posterOf(c: FeedCard) {
   return (c.videos.find((v) => v.lang === c.startLang) ?? c.videos[0])?.poster ?? null;
 }
 
-export function Feed({ initial, nextCursor, seed, filters, employer, candidateViewer, limited }: { initial: FeedCard[]; nextCursor: string | null; seed: string; filters: FeedFilters; employer: Employer; candidateViewer: boolean; limited: boolean }) {
+export function Feed({ initial, nextCursor, seed, filters, employer, candidateViewer, limited, categories, catNames }: { initial: FeedCard[]; nextCursor: string | null; seed: string; filters: FeedFilters; employer: Employer; candidateViewer: boolean; limited: boolean; categories: CategoryOption[]; catNames: Record<string, string> }) {
   const t = useTranslations("feed");
-  const ti = useTranslations("industries");
+  const catName = (k: string) => catNames[k] ?? k;
   const tl = useTranslations("languages");
   const ta = useTranslations("availability");
   const te = useTranslations("errors");
@@ -148,7 +149,7 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
       </header>
       {filtersOpen ? (
         <div className="chips">
-          <FilterGroups filters={filters} setFilter={setFilter} />
+          <FilterGroups filters={filters} setFilter={setFilter} categories={categories} />
           {!employer ? <p className="note">{t("visitorNote")}</p> : null}
           <LangSwitch variant="button" />
         </div>
@@ -233,7 +234,7 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
             <h2>{t("filters")}</h2>
             {nFilters ? <button type="button" className="linkbtn" onClick={() => applyFilters({})}>{t("clearAll")}</button> : null}
           </div>
-          <FilterGroups filters={filters} setFilter={setFilter} />
+          <FilterGroups filters={filters} setFilter={setFilter} categories={categories} />
           <p className="note fpanel-note">{t("fairNote")}</p>
         </div>
       </aside>
@@ -286,7 +287,7 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
             <div className="pp-facts">
               <div><LIcon name="briefcase" size={20} /><b>{t("yearsShort", { n: current.years })}</b><span>{t("expLbl")}</span></div>
               {current.location ? <div><LIcon name="pin" size={20} /><b>{current.location}</b><span>{t("locLbl")}</span></div> : null}
-              {current.industry ? <div><LIcon name={current.industry} size={20} /><b>{ti.has(current.industry) ? ti(current.industry) : current.industry}</b><span>{t("indLbl")}</span></div> : null}
+              {current.industry ? <div><LIcon name={current.industry} size={20} /><b>{catName(current.industry)}</b><span>{t("indLbl")}</span></div> : null}
               <div><LIcon name="clock" size={20} /><b>{ta(current.availability)}</b><span>{t("availability")}</span></div>
             </div>
 
@@ -315,7 +316,7 @@ export function Feed({ initial, nextCursor, seed, filters, employer, candidateVi
             <h3 className="h3" style={{ fontSize: 18 }}>{profileOf.name}</h3>
             <p className="p">{profileOf.headline} · {profileOf.location}</p>
             {profileOf.about ? <><label className="lbl">{t("about")}</label><p className="p">{profileOf.about}</p></> : null}
-            <label className="lbl">{t("industry")}</label><p className="p">{ti.has(profileOf.industry) ? ti(profileOf.industry) : profileOf.industry}</p>
+            <label className="lbl">{t("industry")}</label><p className="p">{catName(profileOf.industry)}</p>
             <p className="p" style={{ marginTop: 10 }}>{t("contactPrivate")}</p>
             <div className="row" style={{ marginTop: 14 }}>
               <button type="button" className="btn g" onClick={() => setProfileOf(null)}>{t("close")}</button>
@@ -402,14 +403,13 @@ function DeskTop({ employer, candidate, savedN, onGate }: { employer: Employer; 
   );
 }
 
-function FilterGroups({ filters, setFilter }: { filters: FeedFilters; setFilter: (k: FilterKey, v: string | null) => void }) {
+function FilterGroups({ filters, setFilter, categories }: { filters: FeedFilters; setFilter: (k: FilterKey, v: string | null) => void; categories: CategoryOption[] }) {
   const t = useTranslations("feed");
-  const ti = useTranslations("industries");
   const tl = useTranslations("languages");
   const ta = useTranslations("availability");
   const tc = useTranslations("signup.countries");
   const groups: { k: FilterKey; title: string; icon: string; anyLabel: string; options: [string, string][] }[] = [
-    { k: "industry", title: t("industry"), icon: "all", anyLabel: t("all"), options: INDUSTRIES.map((k) => [k, ti(k)]) },
+    { k: "industry", title: t("industry"), icon: "all", anyLabel: t("all"), options: categories.map((c) => [c.key, c.name]) },
     { k: "exp", title: t("experience"), icon: "briefcase", anyLabel: t("any"), options: Object.entries(EXP_BANDS).map(([k, [a, b]]) => [k, k.endsWith("+") ? t("expPlus", { n: a }) : t("expBand", { a, b })]) },
     { k: "place", title: t("location"), icon: "pin", anyLabel: t("any"), options: Object.keys(FEED_PLACES).map((k) => [k, tc(k)]) },
     { k: "lang", title: t("videoLanguage"), icon: "connect", anyLabel: t("any"), options: VIDEO_LANGUAGES.map((k) => [k, tl(k)]) },

@@ -707,3 +707,22 @@ nav .nb { position: absolute; top: -4px; inset-inline-end: -10px; min-width: 18p
   .chat { border-inline: 1px solid var(--bd); }
   .chat-list { padding: 16px 24px 20px; }
 }
+
+/* ---------- admin: categories and top employers ---------- */
+.catrow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 10px; align-items: start; padding: 10px; border: 1px solid var(--bd); border-radius: 14px; background: var(--bg); }
+.catrow.off { opacity: .6; }
+.catrow-move { display: flex; flex-direction: column; gap: 4px; }
+.catrow-move .btn { min-width: 40px; padding-inline: 0; }
+.catrow-in { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.catrow-btns { grid-column: 2; display: flex; gap: 8px; flex-wrap: wrap; }
+.frow { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--bd); border-radius: 14px; background: var(--bg); }
+.frow-n { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--g); color: #fff; font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+.frow-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.frow-txt b, .frow-txt span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.frow-txt span { font-size: 13px; color: var(--tx2); }
+.frow-btns { flex: none; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+@media (min-width: 720px) {
+  .catrow { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
+  .catrow-in { grid-template-columns: 1fr 1fr; }
+  .catrow-btns { grid-column: auto; }
+}

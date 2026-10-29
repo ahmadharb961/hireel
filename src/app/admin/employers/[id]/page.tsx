@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { categoryNamer } from "@/server/categories";
 import { bannerUrl, logoUrl } from "@/lib/logo";
 import { notFound } from "next/navigation";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
@@ -7,6 +8,8 @@ import { periodStart } from "@/server/rules/plans";
 import { requireAdmin } from "@/server/session";
 import { AdminFrame } from "../../AdminFrame";
 import { CompanyControls } from "../CompanyControls";
+import { FeaturedControls } from "../../featured/FeaturedControls";
+import { FEATURED_MAX } from "@/lib/categories";
 
 /** Everything about one company: details, team, usage, every request sent, reports and history. */
 export default async function CompanyDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -14,7 +17,7 @@ export default async function CompanyDetail({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const t = await getTranslations("admin");
   const ta = await getTranslations("adminC");
-  const ti = await getTranslations("industries");
+  const catName = await categoryNamer();
   const tr = await getTranslations("inbox.status");
   const locale = await getLocale();
   const fmt = await getFormatter();
@@ -31,11 +34,12 @@ export default async function CompanyDetail({ params }: { params: Promise<{ id: 
   });
   if (!c) notFound();
 
-  const [plans, usage, reports, log] = await Promise.all([
+  const [plans, usage, reports, log, featuredCount] = await Promise.all([
     prisma.plan.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.usageLedger.groupBy({ by: ["kind"], where: { companyId: c.id, periodStart: periodStart(new Date()) }, _count: true }),
     prisma.report.findMany({ where: { targetType: "COMPANY", targetId: c.id }, orderBy: { createdAt: "desc" }, include: { reporter: { select: { email: true } } } }),
     prisma.auditLog.findMany({ where: { targetId: { in: [c.id, ...c.members.map((m) => m.user.id)] } }, orderBy: { createdAt: "desc" }, take: 30, include: { actor: { select: { email: true } } } }),
+    prisma.company.count({ where: { featuredRank: { not: null } } }),
   ]);
   await prisma.auditLog.create({ data: { actorId: admin.id, action: "admin.view_company", targetType: "Company", targetId: c.id } });
   const used = (k: string) => usage.find((u) => u.kind === k)?._count ?? 0;
@@ -51,7 +55,7 @@ export default async function CompanyDetail({ params }: { params: Promise<{ id: 
         <span className="arow-av lg">{logoUrl(c) ? <img src={logoUrl(c)!} alt="" style={{ objectFit: "contain", background: "#fff" }} /> : c.name.slice(0, 1)}</span>
         <div style={{ minWidth: 0, flex: 1 }}>
           <h1 className="h2">{c.name} {c.isDemo ? <span className="demo-flag">Demo</span> : null}</h1>
-          <p className="p">{[c.industry && (ti.has(c.industry) ? ti(c.industry) : c.industry), c.country, c.size].filter(Boolean).join(" · ")}</p>
+          <p className="p">{[catName(c.industry), c.country, c.size].filter(Boolean).join(" · ")}</p>
           <div className="wrap" style={{ marginTop: 8 }}>
             <span className={`tag ${c.status === "VERIFIED" ? "" : c.status === "SUSPENDED" ? "bad" : "mute"}`}>{t(`companyStatus.${c.status}`)}</span>
           </div>
@@ -61,12 +65,18 @@ export default async function CompanyDetail({ params }: { params: Promise<{ id: 
       <div className="card">
         <h2 className="h3">{ta("actions")}</h2>
         <CompanyControls id={c.id} status={c.status} planId={c.planId} plans={plans.map((p) => ({ id: p.id, name: locale === "ar" ? p.nameAr : p.nameEn }))} />
+        <h3 className="lbl">{ta("topEmployers")}</h3>
+        <div className="sw">
+          <p className="note" style={{ margin: 0 }}>{c.featuredRank ? ta("featuredAt", { n: c.featuredRank }) : ta("notFeatured", { n: featuredCount, max: FEATURED_MAX })}</p>
+          <FeaturedControls id={c.id} featured={Boolean(c.featuredRank)} full={featuredCount >= FEATURED_MAX} />
+        </div>
       </div>
 
       <div className="asplit">
         <section className="card">
           <h2 className="h3">{ta("companyInfo")}</h2>
           <dl className="afacts">
+            {fact(ta("phone"), c.phone ? <a href={`tel:${c.phone.replace(/[^+0-9]/g, "")}`} dir="ltr">{c.phone}</a> : null)}
             {fact(ta("website"), c.website ? <a href={c.website} target="_blank" rel="noreferrer noopener">{c.website}</a> : null)}
             {[["LinkedIn", c.linkedinUrl], ["Instagram", c.instagramUrl], ["Facebook", c.facebookUrl]].map(([k, u]) => <div key={k}><dt>{k}</dt><dd>{u ? <a href={u} target="_blank" rel="noreferrer noopener nofollow">{u.replace(/^https:\/\/(www\.)?/, "")}</a> : "—"}</dd></div>)}
             {fact(ta("signedUp"), date(c.createdAt))}

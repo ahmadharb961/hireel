@@ -1,4 +1,5 @@
 import { PhotoUpload } from "@/components/PhotoUpload";
+import { categoryOptionsWith } from "@/server/categories";
 import { prisma } from "@/lib/db";
 import { photoUrl } from "@/lib/photo";
 import { requireOnboardedCandidate } from "@/server/candidate-data";
@@ -17,6 +18,7 @@ export default async function EditPage() {
       <main className="main">
         <section className="card" style={{ marginBottom: 16 }}><PhotoUpload initialUrl={photoUrl(profile)} name={profile.fullName} /></section>
         <EditForm
+          categories={await categoryOptionsWith(profile.industry)}
           candidateId={profile.id}
           cv={cv}
           initial={{

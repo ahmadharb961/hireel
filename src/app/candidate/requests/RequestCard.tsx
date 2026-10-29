@@ -4,12 +4,13 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LIcon } from "@/components/landing/icons";
+import { siteLink } from "@/lib/social";
 import { Sheet } from "@/components/Sheet";
 import { useToast } from "@/components/Toast";
 import { blockCompany, reportCompany, respondToRequest } from "../safe-actions";
 
 export type RequestView = {
-  id: string; company: string; verified: boolean; rep: string; description: string; industry: string; size: string;
+  id: string; companyId: string; company: string; verified: boolean; rep: string; description: string; industry: string; size: string; phone: string;
   website: string; country: string; since: string; logo: string | null; banner: string | null;
   social: { linkedin: string; instagram: string; facebook: string };
   roleTitle: string; employment: string; workLocation: string; payRange: string; message: string; wantsCv: boolean;
@@ -23,7 +24,6 @@ const REPORT_REASONS = ["fake", "money", "harassment", "other"] as const;
 export function RequestCard({ r }: { r: RequestView }) {
   const t = useTranslations("requests");
   const tc = useTranslations("chat");
-  const ti = useTranslations("industries");
   const tm = useTranslations("employment");
   const te = useTranslations("errors");
   const router = useRouter();
@@ -47,13 +47,7 @@ export function RequestCard({ r }: { r: RequestView }) {
     : r.status === "ACCEPTED" ? <span className="tag">{t("accepted")}</span>
     : r.status === "BLOCKED" ? <span className="tag bad">{t("blocked")}</span>
     : <span className="tag mute">{t("declined")}</span>;
-  // Only http(s) links, shown as the bare domain.
-  const site = (() => {
-    try {
-      const u = new URL(/^https?:\/\//i.test(r.website) ? r.website : `https://${r.website}`);
-      return r.website && /^https?:$/.test(u.protocol) && u.hostname.includes(".") ? { href: u.href, label: u.hostname.replace(/^www\./, "") } : null;
-    } catch { return null; }
-  })();
+  const site = siteLink(r.website);
   const sharedList = [r.shared.email && t("shareEmail"), r.shared.phone && t("sharePhone"), r.shared.cv && t("shareCv")].filter(Boolean).join(", ");
 
   return (
@@ -68,7 +62,7 @@ export function RequestCard({ r }: { r: RequestView }) {
         </div>
         {tag}
       </div>
-      <p className="note" style={{ marginTop: 4 }}>{[r.industry && ti.has(r.industry) ? ti(r.industry) : r.industry, r.size, r.country].filter(Boolean).join(" · ")}</p>
+      <p className="note" style={{ marginTop: 4 }}>{[r.industry, r.size, r.country].filter(Boolean).join(" · ")}</p>
       <button type="button" className="btn sm o cview" onClick={() => setSheet("company")}>{t("viewCompany")} →</button>
       <div style={{ marginTop: 10 }}>
         <div className="kv"><span>{t("opportunity")}</span><b>{r.roleTitle}</b></div>
@@ -144,13 +138,14 @@ export function RequestCard({ r }: { r: RequestView }) {
           </div>
           <span className="chead-logo cprof-logo">{r.logo ? <img src={r.logo} alt="" /> : r.company.slice(0, 1)}</span>
           <h2 className="h2" style={{ marginTop: 8 }}>{r.company} {r.verified ? <span className="tag">✓ {t("verified")}</span> : <span className="tag mute">{t("notVerified")}</span>}</h2>
-          <p className="p">{[r.industry && ti.has(r.industry) ? ti(r.industry) : r.industry, r.country].filter(Boolean).join(" · ")}</p>
+          <p className="p">{[r.industry, r.country].filter(Boolean).join(" · ")}</p>
           <p className="note">{t("sentBy", { name: r.rep })}</p>
           <div className="cprof-body">
           {r.description ? <p className="p" style={{ color: "var(--tx)", whiteSpace: "pre-wrap" }}>{r.description}</p> : <p className="note">{t("noDescription")}</p>}
           <div className="kv"><span>{t("website")}</span><b>{site ? <a href={site.href} target="_blank" rel="noopener noreferrer nofollow">{site.label} ↗</a> : "—"}</b></div>
-          <div className="kv"><span>{t("industry")}</span><b>{r.industry ? (ti.has(r.industry) ? ti(r.industry) : r.industry) : "—"}</b></div>
+          <div className="kv"><span>{t("industry")}</span><b>{r.industry || "—"}</b></div>
           <div className="kv"><span>{t("size")}</span><b>{r.size ? t("employees", { size: r.size }) : "—"}</b></div>
+          {r.phone ? <div className="kv"><span>{t("phone")}</span><b dir="ltr"><a href={`tel:${r.phone.replace(/[^+0-9]/g, "")}`}>{r.phone}</a></b></div> : null}
           <div className="kv"><span>{t("country")}</span><b>{r.country || "—"}</b></div>
           <div className="kv"><span>{t("since")}</span><b>{r.since}</b></div>
           {Object.values(r.social).some(Boolean) ? (

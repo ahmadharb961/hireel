@@ -460,7 +460,8 @@
     "safetyTip": "Hireel never asks candidates to pay. If a company asks you for money, decline and report it.",
     "viewCompany": "View company profile",
     "sentBy": "Request sent by {name}",
-    "close": "Close"
+    "close": "Close",
+    "phone": "Phone"
   },
   "onboarding": {
     "stepOf": "Step {step} of {total}",
@@ -755,7 +756,9 @@
       "employers": "Companies",
       "plans": "Plans",
       "reports": "Reports ({n})",
-      "candidates": "Candidates"
+      "candidates": "Candidates",
+      "featured": "Top employers",
+      "categories": "Categories"
     },
     "stats": {
       "candidates": "Candidates",
@@ -1001,6 +1004,11 @@
       ],
       "viewProfile": "View Full Profile",
       "example": "Example"
+    },
+    "topEmployers": {
+      "title": "Top employers",
+      "sub": "Companies hiring on Hireel right now.",
+      "verified": "Verified by Hireel"
     }
   },
   "authside": {
@@ -1114,7 +1122,10 @@
     "cvFile": "CV file",
     "noCvFile": "No CV file uploaded.",
     "removePhoto": "Remove photo",
-    "photoRemoved": "Photo removed"
+    "photoRemoved": "Photo removed",
+    "topEmployers": "Top employers (homepage)",
+    "featuredAt": "Shown on the homepage, position {n}.",
+    "notFeatured": "Not on the homepage ({n} of {max} places used)."
   },
   "cvFile": {
     "title": "CV file",
@@ -1216,7 +1227,9 @@
     "linkedinPh": "linkedin.com/company/your-company",
     "instagramPh": "@yourcompany",
     "facebookPh": "facebook.com/yourcompany",
-    "socialInvalid": "That doesn’t look like a {site} page. Paste the link to your company’s page, or leave it empty."
+    "socialInvalid": "That doesn’t look like a {site} page. Paste the link to your company’s page, or leave it empty.",
+    "phone": "Contact phone (optional)",
+    "phoneNote": "Shown on your company page to people who are logged in, and to candidates you send requests to."
   },
   "banner": {
     "title": "Cover banner",
@@ -1286,5 +1299,74 @@
     "ended": "Ended by {who} on {date}",
     "none": "No messages.",
     "viewLogged": "Your visit to this chat was recorded in the audit log."
+  },
+  "companyPage": {
+    "metaTitle": "{name} · Hireel",
+    "metaDescription": "{name} is hiring on Hireel, the video-first talent marketplace for Lebanon and the Gulf.",
+    "back": "Back",
+    "verified": "Verified",
+    "about": "About",
+    "noDescription": "This company hasn’t added a description yet.",
+    "website": "Website",
+    "phone": "Phone",
+    "phoneSignIn": "Log in to see",
+    "industry": "Industry",
+    "size": "Company size",
+    "employees": "{size} employees",
+    "country": "Country",
+    "since": "On Hireel since",
+    "verifiedExplain": "Verified: the Hireel team checked that this company is real.",
+    "notVerifiedExplain": "Not verified yet: the Hireel team hasn’t checked this company.",
+    "ctaText": "Want {name} to find you? Record a short intro video.",
+    "ctaButton": "Create my free profile"
+  },
+  "adminCat": {
+    "title": "Categories",
+    "sub": "The job categories people pick on their profile and use to filter reels. Changes show everywhere straight away.",
+    "addTitle": "Add a category",
+    "nameEn": "Name in English",
+    "nameAr": "Name in Arabic",
+    "add": "Add category",
+    "addNote": "New categories appear at the end of the list. Use the arrows to move them.",
+    "added": "Category added",
+    "duplicate": "A category with this name already exists.",
+    "listTitle": "All categories ({n})",
+    "usage": "{c} candidates · {e} companies",
+    "hiddenNote": "hidden: nobody can pick it, people who already have it keep it",
+    "save": "Save",
+    "saved": "Saved",
+    "hide": "Hide",
+    "show": "Show",
+    "hiddenDone": "Category hidden",
+    "shownDone": "Category shown",
+    "moved": "Order changed",
+    "up": "Move {name} up",
+    "down": "Move {name} down"
+  },
+  "adminFeat": {
+    "title": "Top employers",
+    "sub": "Choose up to {max} companies to show in one row on the homepage. People can click them to open the company’s page.",
+    "onHomepage": "On the homepage ({n} of {max})",
+    "preview": "See on homepage",
+    "none": "No companies chosen yet. The section stays hidden until you add one.",
+    "suspendedHidden": "Suspended companies are hidden from the homepage automatically.",
+    "addTitle": "Add a company",
+    "fullNote": "The row is full ({max}). Remove one to add another.",
+    "search": "Search companies by name",
+    "find": "Search",
+    "noMatch": "No companies found.",
+    "verified": "Verified",
+    "notVerified": "Not verified",
+    "suspended": "Suspended",
+    "add": "Add",
+    "remove": "Remove",
+    "earlier": "Move earlier",
+    "later": "Move later",
+    "addedDone": "Added to Top employers",
+    "removedDone": "Removed from Top employers",
+    "moved": "Order changed",
+    "full": "The row is full. Remove a company first.",
+    "cantSuspended": "Suspended companies can’t be shown.",
+    "failed": "Something went wrong. Try again."
   }
 }

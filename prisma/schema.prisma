@@ -342,6 +342,10 @@ model Company {
   linkedinUrl  String        @default("")
   instagramUrl String        @default("")
   facebookUrl  String        @default("")
+  // optional public contact number
+  phone        String        @default("")
+  // 1-10 when the Hireel team shows this company under "Top employers" on the homepage
+  featuredRank Int?
   status      CompanyStatus @default(UNVERIFIED)
   planId      String
   plan        Plan          @relation(fields: [planId], references: [id])
@@ -546,4 +550,14 @@ model Message {
   createdAt DateTime     @default(now())
 
   @@index([requestId, createdAt])
+}
+
+/** Job categories (industries). The Hireel team adds, renames, orders and hides them. */
+model Category {
+  key       String   @id // stored on profiles and companies; never changes
+  nameEn    String
+  nameAr    String
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
 }

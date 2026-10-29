@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { categoryOptions, categoryOptionsWith } from "@/server/categories";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/Header";
 import { getViewer, homeFor } from "@/server/session";
@@ -17,7 +18,7 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
       <div className="scr">
         <Header back="/" />
         <main className="main">
-          <SignUpForm initialRole={role === "employer" ? "employer" : "candidate"} />
+          <SignUpForm categories={await categoryOptions()} initialRole={role === "employer" ? "employer" : "candidate"} />
         </main>
       </div>
     </div>

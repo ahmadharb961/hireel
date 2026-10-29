@@ -6,6 +6,7 @@ import { REJECTION_REASONS } from "@/lib/constants";
 import { adminOrNull } from "@/server/session";
 import { approveVideo } from "@/server/videos";
 import { notifyUsers } from "@/server/push";
+import { type ContentResult, createCategory, featureCompany, moveCategory, moveFeatured, renameCategory, setCategoryActive, unfeatureCompany } from "@/server/admin-content";
 
 type R = { ok: true } | { ok: false; error: string };
 
@@ -145,4 +146,55 @@ export async function removeCandidatePhoto(candidateId: string, reason = ""): Pr
   await audit(a.id, "candidate.remove_photo", "CandidateProfile", candidateId, reason);
   revalidatePath(`/admin/candidates/${candidateId}`);
   return { ok: true };
+}
+
+// ---------- categories and the homepage ----------
+
+type CR = { ok: true } | { ok: false; error: string; field?: string };
+const done = (r: ContentResult): CR => (r.ok ? { ok: true } : { ok: false, error: r.error, field: r.field });
+
+export async function addCategory(nameEn: string, nameAr: string): Promise<CR> {
+  const a = await admin();
+  const r = await createCategory(String(nameEn), String(nameAr));
+  if (r.ok) await audit(a.id, "category.create", "Category", r.key!, `${nameEn} / ${nameAr}`);
+  revalidatePath("/", "layout");
+  return done(r);
+}
+
+export async function editCategory(key: string, nameEn: string, nameAr: string): Promise<CR> {
+  const a = await admin();
+  const r = await renameCategory(key, String(nameEn), String(nameAr));
+  if (r.ok) await audit(a.id, "category.rename", "Category", key, `${nameEn} / ${nameAr}`);
+  revalidatePath("/", "layout");
+  return done(r);
+}
+
+export async function showCategory(key: string, active: boolean): Promise<CR> {
+  const a = await admin();
+  const r = await setCategoryActive(key, Boolean(active));
+  if (r.ok) await audit(a.id, active ? "category.show" : "category.hide", "Category", key);
+  revalidatePath("/", "layout");
+  return done(r);
+}
+
+export async function reorderCategory(key: string, dir: -1 | 1): Promise<CR> {
+  await admin();
+  const r = await moveCategory(key, dir === -1 ? -1 : 1);
+  revalidatePath("/", "layout");
+  return done(r);
+}
+
+export async function setFeatured(companyId: string, on: boolean): Promise<CR> {
+  const a = await admin();
+  const r = on ? await featureCompany(companyId) : await unfeatureCompany(companyId);
+  if (r.ok) await audit(a.id, on ? "company.feature" : "company.unfeature", "Company", companyId);
+  revalidatePath("/", "layout");
+  return done(r);
+}
+
+export async function reorderFeatured(companyId: string, dir: -1 | 1): Promise<CR> {
+  await admin();
+  const r = await moveFeatured(companyId, dir === -1 ? -1 : 1);
+  revalidatePath("/", "layout");
+  return done(r);
 }
