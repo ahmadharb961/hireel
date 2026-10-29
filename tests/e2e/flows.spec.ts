@@ -199,7 +199,23 @@ test.describe.serial("Hireel core loop", () => {
     await expect(page.getByText("Company profile saved")).toBeVisible();
     await page.locator('.phup input[type="file"]').setInputFiles({ name: "logo.png", mimeType: "image/png", buffer: await sharpPng() });
     await expect(page.locator(".phup-av img")).toBeVisible();
+    // Cover: a tall picture is bigger than the 3:1 frame, so the company moves and zooms it before saving.
     await page.locator('.bnup input[type="file"]').setInputFiles({ name: "cover.png", mimeType: "image/png", buffer: await sharpPng() });
+    const crop = page.getByRole("dialog", { name: "Position your cover" });
+    await expect(crop.locator(".crop-frame img")).toHaveCSS("opacity", "1");
+    const fr = (await crop.locator(".crop-frame").boundingBox())!;
+    const imgTop = async () => (await crop.locator(".crop-frame img").boundingBox())!.y;
+    const before = await imgTop();
+    await page.mouse.move(fr.x + fr.width / 2, fr.y + fr.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(fr.x + fr.width / 2, fr.y + fr.height / 2 - 40, { steps: 4 });
+    await page.mouse.up();
+    expect(await imgTop()).toBeLessThan(before);
+    await crop.getByRole("button", { name: "Fit whole picture" }).click();
+    expect((await crop.locator(".crop-frame img").boundingBox())!.height).toBeLessThanOrEqual(fr.height + 1);
+    await crop.getByRole("button", { name: "Fill the frame" }).click();
+    await crop.screenshot({ path: "/tmp/claude-0/-home-user-hireel/b8f49245-c34e-5653-8da8-b04c2db3e081/scratchpad/shots/cropper.png" }).catch(() => {});
+    await crop.getByRole("button", { name: "Save cover" }).click();
     await expect(page.locator(".bnup-box")).toHaveAttribute("style", /company-banner/);
     await noSideScroll(page);
   });

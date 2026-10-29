@@ -1233,7 +1233,7 @@
   },
   "banner": {
     "title": "Cover banner",
-    "help": "A wide image (3:1, for example 1500 × 500) shown at the top of your company details. Optional.",
+    "help": "A wide image shown at the top of your company page. Any size works: after choosing it, you can move and zoom it to fit. Optional.",
     "add": "Add cover",
     "change": "Change cover",
     "remove": "Remove",
@@ -1368,5 +1368,15 @@
     "full": "The row is full. Remove a company first.",
     "cantSuspended": "Suspended companies can’t be shown.",
     "failed": "Something went wrong. Try again."
+  },
+  "cropper": {
+    "title": "Position your cover",
+    "help": "Drag the picture to move it. Pinch, scroll or use the slider to zoom. What’s inside the frame is what people see.",
+    "frame": "Cover picture. Drag to move, use + and − to zoom.",
+    "zoom": "Zoom",
+    "fitAll": "Fit whole picture",
+    "fill": "Fill the frame",
+    "cancel": "Cancel",
+    "save": "Save cover"
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
+import { ImageCropper, type CropArea } from "@/components/ImageCropper";
 import { useToast } from "@/components/Toast";
 
 /** Wide company cover image (3:1) with add / change / remove. */
@@ -12,15 +13,22 @@ export function BannerUpload({ initialUrl, logoUrl, name }: { initialUrl: string
   const [url, setUrl] = useState(initialUrl);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  // The picture waiting in the crop step.
+  const [picked, setPicked] = useState<File | null>(null);
 
-  async function send(file?: File) {
+  function pick(file?: File) {
     if (!file) return;
     setErr(null);
     if (file.size > 12 * 1024 * 1024) return setErr(te("photo_too_big"));
+    setPicked(file);
+  }
+
+  async function send(file: File, crop: CropArea | null) {
     setBusy(true);
     try {
       const fd = new FormData();
       fd.append("file", file);
+      if (crop) fd.append("crop", JSON.stringify(crop));
       const d = await fetch("/api/company-banner", { method: "POST", body: fd }).then((r) => r.json()).catch(() => ({ ok: false, error: "network" }));
       if (!d.ok) return setErr(te(d.error ?? "generic"));
       setUrl(d.url);
@@ -41,7 +49,7 @@ export function BannerUpload({ initialUrl, logoUrl, name }: { initialUrl: string
 
   return (
     <div className="bnup">
-      <input ref={input} type="file" accept="image/*" hidden onChange={(e) => { send(e.target.files?.[0]); e.target.value = ""; }} />
+      <input ref={input} type="file" accept="image/*" hidden onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
       <button type="button" className="chead-banner bnup-box" onClick={() => input.current?.click()} disabled={busy} aria-label={url ? t("change") : t("add")} style={url ? { backgroundImage: `url(${url})` } : undefined}>
         {!url ? <span className="bnup-empty">🖼 {t("add")}</span> : null}
         {busy ? <span className="bnup-busy">…</span> : null}
@@ -56,6 +64,7 @@ export function BannerUpload({ initialUrl, logoUrl, name }: { initialUrl: string
         </div>
         {err ? <p className="err" role="alert">{err}</p> : null}
       </div>
+      <ImageCropper file={picked} aspect={3} onCancel={() => setPicked(null)} onDone={(crop) => { const f = picked; setPicked(null); if (f) void send(f, crop); }} />
     </div>
   );
 }
