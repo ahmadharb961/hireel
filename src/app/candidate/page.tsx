@@ -107,8 +107,12 @@ export default async function CandidateHome() {
           <div className="grid3">
             <Link className="stat link" href="/candidate/interest"><b>{profileViews}</b><span>{t("stats.profileViews")} →</span></Link>
             <Link className="stat link" href="/candidate/interest"><b>{saves}</b><span>{t("stats.saves")} →</span></Link>
-            <Link className="stat link" href="/candidate/video"><b>{videoViews}</b><span>{t("stats.videoViews")} →</span></Link>
+            <Link className="stat link" href="/candidate/video#views"><b>{videoViews}</b><span>{t("stats.videoViews")} →</span></Link>
           </div>
+          <Link className="list-row" href="/candidate/profile/print">
+            <div className="thumb" style={{ height: 54 }}>📄</div>
+            <div className="t"><b>{t("downloadPdf")}</b><span>{t("downloadPdfSub")}</span></div>
+          </Link>
           {interest.length ? (
             <section className="msec" aria-labelledby="home-int">
               <h2 className="msec-h" id="home-int">{ti("title")}<Link className="lsec-link" href="/candidate/interest">{t("seeAll")} →</Link></h2>

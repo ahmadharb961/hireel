@@ -120,7 +120,7 @@ export function Studio({ videos, uploadsEnabled, textOnly, aboutOk, points }: { 
           return (
             <button key={i} type="button" role="tab" aria-selected={active === i} className={active === i ? "on" : ""} onClick={() => { setActive(i); setError(null); setConfirmRemove(false); }}>
               <span>{t("slot", { n: i + 1 })}</span>
-              <small>{v ? tl(v.lang) : t("empty")}{v?.primary ? ` · ${t("primary")}` : ""}</small>
+              <small>{v ? tl(v.lang) : t("empty")}{v?.primary ? ` · ${t("primary")}` : ""}{v?.status === "live" && !v.isDemo ? ` · 👁 ${v.views}` : ""}</small>
             </button>
           );
         })}
@@ -156,7 +156,7 @@ export function Studio({ videos, uploadsEnabled, textOnly, aboutOk, points }: { 
       {slot && status && status !== "rejected" ? (
         <div className={`vstatus ${status}`} role="status">
           <span className="vstatus-ic" aria-hidden="true">{status === "live" ? "✓" : status === "failed" ? "!" : status === "review" ? "⏳" : "…"}</span>
-          <div><b>{status === "review" ? t("pendingTitle") : ts(status)}</b>{statusMsg ? <p>{statusMsg}</p> : null}</div>
+          <div><b>{status === "review" ? t("pendingTitle") : ts(status)}</b>{statusMsg ? <p>{statusMsg}</p> : null}{status === "live" && !slot.isDemo ? <p id="views"><b>👁 {t("viewsCount", { n: slot.views })}</b></p> : null}</div>
         </div>
       ) : null}
 

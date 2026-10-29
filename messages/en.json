@@ -330,7 +330,8 @@
     "unreadMessages": "{n, plural, one {# chat has} other {# chats have}} new messages.",
     "seeAll": "See all",
     "shareProfile": "Share my profile",
-    "downloadPdf": "Download my profile (PDF)",
+    "downloadPdf": "Download my CV (PDF with QR code)",
+    "downloadPdfSub": "One page with your photo, details and a QR code that opens your video profile. Print it or send it.",
     "hideFrom": "Hide my profile from companies",
     "prefsNudge": "Add your job preferences",
     "prefsNudgeSub": "The jobs you want, remote or on-site, where you’d move. You’ll get more relevant requests."
@@ -347,6 +348,7 @@
     "noVideo": "No video yet",
     "demoVideo": "Demo video placeholder",
     "uploadingPct": "Uploading… {pct}%",
+    "viewsCount": "{n, plural, =0 {No views yet} one {Watched # time} other {Watched # times}}",
     "landscapeNote": "Landscape video: shown whole on a blurred background, never stretched.",
     "statusMsg": {
       "uploading": "Uploading. Keep this screen open until it reaches 100%.",
