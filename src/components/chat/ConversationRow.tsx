@@ -5,12 +5,14 @@ export type Conversation = {
   last: { body: string; mine: boolean } | null; time: string; unread: boolean; ended: boolean;
   /** Shown instead of the last message (e.g. "Wants to meet you"). */
   hint?: string;
+  /** The chat open right now (desktop list). */
+  active?: boolean;
 };
 
 /** One chat in the Messages list: who, what it's about, the last message and whether it's new. Like a phone's messages app. */
 export function ConversationRow({ c, labels }: { c: Conversation; labels: { you: string; start: string; ended: string; unread: string } }) {
   return (
-    <Link href={c.href} className={`conv${c.unread ? " new" : ""}`}>
+    <Link href={c.href} className={`conv${c.unread ? " new" : ""}${c.active ? " on" : ""}`} aria-current={c.active ? "page" : undefined}>
       <span className="conv-av">{c.avatar ? <img src={c.avatar} alt="" /> : c.name.slice(0, 1)}</span>
       <span className="conv-main">
         <span className="conv-top">

@@ -420,6 +420,9 @@ model IntroRequest {
   // while the chat is on someone's screen (cleared when they leave): no pings for messages they see live
   candidateActiveAt  DateTime?
   employerActiveAt   DateTime?
+  // when they left the chat screen: a check-in that arrives just after this doesn't count as watching
+  candidateLeftAt    DateTime?
+  employerLeftAt     DateTime?
   // when each side was last emailed about new messages (one email per unread batch)
   candidateEmailedAt DateTime?
   employerEmailedAt  DateTime?

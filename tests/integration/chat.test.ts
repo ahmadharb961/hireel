@@ -21,7 +21,7 @@ async function setup(accept = true) {
   if (accept) await prisma.introRequest.update({ where: { id: r.id }, data: { status: "ACCEPTED", respondedAt: new Date() } });
   return { c, e, id: r.id };
 }
-const at = (s: number) => new Date(Date.UTC(2026, 9, 1, 10, 0, s));
+const at = (s: number) => new Date(Date.UTC(2026, 9, 1, 10, 0, 0) + s * 1000);
 
 describe("chat after an accepted request", () => {
   beforeEach(async () => { await reset(); pings.length = 0; });
@@ -84,11 +84,13 @@ describe("chat after an accepted request", () => {
     await sendMessage(e.userId, id, "Three", at(60));
     expect(pings.at(-1)?.email).toBe(true);
     // Reading right now: no ping at all.
-    await markRead(id, "candidate", at(100));
+    await markRead(id, "candidate", at(100), true);
     await sendMessage(e.userId, id, "Four", at(105));
     expect(pings).toHaveLength(3);
     // They leave the chat: the very next message notifies them, even seconds later.
-    await markLeft(id, "candidate");
+    // A check-in that was on its way when they left arrives just after: it doesn't count.
+    await markLeft(id, "candidate", at(106));
+    await markRead(id, "candidate", at(106.5), true);
     await sendMessage(e.userId, id, "Five", at(107));
     expect(pings).toHaveLength(4);
     // Leaving doesn't make messages they already read count as unread.

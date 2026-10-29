@@ -56,17 +56,31 @@ export async function listMessages(requestId: string, viewerId: string, after?: 
   return rows.map((m) => ({ id: m.id, mine: m.senderId === viewerId, body: m.body, at: m.createdAt.toISOString() }));
 }
 
-/** The chat is on this person's screen: everything in it is read, and they're watching it live. */
-export async function markRead(requestId: string, side: ChatSide, now = new Date()) {
-  await prisma.introRequest.update({ where: { id: requestId }, data: side === "candidate" ? { candidateReadAt: now, candidateActiveAt: now } : { employerReadAt: now, employerActiveAt: now } });
+/**
+ * Everything in the chat is read. `live` (sent by the open chat's regular check-in, only while it's on
+ * screen) also marks them as watching it right now, so new messages don't ping them.
+ */
+export async function markRead(requestId: string, side: ChatSide, now = new Date(), live = false) {
+  const read = side === "candidate" ? { candidateReadAt: now } : { employerReadAt: now };
+  const active = live ? (side === "candidate" ? { candidateActiveAt: now } : { employerActiveAt: now }) : {};
+  await prisma.introRequest.update({ where: { id: requestId }, data: { ...read, ...active } });
 }
 
 /**
  * The person closed the chat or switched away: from now on, new messages notify them right away
  * (otherwise they'd count as "looking at it" for a few more seconds).
  */
-export async function markLeft(requestId: string, side: ChatSide) {
-  await prisma.introRequest.update({ where: { id: requestId }, data: side === "candidate" ? { candidateActiveAt: null } : { employerActiveAt: null } });
+export async function markLeft(requestId: string, side: ChatSide, now = new Date()) {
+  await prisma.introRequest.update({ where: { id: requestId }, data: side === "candidate" ? { candidateActiveAt: null, candidateLeftAt: now } : { employerActiveAt: null, employerLeftAt: now } });
+}
+
+/** A check-in this soon after leaving was still on its way when they left: it doesn't count. */
+const LEFT_GRACE_MS = 2500;
+
+/** Is this person looking at the chat right now? */
+export function isWatching(activeAt: Date | null, leftAt: Date | null, now: Date) {
+  if (!activeAt || now.getTime() - activeAt.getTime() >= ACTIVE_MS) return false;
+  return !leftAt || activeAt.getTime() > leftAt.getTime() + LEFT_GRACE_MS;
 }
 
 export type SendResult = { ok: true; message: ChatMessage } | { ok: false; error: "not_found" | "chat_closed" | "message_empty" | "too_long" | "rate_limited" };
@@ -92,8 +106,7 @@ export async function sendMessage(userId: string, requestId: string, text: strin
   const toCandidate = side === "company";
   const readAt = toCandidate ? r.candidateReadAt : r.employerReadAt;
   const emailedAt = toCandidate ? r.candidateEmailedAt : r.employerEmailedAt;
-  const activeAt = toCandidate ? r.candidateActiveAt : r.employerActiveAt;
-  const active = activeAt && now.getTime() - activeAt.getTime() < ACTIVE_MS;
+  const active = isWatching(toCandidate ? r.candidateActiveAt : r.employerActiveAt, toCandidate ? r.candidateLeftAt : r.employerLeftAt, now);
   if (!active) {
     const email = !emailedAt || Boolean(readAt && readAt > emailedAt);
     if (email) await prisma.introRequest.update({ where: { id: requestId }, data: toCandidate ? { candidateEmailedAt: now } : { employerEmailedAt: now } });

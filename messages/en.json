@@ -1493,5 +1493,18 @@
     "emptyTitle": "No companies yet",
     "empty": "When a company opens or saves your profile, it shows up here.",
     "note": "Companies are told that candidates can see their visits."
+  },
+  "chatDesk": {
+    "chats": "Chats",
+    "menu": "Menu",
+    "viewProfile": "View full profile",
+    "viewCompany": "View company page",
+    "request": "About this request",
+    "role": "Job",
+    "accepted": "Accepted on",
+    "from": "Sent by",
+    "youShared": "You shared",
+    "contact": "Contact",
+    "years": "{n, plural, one {# year} other {# years}}"
   }
 }

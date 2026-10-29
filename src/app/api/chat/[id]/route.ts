@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const a = req.nextUrl.searchParams.get("after");
   const after = a && !Number.isNaN(Date.parse(a)) ? new Date(a) : undefined;
   const messages = await listMessages(id, viewer.id, after);
-  if (req.nextUrl.searchParams.get("seen") === "1") await markRead(id, chat.side);
+  if (req.nextUrl.searchParams.get("seen") === "1") await markRead(id, chat.side, new Date(), true);
   // When the other person last read the chat: shows "Seen" under your messages.
   const otherReadAt = (chat.side === "candidate" ? chat.r.employerReadAt : chat.r.candidateReadAt)?.toISOString() ?? null;
   return NextResponse.json({ ok: true, state: chat.state, messages, otherReadAt }, { headers: { "Cache-Control": "no-store" } });
